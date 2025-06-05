@@ -1,4 +1,4 @@
-## Getting started
+## Getting started with DarkWeather Admin portal
 
 Get the latest local environment from the dev team.
 
