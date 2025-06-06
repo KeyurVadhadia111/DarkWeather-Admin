@@ -1,0 +1,180 @@
+/* Import Rubik font from Google Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap");
+
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+/* @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *)); */
+
+@layer base {
+	/* Set Rubik as default font */
+	body {
+		font-family: "Rubik", sans-serif;
+	}
+
+	:root {
+		--background: 0 0% 100%;
+		--foreground: 222.2 47.4% 11.2%;
+
+		--muted: 210 40% 96.1%;
+		--muted-foreground: 215.4 16.3% 46.9%;
+
+		--popover: 0 0% 100%;
+		--popover-foreground: 222.2 47.4% 11.2%;
+
+		--border: 214.3 31.8% 91.4%;
+		--input: 214.3 31.8% 91.4%;
+
+		--card: 0 0% 100%;
+		--card-foreground: 222.2 47.4% 11.2%;
+
+		--primary: 222.2 47.4% 11.2%;
+		--primary-foreground: 210 40% 98%;
+
+		--secondary: 210 40% 96.1%;
+		--secondary-foreground: 222.2 47.4% 11.2%;
+
+		--accent: 210 40% 96.1%;
+		--accent-foreground: 222.2 47.4% 11.2%;
+
+		--destructive: 0 100% 50%;
+		--destructive-foreground: 210 40% 98%;
+
+		--ring: 215 20.2% 65.1%;
+
+		--radius: 0.5rem;
+	}
+
+	/* body {
+		@apply font-sans;
+	} */
+}
+
+@layer utilities {
+	.container {
+		/* Center the container */
+		margin-left: auto;
+		margin-right: auto;
+
+		/* Apply padding */
+		padding-left: 24px;
+		padding-right: 24px;
+
+		/* Apply custom breakpoints */
+		width: 100%;
+		max-width: 1170px; /* Apply 1170px max-width on large screens */
+	}
+	/* Custom breakpoints */
+	@media (min-width: 600px) {
+		.container {
+			max-width: 600px;
+			padding-left: 24px;
+			padding-right: 24px;
+		}
+	}
+	@media (min-width: 1170px) {
+		.container {
+			max-width: 1170px;
+			padding-left: 0px;
+			padding-right: 0px;
+		}
+	}
+	@media (min-width: 1240px) {
+		.container {
+			max-width: 1170px;
+		}
+	}
+	@media (min-width: 1496px) {
+		.container {
+			max-width: 1170px;
+		}
+	}
+}
+
+@theme {
+	--color-text: #1c282b;
+	--color-textSecondary: #808080;
+	--color-textTurnery: #868686;
+	--color-primary: #ffa500;
+	--color-primarySecondary: #fffbf3;
+	--color-textDark: #ffffff;
+	--color-bgc: #ffffff;
+	--color-bgcDark: #272727;
+	--color-fgc: #fafafa;
+	--color-fgcDark: #303030;
+	--color-error: #f04349;
+	--color-warning: #ffa500;
+	--color-success: #00a157;
+	--color-bgcSecondary: #28383c;
+	--color-border: #eeeeee;
+	--color-borderDark: #494949;
+}
+
+button {
+	cursor: pointer;
+}
+
+/* Chrome, Safari, Edge, Opera */
+.OTPInput::-webkit-outer-spin-button,
+.OTPInput::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+/* Firefox */
+.OTPInput {
+	-moz-appearance: textfield;
+}
+
+.Toastify__toast {
+	min-height: 56px;
+	overflow: hidden;
+}
+.Toastify__toast--success {
+	color: var(--toastify-color-progress-success);
+}
+.Toastify__toast--success:not(.Toastify__toast-theme--dark) {
+	background: #f5fffa;
+}
+.Toastify__toast--success.Toastify__toast-theme--dark {
+	background: #0c270d;
+}
+.Toastify__toast--error {
+	color: var(--toastify-color-progress-error);
+}
+.Toastify__toast--error:not(.Toastify__toast-theme--dark) {
+	background: #f2e4e2;
+}
+.Toastify__toast--error.Toastify__toast-theme--dark {
+	background: #24110f;
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+	background-color: var(--color-bgc);
+	width: 42px;
+	height: 42px;
+	border-radius: 100%;
+	box-shadow: 0 6px 32px rgba(0, 0, 0, 0.1);
+}
+.dark .swiper-button-prev,
+.dark .swiper-button-next {
+	background-color: var(--color-bgcDark);
+	color: var(--color-text);
+	box-shadow: 0 6px 32px rgba(255, 255, 255, 0.1);
+}
+.swiper-button-prev.swiper-button-disabled,
+.swiper-button-next.swiper-button-disabled {
+	opacity: 0.4;
+}
+
+.swiper-button-prev::after,
+.swiper-button-next::after {
+	font-size: 16px;
+	color: var(--color-text);
+}
+.dark .swiper-button-prev::after,
+.dark .swiper-button-next::after {
+	font-size: 16px;
+	color: var(--color-textDark) !important;
+}
