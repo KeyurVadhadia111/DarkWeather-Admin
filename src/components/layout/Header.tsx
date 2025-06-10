@@ -2,12 +2,16 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import Sidebar from "components/common/Sidebar";
 import Icon from "components/utils/Icon";
 import ProfileMenu from "components/utils/ProfileMenu";
-import { useAppState } from "components/utils/useAppState";
-import { use, useEffect, useState } from "react";
+import useAppState from "components/utils/useAppState";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 export default function Header() {
-	const [{ isDark, userDetails }, setAppState] = useAppState();
+	// Use individual selectors from Zustand store
+	const isDark = useAppState(state => state.isDark);
+	const setIsDark = useAppState(state => state.setIsDark);
+	const userDetails = useAppState(state => state.userDetails);
+	const setUserDetails = useAppState(state => state.setUserDetails);
 
 	// Navigation menu items
 	const navItems = [
@@ -20,29 +24,27 @@ export default function Header() {
 	];
 
 	useEffect(() => {
-		setAppState({ userDetails: JSON.parse(localStorage.getItem("auth") || "{}") });
+		setUserDetails(JSON.parse(localStorage.getItem("auth") || "{}"));
 		// Check for dark mode preference
 		if (localStorage.theme === "dark") {
 			setThemeMode(true);
-			setAppState({ isDark: true });
 		}
 		if (window.matchMedia("(prefers-color-scheme: dark)").matches && localStorage?.theme === undefined) {
 			setThemeMode(true);
-			setAppState({ isDark: true });
 		}
-	}, []);
+	}, [setUserDetails]);
 
-	const setThemeMode = (isDark: boolean) => {
+	const setThemeMode = (dark: boolean) => {
 		if (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches) {
 			document.documentElement.classList.add("dark");
-			isDark = true;
+			dark = true;
 		}
-		if (isDark) {
+		if (dark) {
 			document.documentElement.classList.add("dark");
 		} else {
 			document.documentElement.classList.remove("dark");
 		}
-		setAppState({ isDark: isDark });
+		setIsDark(dark);
 	};
 
 	return (

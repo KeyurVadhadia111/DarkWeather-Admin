@@ -7,14 +7,14 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import Icon from "components/utils/Icon";
-import { useAppState } from "components/utils/useAppState";
+import useAppState from "components/utils/useAppState";
 import { toast } from "components/utils/toast";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import OtpInput from "components/common/otpInput";
 import CountDown from "components/common/CountDown";
 
 function Register() {
-	const [{ userDetails }, setAppState] = useAppState();
+	const setUserDetails = useAppState(state => state.setUserDetails);
 	const [step, setStep] = useState(1);
 	const [isLoading, setIsLoading] = useState(false);
 	const [countDownTimer, setCountDownTimer] = useState(Date.now() + 10);
@@ -82,7 +82,6 @@ function Register() {
 			email: "",
 			password: "",
 			confirmPassword: "",
-			// remember: false,
 			otp: "",
 		},
 	});
@@ -95,7 +94,7 @@ function Register() {
 		const userDetails = JSON.parse(JSON.stringify(data));
 		userDetails._id = Math.floor(Math.random() * 10000000000).toString();
 		localStorage.setItem("auth", JSON.stringify(userDetails));
-		setAppState({ userDetails: userDetails });
+		setUserDetails(userDetails);
 		toast.success("Registration successful!");
 		console.log("userDetails", userDetails);
 		reset();

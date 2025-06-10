@@ -2,22 +2,27 @@ import { useEffect, useState } from "react";
 import { Button } from "components/utils/Button";
 import { Checkbox } from "components/utils/checkbox";
 import { Input } from "components/utils/Input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
-import { useAppState } from "components/utils/useAppState";
+import useAppState from "components/utils/useAppState";
 import { toast } from "components/utils/toast";
 import Icon from "components/utils/Icon";
 import OtpInput from "components/common/otpInput";
 import CountDown from "components/common/CountDown";
 
 function Login() {
-	const [{ isDark, userDetails }, setAppState] = useAppState();
+	const isDark = useAppState(state => state.isDark);
+	const setIsDark = useAppState(state => state.setIsDark);
+	const userDetails = useAppState(state => state.userDetails);
+	const setUserDetails = useAppState(state => state.setUserDetails);
+
 	const [activeRole, setActiveRole] = useState("Super Admin");
 	const [step, setStep] = useState(1);
 	const [countDownTimer, setCountDownTimer] = useState(Date.now() + 60000);
 	const roles = ["Super Admin", "Analytics", "Support", "Operations", "Meteorologist"];
+	const navigate = useNavigate();
 
 	type ILoginFormData = {
 		email: string;
@@ -58,30 +63,27 @@ function Login() {
 	});
 
 	useEffect(() => {
-		setAppState({ userDetails: JSON.parse(localStorage.getItem("auth") || "{}") });
+		setUserDetails(JSON.parse(localStorage.getItem("auth") || "{}"));
 		// Check for dark mode preference
 		if (localStorage.theme === "dark") {
 			setThemeMode(true);
-			setAppState({ isDark: true });
 		}
 		if (window.matchMedia("(prefers-color-scheme: dark)").matches && localStorage?.theme === undefined) {
 			setThemeMode(true);
-			setAppState({ isDark: true });
 		}
-		// eslint-disable-next-line
-	}, []);
+	}, [setUserDetails]);
 
-	const setThemeMode = (isDark: boolean) => {
+	const setThemeMode = (dark: boolean) => {
 		if (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches) {
 			document.documentElement.classList.add("dark");
-			isDark = true;
+			dark = true;
 		}
-		if (isDark) {
+		if (dark) {
 			document.documentElement.classList.add("dark");
 		} else {
 			document.documentElement.classList.remove("dark");
 		}
-		setAppState({ isDark: isDark });
+		setIsDark(dark);
 	};
 
 	const resendOtp = () => {
@@ -91,7 +93,6 @@ function Login() {
 
 	const onSubmit = (data: ILoginFormData) => {
 		if (step === 1) {
-			// Simulate sending OTP
 			setStep(2);
 			setCountDownTimer(Date.now() + 60000);
 			toast.success("OTP sent to your email!");
@@ -102,12 +103,12 @@ function Login() {
 		userDetails._id = Math.floor(Math.random() * 10000000000).toString();
 		userDetails.role = activeRole;
 		localStorage.setItem("auth", JSON.stringify(userDetails));
-		setAppState({ userDetails: userDetails });
+		setUserDetails(userDetails);
 		toast.success("Login successful!");
 		reset();
 		setStep(1);
+		navigate("/dashboard");
 	};
-
 	return (
 		<div className="relative flex items-center bg-bgc dark:bg-bgcDark">
 			<div className={`w-full flex flex-col items-center gap-20 justify-start sm:justify-around relative h-dvh`}>

@@ -178,3 +178,36 @@ button {
 	font-size: 16px;
 	color: var(--color-textDark) !important;
 }
+
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+	width: 8px;
+	background: transparent;
+	border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #ffa500;
+	border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: #ffa500;
+}
+
+/* Firefox */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: #ffa500 #181c29;
+}
+
+/* Responsive: Thinner scrollbar on small screens */
+@media (max-width: 600px) {
+	::-webkit-scrollbar {
+		width: 4px;
+		border-radius: 10px;
+	}
+	::-webkit-scrollbar-thumb {
+		border-radius: 4px;
+	}
+}

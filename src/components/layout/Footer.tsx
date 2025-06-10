@@ -1,12 +1,17 @@
 import { Button } from "components/utils/Button";
 import Icon from "components/utils/Icon";
 import { Separator } from "components/utils/Separator";
-import { useAppState } from "components/utils/useAppState";
+import useAppState from "components/utils/useAppState";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 export default function Footer() {
-	const [{ isDark, userDetails, premiumStep }, setAppState] = useAppState();
+	// Use individual selectors from Zustand store
+	const isDark = useAppState(state => state.isDark);
+	const setIsDark = useAppState(state => state.setIsDark);
+	const userDetails = useAppState(state => state.userDetails);
+	const premiumStep = useAppState(state => state.premiumStep);
+
 	const [isAuthPage, setIsAuthPage] = useState(false);
 	const location = useLocation();
 
@@ -19,18 +24,18 @@ export default function Footer() {
 	];
 
 	const quickLinks1 = [
-		{ label: "Home", href: "/" },
-		{ label: "About us", href: "/about-us" },
-		{ label: "Radar & Maps", href: "/radar-maps" },
-		{ label: "Weather A.I.", href: "/weather-ai" },
-		{ label: "Go Premium", href: "/premium-plan" },
+		{ label: "", href: "/" },
+		{ label: "", href: "/" },
+		{ label: "", href: "/" },
+		{ label: "", href: "/" },
+		{ label: "", href: "/" },
 	];
 	const quickLinks2 = [
-		{ label: "Top Stories", href: "/top-stories" },
-		{ label: "Severe Weather", href: "/severe-weather" },
-		{ label: "Contact us", href: "/contact-us" },
-		{ label: "FAQs", href: "/faq" },
-		{ label: "Glossary", href: "/weather-glossary" },
+		{ label: "", href: "/" },
+		{ label: "", href: "/" },
+		{ label: "", href: "/" },
+		{ label: "", href: "/" },
+		{ label: "", href: "/" },
 	];
 
 	useEffect(() => {
@@ -40,22 +45,19 @@ export default function Footer() {
 				location.pathname === "/register" ||
 				location.pathname === "/forgot-password",
 		);
-		return () => {
-			true;
-		};
 	}, [location.pathname]);
 
-	const setThemeMode = (isDark: boolean) => {
+	const setThemeMode = (dark: boolean) => {
 		if (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches) {
 			document.documentElement.classList.add("dark");
-			isDark = true;
+			dark = true;
 		}
-		if (isDark) {
+		if (dark) {
 			document.documentElement.classList.add("dark");
 		} else {
 			document.documentElement.classList.remove("dark");
 		}
-		setAppState({ isDark: isDark });
+		setIsDark(dark);
 	};
 
 	return (

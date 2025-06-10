@@ -5,18 +5,18 @@ import "swiper/css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastIcons } from "components/utils/toast-icons";
-import { useAppState } from "components/utils/useAppState";
+import useAppState from "components/utils/useAppState";
 import "simplebar-react/dist/simplebar.min.css";
 
 function App() {
-	const [{ premiumStep }, setAppState] = useAppState();
+	const premiumStep = useAppState(state => state.premiumStep);
 
 	const location = useLocation();
 	const isAuthPage =
 		location.pathname === "/login" || location.pathname === "/register" || location.pathname === "/forgot-password";
 
 	return (
-		<div className="bg-bgc dark:bg-bgcDark flex flex-row justify-center w-full">
+		<div className="bg-fgc dark:bg-bgcDark flex flex-row justify-center w-full">
 			<div className="overflow-hidden w-full h-full min-h-screen">
 				<div className="flex flex-col w-full items-end relative">
 					<div
@@ -37,7 +37,10 @@ function App() {
 
 					{/* Footer Section */}
 					{/* {location.pathname !== "/weather-ai" ? <Footer /> : ""} */}
-					<ToastContainer toastClassName={"!rounded-2xl"} icon={({ type }) => ToastIcons[type as keyof typeof ToastIcons]?.() || null} />
+					<ToastContainer
+						toastClassName={"!rounded-2xl"}
+						icon={({ type }) => ToastIcons[type as keyof typeof ToastIcons]?.() || null}
+					/>
 				</div>
 			</div>
 		</div>

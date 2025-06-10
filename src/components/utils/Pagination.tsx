@@ -1,5 +1,5 @@
 import React from "react";
-import { useAppState } from "./useAppState";
+import useAppState from "./useAppState";
 import { Button } from "./Button";
 import Icon from "./Icon";
 
@@ -10,7 +10,7 @@ interface Props {
 	handlePageChange: (pageNumber: number) => void;
 }
 const Pagination: React.FC<Props> = ({ totalRecords, recordsPerPage, currentPage, handlePageChange }) => {
-	const [{ isDark, userDetails }, setAppState] = useAppState();
+	const isDark = useAppState(state => state.isDark);
 	const totalPages = Math.ceil(totalRecords / recordsPerPage);
 	const paginationItems = [];
 

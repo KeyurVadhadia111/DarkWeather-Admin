@@ -1,40 +1,29 @@
-import React, { createContext, ReactNode, useContext, useEffect, useReducer } from "react";
-import type { Dispatch, Reducer } from "react";
+import { create } from "zustand";
 
-export const StateContext = createContext<any>({});
+type AppState = {
+	isDark: boolean;
+	isLoading: boolean;
+	isUserDetails: boolean;
+	userDetails: Record<string, any>;
+	premiumStep: number;
+	setIsDark: (isDark: boolean) => void;
+	setIsLoading: (isLoading: boolean) => void;
+	setUserDetails: (details: Record<string, any>) => void;
+	setPremiumStep: (step: number) => void;
+};
 
-export const initialState: any = {
+const useAppState = create<AppState>(set => ({
 	isDark: false,
 	isLoading: false,
 	isUserDetails: false,
 	userDetails: {},
-	forecastTab: "Today",
-	questionTabs: "General Information",
 	premiumStep: 1,
-	currentPremiumPlan: {},
-};
 
-let globalState: any = initialState;
-let globalDispatch: Dispatch<any>;
+	// Actions
+	setIsDark: isDark => set({ isDark }),
+	setIsLoading: isLoading => set({ isLoading }),
+	setUserDetails: details => set({ userDetails: details, isUserDetails: !!details }),
+	setPremiumStep: step => set({ premiumStep: step }),
+}));
 
-export const getState = () => globalState;
-export const getDispatch = () => globalDispatch;
-
-export const StateProvider = function <I>({
-	reducer,
-	initialState,
-	children,
-}: {
-	reducer: Reducer<any, any>;
-	initialState: I;
-	children: ReactNode;
-}) {
-	const [state, setAppState] = useReducer(reducer, initialState);
-	useEffect(() => {
-		globalState = state;
-		globalDispatch = setAppState;
-	}, [state]);
-	return <StateContext.Provider value={[state, setAppState]}>{children}</StateContext.Provider>;
-};
-
-export const useAppState = () => useContext(StateContext);
+export default useAppState;

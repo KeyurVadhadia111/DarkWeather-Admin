@@ -1,6 +1,6 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { classNames } from "components/utils";
-import { useAppState } from "components/utils/useAppState";
+import useAppState from "components/utils/useAppState";
 import React, { Fragment, JSX, useRef } from "react";
 
 type ModalSizeType = {
@@ -25,7 +25,7 @@ type RequestType = {
 
 const Modal: React.FC<RequestType> = ({ openModal, setOpenModal, size, children, className }) => {
 	const cancelButtonRef = useRef(null);
-	const [{ isDark }] = useAppState();
+	const isDark = useAppState(state => state.isDark);
 	return (
 		<>
 			{size && (

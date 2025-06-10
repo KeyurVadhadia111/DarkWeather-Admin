@@ -8,8 +8,7 @@ import { toast } from "components/utils/toast";
 import { useEffect, useState } from "react";
 import OtpInput from "components/common/otpInput";
 import Icon from "components/utils/Icon";
-import { useAppState } from "components/utils/useAppState";
-
+import useAppState from "components/utils/useAppState";
 interface IForgotPasswordFormData {
 	email: string;
 	otp: string;
@@ -18,7 +17,9 @@ interface IForgotPasswordFormData {
 }
 
 function ForgotPasswordPage() {
-	const [{ isDark, userDetails }, setAppState] = useAppState();
+	const isDark = useAppState(state => state.isDark);
+	const setIsDark = useAppState(state => state.setIsDark);
+	const setUserDetails = useAppState(state => state.setUserDetails);
 
 	const [step, setStep] = useState(1);
 
@@ -98,32 +99,28 @@ function ForgotPasswordPage() {
 	});
 
 	useEffect(() => {
-		setAppState({ userDetails: JSON.parse(localStorage.getItem("auth") || "{}") });
+		setUserDetails(JSON.parse(localStorage.getItem("auth") || "{}"));
 		// Check for dark mode preference
 		if (localStorage.theme === "dark") {
 			setThemeMode(true);
-			setAppState({ isDark: true });
 		}
 		if (window.matchMedia("(prefers-color-scheme: dark)").matches && localStorage?.theme === undefined) {
 			setThemeMode(true);
-			setAppState({ isDark: true });
 		}
-		// eslint-disable-next-line
-	}, []);
+	}, [setUserDetails]);
 
-	const setThemeMode = (isDark: boolean) => {
+	const setThemeMode = (dark: boolean) => {
 		if (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches) {
 			document.documentElement.classList.add("dark");
-			isDark = true;
+			dark = true;
 		}
-		if (isDark) {
+		if (dark) {
 			document.documentElement.classList.add("dark");
 		} else {
 			document.documentElement.classList.remove("dark");
 		}
-		setAppState({ isDark: isDark });
+		setIsDark(dark);
 	};
-
 	return (
 		<div className="relative flex items-center bg-bgc dark:bg-bgcDark">
 			<div className={`w-full flex flex-col items-center gap-20 justify-start sm:justify-around  relative h-dvh`}>
