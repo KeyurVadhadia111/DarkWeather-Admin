@@ -1,12 +1,13 @@
 import Footer from "components/layout/Footer";
-import Header from "components/layout/Header";
 import { Outlet, useLocation } from "react-router-dom";
+import Header from "components/layout/Header";
 import "swiper/css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastIcons } from "components/utils/toast-icons";
 import useAppState from "components/utils/useAppState";
 import "simplebar-react/dist/simplebar.min.css";
+import Sidebar from "components/layout/Sidebar";
 
 function App() {
 	const premiumStep = useAppState(state => state.premiumStep);
@@ -27,12 +28,14 @@ function App() {
 					/>
 
 					{/* Header Navigation */}
-					{/* {location.pathname !== "/weather-ai" ? <Header /> : ""} */}
 
 					{/* Main Content */}
-					<main
-						className={`z-[1] relative w-full ${location.pathname !== "/weather-ai" && "min-h-[calc(100vh-470px)]"}`}>
-						<Outlet />
+					<main className={`w-full flex p-0 sm:p-4`}>
+						{location.pathname !== "/" && location.pathname !== "/forgot-password" ? <Sidebar /> : ""}
+						<div className="flex flex-col w-full relative pl-0 sm:pl-4">
+							{location.pathname !== "/" && location.pathname !== "/forgot-password" ? <Header /> : ""}
+							<Outlet />
+						</div>
 					</main>
 
 					{/* Footer Section */}

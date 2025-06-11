@@ -8,7 +8,7 @@ const data = [
 ];
 
 const FeaturesBarChart: React.FC = () => (
-	<div className="w-full flex flex-col gap-4 sm:gap-[34.67px]">
+	<div className="w-full flex flex-col gap-4 sm:gap-[29px]">
 		{data.map(item => (
 			<div className="flex flex-col gap-3 sm:gap-5" key={item.name}>
 				<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>

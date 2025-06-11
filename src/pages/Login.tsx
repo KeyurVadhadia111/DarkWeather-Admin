@@ -64,7 +64,6 @@ function Login() {
 
 	useEffect(() => {
 		setUserDetails(JSON.parse(localStorage.getItem("auth") || "{}"));
-		// Check for dark mode preference
 		if (localStorage.theme === "dark") {
 			setThemeMode(true);
 		}
@@ -98,10 +97,9 @@ function Login() {
 			toast.success("OTP sent to your email!");
 			return;
 		}
-		// Step 2: OTP verification
 		const userDetails = JSON.parse(JSON.stringify(data));
 		userDetails._id = Math.floor(Math.random() * 10000000000).toString();
-		userDetails.role = activeRole;
+		userDetails.role = activeRole.replace(/\s/g, ""); // Remove all spaces between words
 		localStorage.setItem("auth", JSON.stringify(userDetails));
 		setUserDetails(userDetails);
 		toast.success("Login successful!");
@@ -109,9 +107,10 @@ function Login() {
 		setStep(1);
 		navigate("/dashboard");
 	};
+
 	return (
 		<div className="relative flex items-center bg-bgc dark:bg-bgcDark">
-			<div className={`w-full flex flex-col items-center gap-20 justify-start sm:justify-around relative h-dvh`}>
+			<div className="w-full flex flex-col items-center gap-20 justify-start sm:justify-around relative h-dvh">
 				{/* Header */}
 				<div className="absolute top-[12px] sm:top-[50px] left-auto flex items-center justify-between px-6 w-full max-w-[820px]">
 					<Link to={"/"}>
@@ -154,7 +153,6 @@ function Login() {
 									: "We have sent a verification code to your email ID. Please check."}
 							</p>
 						</div>
-
 						{/* Role Selection */}
 						<div className="flex flex-col gap-6 sm:gap-9 w-full">
 							{/* Role Tabs */}
@@ -165,10 +163,10 @@ function Login() {
 											key={role}
 											type="button"
 											onClick={() => setActiveRole(role)}
-											className={`text-xs sm:text-base px-2 py-1.5 sm:px-5 sm:py-2.5 rounded-md  transition whitespace-nowrap ${
+											className={`text-xs sm:text-base px-2 py-1.5 sm:px-5 sm:py-2.5 rounded-md transition whitespace-nowrap ${
 												activeRole === role
 													? "bg-primary text-text font-semibold rounded-[6px] sm:rounded-lg"
-													: " text-text  dark:text-textDark font-normal"
+													: "text-text dark:text-textDark font-normal"
 											}`}>
 											{role}
 										</button>
@@ -177,10 +175,9 @@ function Login() {
 							) : (
 								""
 							)}
-
 							{/* Login Form */}
 							<form
-								className={`flex flex-col ${step === 1 ? " gap-3 sm:gap-4" : "gap-2 sm:gap-[52px]"} w-full`}
+								className={`flex flex-col ${step === 1 ? "gap-3 sm:gap-4" : "gap-2 sm:gap-[52px]"} w-full`}
 								onSubmit={handleSubmit(onSubmit)}>
 								{step === 1 && (
 									<>
@@ -206,7 +203,6 @@ function Login() {
 										</div>
 									</>
 								)}
-
 								{step === 2 && (
 									<div className="flex flex-col gap-2">
 										<OtpInput
@@ -222,14 +218,12 @@ function Login() {
 										)}
 									</div>
 								)}
-
 								<Button
 									type="submit"
 									className={`w-full bg-primary hover:bg-primary/80 text-text font-bold rounded-lg !py-[10px] sm:!py-[17px] text-lg transition ${step === 1 ? "mt-2" : "mt-[30px] sm:mt-0"}`}>
 									{step === 1 ? "Verify" : "Submit"}
 								</Button>
 								{step === 2 && (
-									/* Resend Link */
 									<div className="flex items-center justify-center gap-2 text-sm sm:text-base ">
 										<span className="font-normal text-text dark:text-textDark text-center">
 											Didn’t receive the email?
@@ -249,12 +243,8 @@ function Login() {
 			</div>
 			{/* Right Side (Image) */}
 			<div className="w-full h-dvh hidden sm:flex items-center justify-center relative overflow-hidden">
-				<div
-					className={`w-full h-dvh bg-no-repeat bg-position-[center_top] bg-[length:360%] sm:bg-[length:120%] bg-[url('/assets/images/bg/bg-login.png')]`}
-				/>
-				<div
-					className={`absolute bg-gradient-to-b from-bgc/0 to-bgc dark:from-bgcDark/70 dark:to-bgcDark w-full h-auto`}
-				/>
+				<div className="w-full h-dvh bg-no-repeat bg-position-[center_top] bg-[length:360%] sm:bg-[length:120%] bg-[url('/assets/images/bg/bg-login.png')]" />
+				<div className="absolute bg-gradient-to-b from-bgc/0 to-bgc dark:from-bgcDark/70 dark:to-bgcDark w-full h-auto" />
 				<img
 					src={`/assets/images/dashboard${!isDark ? "-light" : "-dark"}.png`}
 					alt="dashboard"

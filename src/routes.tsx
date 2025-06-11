@@ -7,6 +7,7 @@ import AccessDisabled from "pages/AccessDisabled";
 import Register from "pages/Register";
 import ForgotPasswordPage from "pages/ForgotPasswordPage";
 import Dashboard from "pages/Dashboard";
+import UserManagementPage from "pages/UserManagementPage";
 
 declare global {
 	interface Window {
@@ -71,14 +72,6 @@ const createRoutes: React.FC = () => {
 							}
 						/>
 						<Route
-							path="/register"
-							element={
-								<ProtectedRoute>
-									<Register />
-								</ProtectedRoute>
-							}
-						/>
-						<Route
 							path="/forgot-password"
 							element={
 								<ProtectedRoute>
@@ -91,6 +84,14 @@ const createRoutes: React.FC = () => {
 							element={
 								<ProtectedRoute>
 									<Dashboard />
+								</ProtectedRoute>
+							}
+						/>
+						<Route
+							path="/user-management"
+							element={
+								<ProtectedRoute>
+									<UserManagementPage />
 								</ProtectedRoute>
 							}
 						/>
