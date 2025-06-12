@@ -18,7 +18,12 @@ export default function DashboardSidebar() {
 		{ title: "Dashboard", icon: "dashboard", href: "/dashboard", roles: ["SuperAdmin", "Analytics", "Support"] },
 		// Add Login Activity for Support role
 		{ title: "Login Activity", icon: "login-activity", href: "", roles: ["Support"] },
-		{ title: "User Management", icon: "user-management", href: "", roles: ["SuperAdmin", "Support"] },
+		{
+			title: "User Management",
+			icon: "user-management",
+			href: "/user-management",
+			roles: ["SuperAdmin", "Support"],
+		},
 		{ title: "Override Weather Info", icon: "override-weather-info", href: "", roles: ["SuperAdmin"] },
 		{ title: "Role Management", icon: "role-management", href: "", roles: ["SuperAdmin", "Support"] },
 		{ title: "API Integration", icon: "api-integration", href: "", roles: ["SuperAdmin"] },

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "components/utils/Button";
 import { Checkbox } from "components/utils/checkbox";
 import { Input } from "components/utils/Input";
@@ -22,6 +22,8 @@ function Login() {
 	const [step, setStep] = useState(1);
 	const [countDownTimer, setCountDownTimer] = useState(Date.now() + 60000);
 	const roles = ["Super Admin", "Analytics", "Support", "Operations", "Meteorologist"];
+	const otpInputRef = useRef<HTMLInputElement>(null);
+	const emailInputRef = useRef<HTMLInputElement>(null);
 	const navigate = useNavigate();
 
 	type ILoginFormData = {
@@ -84,6 +86,15 @@ function Login() {
 		}
 		setIsDark(dark);
 	};
+
+	useEffect(() => {
+		if (step === 1 && emailInputRef.current) {
+			emailInputRef.current.focus();
+		}
+		if (step === 2 && otpInputRef.current) {
+			otpInputRef.current.focus();
+		}
+	}, [step]);
 
 	const resendOtp = () => {
 		setCountDownTimer(Date.now() + 60000);
@@ -206,6 +217,7 @@ function Login() {
 								{step === 2 && (
 									<div className="flex flex-col gap-2">
 										<OtpInput
+											ref={otpInputRef}
 											onOtpChange={(otp: string) => {
 												setValue("otp", otp);
 												trigger("otp");

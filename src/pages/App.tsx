@@ -13,8 +13,7 @@ function App() {
 	const premiumStep = useAppState(state => state.premiumStep);
 
 	const location = useLocation();
-	const isAuthPage =
-		location.pathname === "/login" || location.pathname === "/register" || location.pathname === "/forgot-password";
+	const isAuthPage = location.pathname === "/login" || location.pathname === "/forgot-password";
 
 	return (
 		<div className="bg-fgc dark:bg-bgcDark flex flex-row justify-center w-full">
@@ -34,7 +33,9 @@ function App() {
 						{location.pathname !== "/" && location.pathname !== "/forgot-password" ? <Sidebar /> : ""}
 						<div className="flex flex-col w-full relative pl-0 sm:pl-4">
 							{location.pathname !== "/" && location.pathname !== "/forgot-password" ? <Header /> : ""}
-							<Outlet />
+							<div className="p-6 sm:p-0">
+								<Outlet />
+							</div>
 						</div>
 					</main>
 

@@ -4,7 +4,6 @@ import useAppState from "components/utils/useAppState";
 import Login from "pages/Login";
 import App from "pages/App";
 import AccessDisabled from "pages/AccessDisabled";
-import Register from "pages/Register";
 import ForgotPasswordPage from "pages/ForgotPasswordPage";
 import Dashboard from "pages/Dashboard";
 import UserManagementPage from "pages/UserManagementPage";
@@ -28,24 +27,20 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 	const setUserDetails = useAppState(state => state.setUserDetails);
 	const user = JSON.parse(localStorage.getItem("auth") || "{}");
 
-	const isAuthPage =
-		location.pathname === "/login" ||
-		location.pathname === "/register" ||
-		location.pathname === "/forgot-password" ||
-		location.pathname === "/forecast";
+	const isAuthPage = location.pathname === "/login" || location.pathname === "/forgot-password";
 
 	if (location.pathname === "/") {
 		return <>{children}</>;
 	}
 	if (user?._id) {
-		// User is logged in, block access to login/register
+		// User is logged in, block access to login
 		if (isAuthPage) {
 			return <Navigate to="/" replace />;
 		}
 		// Allow access to other routes
 		return <>{children}</>;
 	} else {
-		// Not logged in, allow access only to login/register
+		// Not logged in, allow access only to login
 		if (isAuthPage) {
 			return <>{children}</>;
 		}

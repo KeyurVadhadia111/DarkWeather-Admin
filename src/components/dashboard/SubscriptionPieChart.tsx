@@ -11,11 +11,11 @@ const data = [
 const SubscriptionPieChart: React.FC = () => {
 	const isDark = useAppState(state => state.isDark);
 	return (
-		<div className="flex flex-col gap-4 w-full">
+		<div className="flex flex-col gap-4 sm:gap-[22px] w-full">
 			{data.map((item, idx) => (
 				<div
 					key={item.name}
-					className="flex items-center justify-between rounded-xl px-4 py-[11px] sm:px-5 sm:py-4"
+					className="flex items-center justify-between rounded-xl px-4 py-[11px] sm:px-5 sm:py-[18px]"
 					style={{ background: !isDark ? item.color : item.colorDark }}>
 					<span className="font-normal text-xs sm:text-base text-text dark:text-textDark">{item.name}</span>
 					<span className="font-medium text-sm sm:text-lg text-text dark:text-textDark">{item.value}%</span>

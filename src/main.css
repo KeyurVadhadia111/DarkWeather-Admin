@@ -108,6 +108,9 @@
 	--color-bgcSecondary: #28383c;
 	--color-border: #eeeeee;
 	--color-borderDark: #494949;
+	--color-textGreen: #2e7d64;
+	--color-textRed: #e5646c;
+	--color-bgGreen: #e4f8ef;
 }
 
 button {
@@ -194,3 +197,6 @@ button {
 	border-radius: 8px;
 	bottom: 2px;
 }
+/* .simplebar-placeholder {
+	display: none !important;
+} */

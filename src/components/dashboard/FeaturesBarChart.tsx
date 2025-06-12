@@ -10,7 +10,7 @@ const data = [
 const FeaturesBarChart: React.FC = () => (
 	<div className="w-full flex flex-col gap-4 sm:gap-[29px]">
 		{data.map(item => (
-			<div className="flex flex-col gap-3 sm:gap-5" key={item.name}>
+			<div className="flex flex-col gap-2.5 sm:gap-5" key={item.name}>
 				<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
 					<span className="text-text dark:text-textDark text-xs sm:text-base">{item.name}</span>
 					<span className="text-text dark:text-textDark text-sm sm:text-lg">{item.value}%</span>
