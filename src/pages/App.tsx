@@ -10,10 +10,8 @@ import "simplebar-react/dist/simplebar.min.css";
 import Sidebar from "components/layout/Sidebar";
 
 function App() {
-	const premiumStep = useAppState(state => state.premiumStep);
-
+	const isSideExpanded = useAppState(state => state.isSideExpanded);
 	const location = useLocation();
-	const isAuthPage = location.pathname === "/login" || location.pathname === "/forgot-password";
 
 	return (
 		<div className="bg-fgc dark:bg-bgcDark flex flex-row justify-center w-full">
@@ -32,8 +30,10 @@ function App() {
 					<main className={`w-full flex p-0 sm:p-4`}>
 						{location.pathname !== "/" && location.pathname !== "/forgot-password" ? <Sidebar /> : ""}
 						<div className="flex flex-col w-full relative pl-0 sm:pl-4">
-							{location.pathname !== "/" && location.pathname !== "/forgot-password" ? <Header /> : ""}
-							<div className="p-6 sm:p-0">
+							{location.pathname !== "/" && location.pathname !== "/forgot-password" ? <div className={`${isSideExpanded ? "w-[calc(100%-330px)]" : "w-[calc(100%-100px)]"}`}>
+								<Header />
+							</div> : ""}
+							<div className={`p-6 sm:p-0 ${isSideExpanded ? "w-[calc(100%-330px)]" : "w-[calc(100%-100px)]"}`}>
 								<Outlet />
 							</div>
 						</div>

@@ -5,9 +5,29 @@ import { Input } from "components/utils/Input";
 import Pagination from "components/utils/Pagination";
 import React, { useEffect, useMemo, useState } from "react";
 
+interface User {
+	id: number;
+	avatar: string;
+	name: string;
+	email: string;
+	phone: string;
+	role: string;
+	plan: string;
+	planBg: string;
+	planText: string;
+	lastLogin: string;
+	status: string;
+	statusColor: string;
+}
+
+interface SortConfig {
+	key: keyof User;
+	direction: "asc" | "desc";
+}
+
 export default function UserManagementPage() {
-	// Example user data array
-	const [users, setUsers] = useState([
+	// Example user data array with duplicates removed
+	const [users, setUsers] = useState<User[]>([
 		{
 			id: 1,
 			avatar: "avatar-1",
@@ -175,109 +195,44 @@ export default function UserManagementPage() {
 			lastLogin: "Yesterday, 4:56 PM",
 			status: "Active",
 			statusColor: "text-textGreen",
-		},
-		{
-			id: 13,
-			avatar: "avatar-2",
-			name: "Alex Johnson",
-			email: "alex.j@email.com",
-			phone: "+1 4845850121",
-			role: "Analytics",
-			plan: "Free Tier",
-			planBg: "bg-fgc dark:bg-fgcDark",
-			planText: "text-text dark:text-textDark",
-			lastLogin: "May 18, 9:15 AM",
-			status: "Suspend",
-			statusColor: "text-textRed",
-		},
-		{
-			id: 14,
-			avatar: "avatar-2",
-			name: "Alex Johnson",
-			email: "alex.j@email12.com",
-			phone: "+1 4845850121",
-			role: "Analytics",
-			plan: "Free Tier",
-			planBg: "bg-fgc dark:bg-fgcDark",
-			planText: "text-text dark:text-textDark",
-			lastLogin: "May 18, 9:15 AM",
-			status: "Suspend",
-			statusColor: "text-textRed",
-		},
-		{
-			id: 15,
-			avatar: "avatar-11",
-			name: "Linda Brooks",
-			email: "linda.brooks@gmail.com",
-			phone: "+1 4844670913",
-			role: "Meteorologist",
-			plan: "Consultation Tier",
-			planBg: "bg-bgGreen dark:bg-textGreen/10",
-			planText: "text-textGreen",
-			lastLogin: "May 28, 6:18 PM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 16,
-			avatar: "avatar-8",
-			name: "Emily Brown",
-			email: "emily.brown@gmail.com",
-			phone: "+1 6102458945",
-			role: "User",
-			plan: "Free Tier",
-			planBg: "bg-fgc dark:bg-fgcDark",
-			planText: "text-text dark:text-textDark",
-			lastLogin: "Today, 7:30 AM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
+		}
 	]);
-
-	const [selectedUsers, setSelectedUsers] = React.useState<number[]>([]);
-	interface User {
-		id: number;
-		avatar: string;
-		name: string;
-		email: string;
-		phone: string;
-		role: string;
-		plan: string;
-		planBg: string;
-		planText: string;
-		lastLogin: string;
-		status: string;
-		statusColor: string;
-	}
-
-	const [sortConfig, setSortConfig] = useState<{ key: keyof User; direction: "asc" | "desc" }>({
+	const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
+	const [currentPage, setCurrentPage] = useState(1);
+	const [usersPerPage] = useState(10);
+	const [sortConfig, setSortConfig] = useState<SortConfig>({
 		key: "name",
 		direction: "asc",
 	});
+	const [editIndex, setEditIndex] = useState<number | null>(null);
+	const [isAddEditUserPopupOpen, setIsAddEditUserPopupOpen] = useState(false);
+	const [displayedUsers, setDisplayedUsers] = useState<User[]>([]);
 
-	const handleSort = (key: keyof User) => {
-		setSortConfig(current => ({
-			key,
-			direction: current.key === key && current.direction === "asc" ? "desc" : "asc",
-		}));
-	};
+	const startIdx = (currentPage - 1) * usersPerPage;
+	const endIdx = Math.min(startIdx + usersPerPage, users.length);
 
-	// const usersPerPage = 12;
-	// const [currentPage, setCurrentPage] = useState(1);
+	useEffect(() => {
+		const sorted = [...users].sort((a: User, b: User) => {
+			const key = sortConfig.key;
+			let valA = a[key];
+			let valB = b[key];
 
-	// const startIdx = (currentPage - 1) * usersPerPage;
-	// const endIdx = Math.min(startIdx + usersPerPage, users.length);
-	// const paginatedUsers = users.slice(startIdx, endIdx);
-
-	const sortedUsers = useMemo(() => {
-		if (!sortConfig) return users;
-		const sorted = [...users];
-		sorted.sort((a, b) => {
-			let valA = a[sortConfig.key];
-			let valB = b[sortConfig.key];
-
-			// For string comparison (case-insensitive)
 			if (typeof valA === "string" && typeof valB === "string") {
+				if (key === "lastLogin") {
+					const convertToDate = (str: string): number => {
+						if (str.toLowerCase().includes("today")) return new Date().getTime();
+						if (str.toLowerCase().includes("yesterday")) {
+							const date = new Date();
+							date.setDate(date.getDate() - 1);
+							return date.getTime();
+						}
+						return new Date(str).getTime();
+					};
+					return sortConfig.direction === "asc"
+						? convertToDate(valA) - convertToDate(valB)
+						: convertToDate(valB) - convertToDate(valA);
+				}
+
 				valA = valA.toLowerCase();
 				valB = valB.toLowerCase();
 			}
@@ -286,32 +241,43 @@ export default function UserManagementPage() {
 			if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
 			return 0;
 		});
-		return sorted;
-	}, [users, sortConfig]);
+		setUsers(prev => sorted);
+		setDisplayedUsers(sorted.slice(startIdx, endIdx));
 
-	const usersPerPage = 12;
-	const [currentPage, setCurrentPage] = useState(1);
+		return () => {
+			true;
+		}
+	}, [users, sortConfig, currentPage, usersPerPage, startIdx, endIdx])
 
-	const startIdx = (currentPage - 1) * usersPerPage;
-	const endIdx = Math.min(startIdx + usersPerPage, sortedUsers.length);
-	const paginatedUsers = sortedUsers.slice(startIdx, endIdx);
+	const handleSort = (key: keyof User) => {
+		setSortConfig(prevConfig => ({
+			key,
+			direction: prevConfig.key === key && prevConfig.direction === "asc" ? "desc" : "asc",
+		}));
+	};
 
-	// Update logic to use user.id
-	const allChecked = paginatedUsers.length > 0 && paginatedUsers.every(u => selectedUsers.includes(u.id));
-	const isIndeterminate = paginatedUsers.some(u => selectedUsers.includes(u.id)) && !allChecked;
+	/* Start for checkbox */
+	const allChecked = displayedUsers.length > 0 && displayedUsers.every((u: User) => selectedUsers.includes(u.id));
+	const isIndeterminate = displayedUsers.length > 0 && selectedUsers.some(id => displayedUsers.some(u => u.id === id)) && !allChecked;
 
-	function handleSelectAll() {
-		const pageIds = paginatedUsers.map(u => u.id);
+	const handleSelectAll = () => {
 		if (allChecked) {
+			const pageIds = displayedUsers.map((u: User) => u.id);
 			setSelectedUsers(prev => prev.filter(id => !pageIds.includes(id)));
 		} else {
-			setSelectedUsers(prev => [...prev, ...pageIds.filter(id => !prev.includes(id))]);
+			const pageIds = displayedUsers.map((u: User) => u.id);
+			setSelectedUsers(prev => [...new Set([...prev, ...pageIds])]);
 		}
-	}
+	};
 
-	function handleCheckbox(id: number) {
-		setSelectedUsers(prev => (prev.includes(id) ? prev.filter(e => e !== id) : [...prev, id]));
-	}
+	const handleCheckbox = (id: number) => {
+		if (selectedUsers.includes(id)) {
+			setSelectedUsers(prev => prev.filter(userId => userId !== id));
+		} else {
+			setSelectedUsers(prev => [...prev, id]);
+		}
+	};
+	/* End for checkbox */
 
 	return (
 		<div className="flex flex-col items-start gap-6 p-2.5 sm:p-6 bg-bgc dark:bg-fgcDark rounded-[10px] sm:rounded-[20px]">
@@ -323,15 +289,15 @@ export default function UserManagementPage() {
 					</div>
 				</div>
 				<div className="flex items-center justify-around gap-3 p-2.5 sm:px-6 sm:py-4 relative self-stretch w-full flex-[0_0_auto] bg-bgc dark:bg-bgcDark rounded-2xl shadow-[0px_10px_65px_#0000000d]">
-					<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 relative flex-1 grow">
-						<div className="flex items-center gap-3 relative flex-[0_0_auto]">
-							<div className="flex w-[233px] sm:w-[600px] gap-2 sm:gap-3 h-[42px] sm:h-14 items-center p-4 relative bg-fgc dark:bg-fgcDark rounded-xl">
+					<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-4 relative flex-1 grow w-full">
+						<div className="flex items-center gap-3 relative w-full">
+							<div className="flex w-full gap-2 sm:gap-3 h-[42px] sm:h-14 items-center p-4 relative bg-fgc dark:bg-fgcDark rounded-xl">
 								<Icon
 									icon="search"
 									className="w-5 h-5 sm:w-6 sm:h-6 dark:text-textDark text-text shrink-0"
 								/>
 								<Input
-									className=" font-normal !w-full sm:!w-[550px] !h-[56px] text-bgcSecondary dark:text-textDark text-sm whitespace-nowrap [background:transparent] border-[none] !p-0 !bg-transparent !outline-0 !ring-0 !self-stretch"
+									className=" font-normal !h-[56px] text-bgcSecondary dark:text-textDark text-sm whitespace-nowrap [background:transparent] border-[none] !p-0 !bg-transparent !outline-0 !ring-0 !self-stretch"
 									placeholder="Search by name or email"
 									type="text"
 								/>
@@ -349,7 +315,10 @@ export default function UserManagementPage() {
 									Export Users
 								</div>
 							</Button>
-							<Button className="flex h-[42px] sm:h-14 items-center justify-center gap-3 sm:px-6 py-3 sm:py-4 relative flex-[0_0_auto] bg-primary rounded-lg sm:rounded-xl">
+							<Button className="flex h-[42px] sm:h-14 items-center justify-center gap-3 sm:px-6 py-3 sm:py-4 relative flex-[0_0_auto] bg-primary rounded-lg sm:rounded-xl" onClick={() => {
+								setEditIndex(null);
+								setIsAddEditUserPopupOpen(true)
+							}}>
 								<Icon icon="plus" className="w-5 h-5 sm:w-7 sm:h-7" />
 								<div className="relative  font-semibold text-text text-xs sm:text-base tracking-[0] leading-6 whitespace-nowrap">
 									Add New User
@@ -386,11 +355,10 @@ export default function UserManagementPage() {
 										className="opacity-0 absolute w-6 h-6 cursor-pointer bg-transparent"
 									/>
 									<span
-										className={`w-[17px] h-[17px] rounded-[2px] border border-textSecondary flex items-center justify-center transition-colors duration-150 ${
-											allChecked || isIndeterminate
-												? "bg-primary !border-primary "
-												: "bg-transparent "
-										}`}>
+										className={`w-[17px] h-[17px] rounded-[2px] border border-textSecondary flex items-center justify-center transition-colors duration-150 ${allChecked || isIndeterminate
+											? "bg-primary !border-primary "
+											: "bg-transparent "
+											}`}>
 										{(allChecked || isIndeterminate) && (
 											<Icon
 												icon="check"
@@ -457,7 +425,7 @@ export default function UserManagementPage() {
 								/>
 							</div>
 							<div
-								className="flex items-center gap-2 mr-[64px] sm:mr-0 px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow cursor-pointer"
+								className="flex items-center gap-2  mr-[64px] sm:mr-0 px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow cursor-pointer"
 								onClick={() => handleSort("plan")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Plan
@@ -515,7 +483,7 @@ export default function UserManagementPage() {
 						</div>
 
 						{/* Render user rows dynamically */}
-						{paginatedUsers.map((user, idx) => (
+						{displayedUsers.map((user, idx) => (
 							<React.Fragment key={user.email}>
 								<div className="flex h-8 sm:h-11 items-start justify-between relative self-stretch w-full">
 									{/* Checkbox */}
@@ -528,11 +496,10 @@ export default function UserManagementPage() {
 												className="opacity-0 absolute w-6 h-6 cursor-pointer"
 											/>
 											<span
-												className={`w-[17px] h-[17px] rounded-[2px] border border-textSecondary flex items-center justify-center transition-colors duration-150 ${
-													selectedUsers.includes(user.id)
-														? "bg-primary !border-primary "
-														: "bg-transparent"
-												}`}>
+												className={`w-[17px] h-[17px] rounded-[2px] border border-textSecondary flex items-center justify-center transition-colors duration-150 ${selectedUsers.includes(user.id)
+													? "bg-primary !border-primary "
+													: "bg-transparent"
+													}`}>
 												{selectedUsers.includes(user.id) && (
 													<Icon
 														icon="check"
@@ -616,10 +583,13 @@ export default function UserManagementPage() {
 													leaveTo="transform scale-95 opacity-0">
 													<Menu.Items
 														className={`absolute -right-5 mt-2.5 sm:mt-[17px] w-[140px] sm:w-[163px] bg-fgc dark:bg-fgcDark rounded-xl focus:outline-none flex flex-col z-50
-        												${idx >= paginatedUsers.length - 3 ? "origin-bottom-right bottom-full mb-2" : "origin-top-right"}`}>
-														<div className="flex flex-col items-start px-3 py-2 sm:px-2.5 sm:py-2 gap-1">
+        												${idx >= displayedUsers.length - 3 ? "origin-bottom-right bottom-full mb-2" : "origin-top-right"}`}>
+														<div className="flex flex-col items-start px-3 py-2 sm:px-2.5 sm:py-2.5 gap-1">
 															<Menu.Item>
-																<div className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full">
+																<div className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full" onClick={() => {
+																	setEditIndex(idx);
+																	setIsAddEditUserPopupOpen(true)
+																}}>
 																	Edit
 																</div>
 															</Menu.Item>
@@ -646,7 +616,7 @@ export default function UserManagementPage() {
 									</div>
 								</div>
 								{/* Divider */}
-								{idx < paginatedUsers.length - 1 && (
+								{idx < displayedUsers.length - 1 && (
 									<div className="w-full h-px bg-textSecondary/10 dark:bg-textSecondary/25 shrink-0" />
 								)}
 							</React.Fragment>
@@ -663,7 +633,7 @@ export default function UserManagementPage() {
 
 					<Pagination
 						totalRecords={users.length}
-						recordsPerPage={12}
+						recordsPerPage={10}
 						currentPage={currentPage}
 						handlePageChange={(page: number) => {
 							setCurrentPage(page);

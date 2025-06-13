@@ -1,50 +1,63 @@
 import Icon from "./Icon";
 
-const Select = (props: any) => {
+interface SelectProps {
+	name: string;
+	label?: string;
+	required?: boolean;
+	error?: string;
+	className?: string;
+	items: { value: string; text: string }[];
+	register?: any;
+	trigger?: (name: any) => void;
+	placeholder?: string;
+}
+
+const Select = ({
+	name,
+	label,
+	required,
+	error,
+	className,
+	items,
+	register,
+	trigger,
+	placeholder,
+}: SelectProps) => {
 	return (
 		<div className="relative">
-			{props.label && (
+			{label && (
 				<label
-					htmlFor={props.name}
-					className="text-sm font-medium text-textSecondary dark:text-textDark mb-3 block">
-					{props.label} {props.required && <span className="text-red-500">*</span>}
+					htmlFor={name}
+					className="text-base font-medium text-text dark:text-textDark mb-2 block">
+					{label} {required && <span className="text-red-500">*</span>}
 				</label>
 			)}
 			<div className="relative">
 				<select
-					name={props.name}
-					className={`appearance-none block px-3 py-3 sm:px-4 sm:py-[15px] w-full rounded-xl text-[14px] bg-bgc text-text dark:bg-fgcDark border border-textSecondary/20 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring dark:border-border-dark dark:border-border-dark-dark sm:text-base dark:text-white ${props.className || ""}  ${
-						props.error
-							? "!border !border-red-500 focus-visible:!ring-red-500"
-							: "focus-visible:ring-neutral-300"
-					}`}
-					{...(props.register &&
-						props.register(props.name, {
-							onChange: (e: any) => {
-								props.trigger && props.trigger(props.name);
+					name={name}
+					className={`appearance-none block px-4 w-full h-12 rounded-lg text-base bg-white text-gray-500 dark:bg-gray-800 border border-gray-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FFA500] dark:border-gray-700 dark:text-gray-300 ${className || ""} ${error
+						? "!border-red-500 focus-visible:!ring-red-500"
+						: ""
+						}`}
+					{...(register &&
+						register(name, {
+							onChange: () => {
+								trigger && trigger(name);
 							},
 						}))}>
-					{props.label === "Choose a topic" ? (
-						<option value="">{props.label}</option>
-					) : (
-						<option value="">Select {props.label}</option>
-					)}
-					{props.items &&
-						props.items.map((item: any) => (
-							<option value={item.value} key={item.value}>
-								{item.text}
-							</option>
-						))}
+					{label && <option value="">{placeholder || `Select ${label}`}</option>}
+					{items?.map((item) => (
+						<option value={item.value} key={item.value}>
+							{item.text}
+						</option>
+					))}
 				</select>
 
-				{/* Custom dropdown arrow */}
-				<div
-					className={`pointer-events-none absolute right-4 ${props.error ? "top-[35%]" : "top-1/2"}  -translate-y-1/2`}>
-					<Icon icon="arrow-down" className="w-4 h-4 sm:w-5 sm:h-5 text-textSecondary dark:text-textDark" />
+				<div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2">
+					<Icon icon="chevron-down" className="w-5 h-5 text-gray-400" />
 				</div>
-
-				{props.error && <div className="text-red-500 px-5 inline-block">{props.error}</div>}
 			</div>
+			{error && <div className="text-red-500 text-sm mt-1">{error}</div>}
 		</div>
 	);
 };

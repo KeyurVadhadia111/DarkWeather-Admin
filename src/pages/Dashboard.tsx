@@ -450,7 +450,7 @@ const Dashboard = (): JSX.Element => {
 			{/* SuperAdmin: Show all sections */}
 			{role === "SuperAdmin" && (
 				<>
-					<div className="flex flex-col sm:flex-row items-center gap-6 relative self-stretch w-full flex-[0_0_auto]">
+					<div className="flex flex-col sm:flex-row items-center gap-5 sm:gap-6 relative self-stretch w-full flex-[0_0_auto]">
 						<div className="flex flex-col items-start gap-3 sm:gap-4 relative   w-full">
 							<div className="self-stretch  font-medium text-text dark:text-textDark text-base sm:text-2xl leading-[21px] sm:leading-[31.2px] relative tracking-[0]">
 								User Traffic
@@ -463,27 +463,27 @@ const Dashboard = (): JSX.Element => {
 							<div className="self-stretch  font-medium text-text dark:text-textDark text-base sm:text-2xl leading-[21px] sm:leading-[31.2px] relative tracking-[0]">
 								Most Accessed Features
 							</div>
-							<div className="flex flex-col items-center justify-center gap-3 p-4 sm:px-5 sm:py-6 bg-bgc dark:bg-bgcDark rounded-2xl shadow-[0px_10px_65px_#0000000d] relative self-stretch w-full">
+							<div className="flex flex-col items-center justify-center gap-3 p-4 sm:px-5 sm:py-6 bg-bgc dark:bg-bgcDark rounded-2xl shadow-[0px_10px_65px_#0000000d] relative self-stretch w-full sm:w-[482px]">
 								<FeaturesBarChart />
 							</div>
 						</div>
 					</div>
-					<div className="flex flex-col sm:flex-row items-center gap-6 relative self-stretch flex-[0_0_auto]">
-						<div className="flex flex-col w-full sm:max-w-[482px] items-start gap-4">
-							<div className="self-stretch font-medium text-text dark:text-textDark text-base sm:text-2xl leading-[21px] sm:leading-[31.2px] relative tracking-[0]">
+					<div className="flex flex-col sm:flex-row items-center gap-5 sm:gap-6 relative self-stretch flex-[0_0_auto]">
+						<div className="flex flex-col w-full sm:max-w-[482px] items-start gap-3 sm:gap-4">
+							<div className="self-stretch font-medium text-text dark:text-textDark text-base sm:text-2xl leading-[21px] sm:leading-[31px] relative tracking-[0]">
 								User Subscribed For
 							</div>
 							<div className="flex flex-col items-center justify-center gap-3 p-4 sm:p-5 relative  self-stretch w-full  bg-bgc dark:bg-bgcDark rounded-2xl shadow-[0px_10px_65px_#0000000d]">
 								<SubscriptionPieChart />
 							</div>
 						</div>
-						<div className="flex flex-col items-start gap-4 relative w-full sm:w-[calc(100%-506px)] ">
-							<div className="self-stretch font-medium text-text dark:text-textDark text-base sm:text-2xl leading-[21px] sm:leading-[31.2px] relative tracking-[0]">
+						<div className="flex flex-col items-start gap-3 sm:gap-4 relative w-full sm:w-[calc(100%-506px)] ">
+							<div className="self-stretch font-medium text-text dark:text-textDark text-base sm:text-2xl leading-[21px] sm:leading-[31px] relative tracking-[0]">
 								Top Users
 							</div>
 							<SimpleBar className="w-full bg-bgc dark:bg-bgcDark rounded-2xl shadow-[0px_10px_65px_#0000000d]">
 								<div className="flex flex-col items-start gap-2.5 p-4 w-[488px] sm:w-full">
-									<div className="flex flex-col items-start sm:gap-1.5 relative self-stretch w-full flex-[0_0_auto]">
+									<div className="flex flex-col items-start sm:gap-[5.5px] relative self-stretch w-full flex-[0_0_auto]">
 										<div className="flex h-[42px] sm:h-[52px] items-start sm:justify-between relative self-stretch w-full bg-fgc dark:bg-fgcDark rounded-xl">
 											<div className="flex flex-col w-[56px] sm:w-[94px] items-start justify-center gap-2.5 p-3 sm:px-6 sm:py-3.5 relative self-stretch">
 												<div className="relative w-fit font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
@@ -550,14 +550,14 @@ const Dashboard = (): JSX.Element => {
 							</SimpleBar>
 						</div>
 					</div>
-					<div className="flex flex-col sm:flex-row items-start gap-6 relative self-stretch w-full flex-[0_0_auto]">
-						<div className="flex flex-col  w-full flex-1 items-start gap-4">
-							<div className="self-stretch font-medium text-text dark:text-textDark text-base sm:text-2xl leading-[21px] sm:leading-[31.2px] relative tracking-[0]">
+					<div className="flex flex-col sm:flex-row items-start gap-5 sm:gap-6 relative self-stretch w-full flex-[0_0_auto]">
+						<div className="flex flex-col  w-full flex-1 items-start gap-3 sm:gap-4">
+							<div className="self-stretch font-medium text-text dark:text-textDark text-base sm:text-2xl leading-[21px] sm:leading-[31px] relative tracking-[0]">
 								Most Search Cities
 							</div>
 							<SimpleBar className=" w-full bg-bgc dark:bg-bgcDark rounded-2xl shadow-[0px_10px_65px_#0000000d]">
 								<div className="flex flex-col items-start gap-2.5 p-4 w-[420px] sm:w-full ">
-									<div className="flex flex-col items-start sm:gap-1.5 relative self-stretch w-full flex-[0_0_auto]">
+									<div className="flex flex-col items-start sm:gap-[5.5px] relative self-stretch w-full flex-[0_0_auto]">
 										<div className="h-[42px] sm:h-[52px] w-full bg-fgc dark:bg-fgcDark rounded-xl flex items-start relative self-stretch">
 											<div className="flex flex-col w-[56px] sm:w-[94px] items-start justify-center gap-2.5 p-3  sm:px-6 sm:py-3.5 relative self-stretch">
 												<div className="relative w-fit font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
@@ -577,18 +577,18 @@ const Dashboard = (): JSX.Element => {
 										</div>
 										{mostSearchedCities.map((item, idx) => (
 											<React.Fragment key={item.rank}>
-												<div className="flex h-11 items-start relative self-stretch w-full">
-													<div className="w-[56px] h-[42px] sm:h-11 sm:w-[94px] flex flex-col  items-start justify-center gap-2.5 p-4 sm:px-6 sm:py-4 relative">
+												<div className="flex h-[42px] sm:h-11 items-start relative self-stretch w-full">
+													<div className="w-[56px] h-[40px] sm:h-11 sm:w-[94px] flex flex-col  items-start justify-center gap-2.5 p-4 sm:px-6 sm:py-4 relative">
 														<div className="relative font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
 															{item.rank}
 														</div>
 													</div>
-													<div className="flex flex-col w-[198px] sm:w-[429px] h-[42px] sm:h-11 items-start justify-center gap-2.5 p-4 sm:px-6 sm:py-4 relative">
+													<div className="flex flex-col w-[198px] sm:w-[429px] h-[40px] sm:h-11 items-start justify-center gap-2.5 p-4 sm:px-6 sm:py-4 relative">
 														<div className="relative font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
 															{item.city}
 														</div>
 													</div>
-													<div className="w-[124px] sm:w-[180px] flex flex-col h-[42px] sm:h-11 items-start justify-center gap-2.5 p-4 sm:px-6 sm:py-4 relative">
+													<div className="w-[124px] sm:w-[180px] flex flex-col h-[40px] sm:h-11 items-start justify-center gap-2.5 p-4 sm:px-6 sm:py-4 relative">
 														<div className="mt-[-7.00px] mb-[-5.00px] font-normal text-text dark:text-textDark text-xs sm:text-base text-center leading-6 relative w-fit tracking-[0] whitespace-nowrap">
 															{item.requests}
 														</div>
@@ -603,11 +603,11 @@ const Dashboard = (): JSX.Element => {
 								</div>
 							</SimpleBar>
 						</div>
-						<div className="flex flex-col  w-full flex-1 items-start gap-4 ">
-							<div className="self-stretch font-medium text-text dark:text-textDark text-base sm:text-2xl leading-[21px] sm:leading-[31.2px] relative tracking-[0] whitespace-nowrap">
+						<div className="flex flex-col  w-full flex-1 items-start gap-3 sm:gap-4 ">
+							<div className="self-stretch font-medium text-text dark:text-textDark text-base sm:text-2xl leading-[21px] sm:leading-[31px] relative tracking-[0] whitespace-nowrap">
 								Alerts &amp; Post
 							</div>
-							<SimpleBar className="flex flex-col items-stretch p-3 sm:p-4 bg-bgc dark:bg-bgcDark rounded-2xl shadow-[0px_10px_65px_#0000000d] relative w-full h-[392px] sm:h-[362px]">
+							<SimpleBar className="flex flex-col items-stretch p-3 sm:p-4 bg-bgc dark:bg-bgcDark rounded-2xl shadow-[0px_10px_65px_#0000000d] relative w-full h-[392px] sm:h-[358px]">
 								{alertsAndPosts.map((item, idx) => (
 									<React.Fragment key={idx}>
 										<div className="flex items-start sm:items-center gap-3.5 w-full">
@@ -639,7 +639,7 @@ const Dashboard = (): JSX.Element => {
 			{/* Analytics: Show User Traffic, User Subscribed For, Top Users */}
 			{role === "Analytics" && (
 				<>
-					<div className="flex flex-col sm:flex-row items-center gap-6 relative self-stretch w-full flex-[0_0_auto]">
+					<div className="flex flex-col sm:flex-row items-center gap-5 sm:gap-6 relative self-stretch w-full flex-[0_0_auto]">
 						<div className="flex flex-col items-start gap-4 relative   w-full">
 							<div className="self-stretch  font-medium text-text dark:text-textDark text-base sm:text-2xl leading-[31.2px] relative tracking-[0]">
 								User Traffic
@@ -657,7 +657,7 @@ const Dashboard = (): JSX.Element => {
 							</div>
 						</div>
 					</div>
-					<div className="flex flex-col sm:flex-row items-center gap-6 relative self-stretch flex-[0_0_auto]">
+					<div className="flex flex-col sm:flex-row items-center gap-5 sm:gap-6 relative self-stretch flex-[0_0_auto]">
 						<div className="flex flex-col w-full sm:max-w-[482px] items-start gap-4">
 							<div className="self-stretch  font-medium text-text dark:text-textDark text-base sm:text-2xl leading-[31.2px] relative tracking-[0]">
 								User Subscribed For
@@ -666,13 +666,13 @@ const Dashboard = (): JSX.Element => {
 								<SubscriptionPieChart />
 							</div>
 						</div>
-						<div className="flex flex-col items-start gap-4 relative w-full sm:w-[calc(100%-506px)] ">
+						<div className="flex flex-col items-start gap-3 sm:gap-4 relative w-full sm:w-[calc(100%-506px)] ">
 							<div className="self-stretch font-medium text-text dark:text-textDark text-base sm:text-2xl leading-[21px] sm:leading-[31.2px] relative tracking-[0]">
 								Top Users
 							</div>
 							<SimpleBar className="w-full bg-bgc dark:bg-bgcDark rounded-2xl shadow-[0px_10px_65px_#0000000d]">
 								<div className="flex flex-col items-start gap-2.5 p-4 w-[488px] sm:w-full">
-									<div className="flex flex-col items-start sm:gap-1.5 relative self-stretch w-full flex-[0_0_auto]">
+									<div className="flex flex-col items-start sm:gap-[5.5px] relative self-stretch w-full flex-[0_0_auto]">
 										<div className="flex h-[42px] sm:h-[52px] items-start sm:justify-between relative self-stretch w-full bg-fgc dark:bg-fgcDark rounded-xl">
 											<div className="flex flex-col w-[56px] sm:w-[94px] items-start justify-center gap-2.5 p-3 sm:px-6 sm:py-3.5 relative self-stretch">
 												<div className="relative w-fit font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
@@ -747,7 +747,7 @@ const Dashboard = (): JSX.Element => {
 				<>
 					<div className="flex flex-col items-start gap-4 relative  self-stretch ">
 						<div className="w-full flex items-center justify-between">
-							<div className="self-stretch font-medium text-text dark:text-textDark text-base sm:text-2xl leading-[21px] sm:leading-[31.2px] relative tracking-[0] whitespace-nowrap">
+							<div className="self-stretch font-medium text-text dark:text-textDark text-base sm:text-2xl leading-[21px] sm:leading-[31px] relative tracking-[0] whitespace-nowrap">
 								Login Activity Logs
 							</div>
 							<button className="text-sm sm:text-lg font-semibold text-primary">View All</button>
@@ -795,7 +795,7 @@ const Dashboard = (): JSX.Element => {
 
 					<div className="flex flex-col sm:flex-row items-start gap-6 relative w-full flex-[0_0_auto]">
 						<div className="flex flex-col items-start gap-4 relative w-full">
-							<div className="self-stretch font-medium text-text dark:text-textDark text-base sm:text-2xl leading-[21px] sm:leading-[31.2px] relative tracking-[0] whitespace-nowrap">
+							<div className="self-stretch font-medium text-text dark:text-textDark text-base sm:text-2xl leading-[21px] sm:leading-[31px] relative tracking-[0] whitespace-nowrap">
 								Notifications
 							</div>
 							<SimpleBar className="w-full rounded-2xl shadow-[0px_10px_65px_#0000000d] p-4 bg-bgc dark:bg-bgcDark h-[530px]">
@@ -829,7 +829,7 @@ const Dashboard = (): JSX.Element => {
 							</SimpleBar>
 						</div>
 						<div className="flex flex-col items-start gap-4 relative w-full">
-							<div className="self-stretch font-medium text-text dark:text-textDark text-base sm:text-2xl leading-[21px] sm:leading-[31.2px] relative tracking-[0] whitespace-nowrap">
+							<div className="self-stretch font-medium text-text dark:text-textDark text-base sm:text-2xl leading-[21px] sm:leading-[31px] relative tracking-[0] whitespace-nowrap">
 								Alerts &amp; Post
 							</div>
 							<SimpleBar className="flex flex-col items-stretch p-3 sm:p-4 bg-bgc dark:bg-bgcDark rounded-2xl shadow-[0px_10px_65px_#0000000d] relative w-full h-[530px]">

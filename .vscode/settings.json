@@ -11,6 +11,7 @@
 	"files.autoSave": "off",
 	"files.trimTrailingWhitespace": true,
 	"files.insertFinalNewline": true,
+	"http.proxyStrictSSL": false,
 	"files.associations": {
 		"*.jsx": "javascriptreact",
 		"*.tsx": "typescriptreact"
