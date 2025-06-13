@@ -13,10 +13,8 @@ const ProfileMenu: React.FC<Props> = () => {
 	return (
 		<Menu as="div" className="relative">
 			<div>
-				<MenuButton className="relative flex rounded-full bg-bgc dark:!bg-text border border-bgc dark:border-text text-sm focus:ring-0 focus:outline-hidden cursor-pointer">
-					<span className="absolute -inset-1" />
-					<span className="sr-only">Open user menu</span>
-					<img alt="" src="/assets/images/user.png" className="size-12 rounded-full" />
+				<MenuButton className="relative flex rounded-full bg-bgc dark:!bg-text border border-bgc dark:border-text text-sm focus:ring-0 focus:outline-hidden cursor-pointer w-[52px] h-[52px] ring-1 ring-text">
+					<img alt="" src="/assets/images/user.png" className="w-[52px] h-[52px] rounded-full" />
 				</MenuButton>
 			</div>
 			<MenuItems

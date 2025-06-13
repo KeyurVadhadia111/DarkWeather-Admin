@@ -3,6 +3,7 @@ import { Button } from "components/utils/Button";
 import Icon from "components/utils/Icon";
 import { Input } from "components/utils/Input";
 import Pagination from "components/utils/Pagination";
+import useAppState from "components/utils/useAppState";
 import React, { useEffect, useMemo, useState } from "react";
 
 interface User {
@@ -195,7 +196,7 @@ export default function UserManagementPage() {
 			lastLogin: "Yesterday, 4:56 PM",
 			status: "Active",
 			statusColor: "text-textGreen",
-		}
+		},
 	]);
 	const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
 	const [currentPage, setCurrentPage] = useState(1);
@@ -206,12 +207,12 @@ export default function UserManagementPage() {
 	});
 	const [editIndex, setEditIndex] = useState<number | null>(null);
 	const [isAddEditUserPopupOpen, setIsAddEditUserPopupOpen] = useState(false);
-	const [displayedUsers, setDisplayedUsers] = useState<User[]>([]);
+	const isSideExpanded = useAppState(state => state.isSideExpanded);
 
 	const startIdx = (currentPage - 1) * usersPerPage;
 	const endIdx = Math.min(startIdx + usersPerPage, users.length);
 
-	useEffect(() => {
+	const sortedUsers = useMemo(() => {
 		const sorted = [...users].sort((a: User, b: User) => {
 			const key = sortConfig.key;
 			let valA = a[key];
@@ -232,7 +233,6 @@ export default function UserManagementPage() {
 						? convertToDate(valA) - convertToDate(valB)
 						: convertToDate(valB) - convertToDate(valA);
 				}
-
 				valA = valA.toLowerCase();
 				valB = valB.toLowerCase();
 			}
@@ -241,13 +241,12 @@ export default function UserManagementPage() {
 			if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
 			return 0;
 		});
-		setUsers(prev => sorted);
-		setDisplayedUsers(sorted.slice(startIdx, endIdx));
+		return sorted;
+	}, [users, sortConfig]);
 
-		return () => {
-			true;
-		}
-	}, [users, sortConfig, currentPage, usersPerPage, startIdx, endIdx])
+	const displayedUsers = useMemo(() => {
+		return sortedUsers.slice(startIdx, endIdx);
+	}, [sortedUsers, startIdx, endIdx]);
 
 	const handleSort = (key: keyof User) => {
 		setSortConfig(prevConfig => ({
@@ -258,7 +257,8 @@ export default function UserManagementPage() {
 
 	/* Start for checkbox */
 	const allChecked = displayedUsers.length > 0 && displayedUsers.every((u: User) => selectedUsers.includes(u.id));
-	const isIndeterminate = displayedUsers.length > 0 && selectedUsers.some(id => displayedUsers.some(u => u.id === id)) && !allChecked;
+	const isIndeterminate =
+		displayedUsers.length > 0 && selectedUsers.some(id => displayedUsers.some(u => u.id === id)) && !allChecked;
 
 	const handleSelectAll = () => {
 		if (allChecked) {
@@ -280,7 +280,8 @@ export default function UserManagementPage() {
 	/* End for checkbox */
 
 	return (
-		<div className="flex flex-col items-start gap-6 p-2.5 sm:p-6 bg-bgc dark:bg-fgcDark rounded-[10px] sm:rounded-[20px]">
+		<div
+			className={`${isSideExpanded ? "w-full sm:w-[calc(100vw-385px)]" : "w-full sm:w-[calc(100vw-163px)]"} flex flex-col items-start gap-6 p-2.5 sm:p-6 bg-bgc dark:bg-fgcDark rounded-[10px] sm:rounded-[20px]`}>
 			{/* ...header and search/filter UI... */}
 			<div className="flex flex-col items-center justify-center gap-5 relative self-stretch w-full flex-[0_0_auto]">
 				<div className="flex sm:h-14 items-center w-full">
@@ -315,10 +316,12 @@ export default function UserManagementPage() {
 									Export Users
 								</div>
 							</Button>
-							<Button className="flex h-[42px] sm:h-14 items-center justify-center gap-3 sm:px-6 py-3 sm:py-4 relative flex-[0_0_auto] bg-primary rounded-lg sm:rounded-xl" onClick={() => {
-								setEditIndex(null);
-								setIsAddEditUserPopupOpen(true)
-							}}>
+							<Button
+								className="flex h-[42px] sm:h-14 items-center justify-center gap-3 sm:px-6 py-3 sm:py-4 relative flex-[0_0_auto] bg-primary rounded-lg sm:rounded-xl"
+								onClick={() => {
+									setEditIndex(null);
+									setIsAddEditUserPopupOpen(true);
+								}}>
 								<Icon icon="plus" className="w-5 h-5 sm:w-7 sm:h-7" />
 								<div className="relative  font-semibold text-text text-xs sm:text-base tracking-[0] leading-6 whitespace-nowrap">
 									Add New User
@@ -355,10 +358,11 @@ export default function UserManagementPage() {
 										className="opacity-0 absolute w-6 h-6 cursor-pointer bg-transparent"
 									/>
 									<span
-										className={`w-[17px] h-[17px] rounded-[2px] border border-textSecondary flex items-center justify-center transition-colors duration-150 ${allChecked || isIndeterminate
-											? "bg-primary !border-primary "
-											: "bg-transparent "
-											}`}>
+										className={`w-[17px] h-[17px] rounded-[2px] border border-textSecondary flex items-center justify-center transition-colors duration-150 ${
+											allChecked || isIndeterminate
+												? "bg-primary !border-primary "
+												: "bg-transparent "
+										}`}>
 										{(allChecked || isIndeterminate) && (
 											<Icon
 												icon="check"
@@ -375,14 +379,14 @@ export default function UserManagementPage() {
 									Name
 								</div>
 								<Icon
-									icon="sort"
-									className={`w-5 h-5 text-text dark:text-textDark ${sortConfig?.key === "name" ? "text-primary" : ""}`}
-									style={{
-										transform:
-											sortConfig?.key === "name" && sortConfig.direction === "desc"
-												? "rotate(180deg)"
-												: undefined,
-									}}
+									icon={
+										sortConfig?.key === "name"
+											? sortConfig.direction === "asc"
+												? "up-sort"
+												: "up-sort"
+											: "sort"
+									}
+									className={`w-5 h-5 text-text dark:text-textDark ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
 								/>
 							</div>
 							<div
@@ -392,14 +396,14 @@ export default function UserManagementPage() {
 									Email
 								</div>
 								<Icon
-									icon="sort"
-									className={`w-5 h-5 text-text dark:text-textDark ${sortConfig?.key === "email" ? "text-primary" : ""}`}
-									style={{
-										transform:
-											sortConfig?.key === "email" && sortConfig.direction === "desc"
-												? "rotate(180deg)"
-												: undefined,
-									}}
+									icon={
+										sortConfig?.key === "email"
+											? sortConfig.direction === "asc"
+												? "up-sort"
+												: "up-sort"
+											: "sort"
+									}
+									className={`w-5 h-5 text-text dark:text-textDark ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
 								/>
 							</div>
 							<div className="flex items-center gap-2 mr-[59px] sm:mr-0 px-0 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow">
@@ -414,14 +418,14 @@ export default function UserManagementPage() {
 									Role
 								</div>
 								<Icon
-									icon="sort"
-									className={`w-5 h-5 text-text dark:text-textDark ${sortConfig?.key === "role" ? "text-primary" : ""}`}
-									style={{
-										transform:
-											sortConfig?.key === "role" && sortConfig.direction === "desc"
-												? "rotate(180deg)"
-												: undefined,
-									}}
+									icon={
+										sortConfig?.key === "role"
+											? sortConfig.direction === "asc"
+												? "up-sort"
+												: "up-sort"
+											: "sort"
+									}
+									className={`w-5 h-5 text-text dark:text-textDark ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
 								/>
 							</div>
 							<div
@@ -431,14 +435,14 @@ export default function UserManagementPage() {
 									Plan
 								</div>
 								<Icon
-									icon="sort"
-									className={`w-5 h-5 text-text dark:text-textDark ${sortConfig?.key === "plan" ? "text-primary" : ""}`}
-									style={{
-										transform:
-											sortConfig?.key === "plan" && sortConfig.direction === "desc"
-												? "rotate(180deg)"
-												: undefined,
-									}}
+									icon={
+										sortConfig?.key === "plan"
+											? sortConfig.direction === "asc"
+												? "up-sort"
+												: "up-sort"
+											: "sort"
+									}
+									className={`w-5 h-5 text-text dark:text-textDark ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
 								/>
 							</div>
 							<div
@@ -448,14 +452,14 @@ export default function UserManagementPage() {
 									Last Login
 								</div>
 								<Icon
-									icon="sort"
-									className={`w-5 h-5 text-text dark:text-textDark ${sortConfig?.key === "lastLogin" ? "text-primary" : ""}`}
-									style={{
-										transform:
-											sortConfig?.key === "lastLogin" && sortConfig.direction === "desc"
-												? "rotate(180deg)"
-												: undefined,
-									}}
+									icon={
+										sortConfig?.key === "lastLogin"
+											? sortConfig.direction === "asc"
+												? "up-sort"
+												: "up-sort"
+											: "sort"
+									}
+									className={`w-5 h-5 text-text dark:text-textDark ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
 								/>
 							</div>
 							<div
@@ -465,14 +469,14 @@ export default function UserManagementPage() {
 									Status
 								</div>
 								<Icon
-									icon="sort"
-									className={`w-5 h-5 text-text dark:text-textDark ${sortConfig?.key === "status" ? "text-primary" : ""}`}
-									style={{
-										transform:
-											sortConfig?.key === "status" && sortConfig.direction === "desc"
-												? "rotate(180deg)"
-												: undefined,
-									}}
+									icon={
+										sortConfig?.key === "status"
+											? sortConfig.direction === "asc"
+												? "up-sort"
+												: "up-sort"
+											: "sort"
+									}
+									className={`w-5 h-5 text-text dark:text-textDark ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
 								/>
 							</div>
 							<div className="inline-flex flex-col items-center justify-center gap-2.5 px-5 py-3.5 relative self-stretch flex-[0_0_auto]">
@@ -496,10 +500,11 @@ export default function UserManagementPage() {
 												className="opacity-0 absolute w-6 h-6 cursor-pointer"
 											/>
 											<span
-												className={`w-[17px] h-[17px] rounded-[2px] border border-textSecondary flex items-center justify-center transition-colors duration-150 ${selectedUsers.includes(user.id)
-													? "bg-primary !border-primary "
-													: "bg-transparent"
-													}`}>
+												className={`w-[17px] h-[17px] rounded-[2px] border border-textSecondary flex items-center justify-center transition-colors duration-150 ${
+													selectedUsers.includes(user.id)
+														? "bg-primary !border-primary "
+														: "bg-transparent"
+												}`}>
 												{selectedUsers.includes(user.id) && (
 													<Icon
 														icon="check"
@@ -586,10 +591,12 @@ export default function UserManagementPage() {
         												${idx >= displayedUsers.length - 3 ? "origin-bottom-right bottom-full mb-2" : "origin-top-right"}`}>
 														<div className="flex flex-col items-start px-3 py-2 sm:px-2.5 sm:py-2.5 gap-1">
 															<Menu.Item>
-																<div className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full" onClick={() => {
-																	setEditIndex(idx);
-																	setIsAddEditUserPopupOpen(true)
-																}}>
+																<div
+																	className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full"
+																	onClick={() => {
+																		setEditIndex(idx);
+																		setIsAddEditUserPopupOpen(true);
+																	}}>
 																	Edit
 																</div>
 															</Menu.Item>

@@ -197,6 +197,22 @@ button {
 	border-radius: 8px;
 	bottom: 2px;
 }
-/* .simplebar-placeholder {
-	display: none !important;
-} */
+
+::-webkit-scrollbar {
+	width: 6px;
+	height: 6px;
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
+	border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: #ffa601;
+	border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: #ffa601;
+}

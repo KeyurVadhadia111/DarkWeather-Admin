@@ -1,10 +1,9 @@
-import { Button } from "@headlessui/react";
 import Icon from "components/utils/Icon";
 import useAppState from "components/utils/useAppState";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
-export default function DashboardSidebar() {
+export default function Sidebar() {
 	// Use individual selectors from Zustand store
 	const isDark = useAppState(state => state.isDark);
 	const userDetails = useAppState(state => state.userDetails);
@@ -84,7 +83,7 @@ export default function DashboardSidebar() {
 	return (
 		<>
 			<div
-				className={`${isSideExpanded ? "min-w-[330px]" : "w-[100px]"} transition-all duration-300 h-dhv hidden sm:flex flex-col items-start justify-between p-6 bg-text dark:bg-bgc gap-4 rounded-[20px] relative`}>
+				className={`${isSideExpanded ? "min-w-[330px]" : "w-[108px]"} transition-all duration-300 h-dhv hidden sm:flex flex-col items-start justify-between p-6 bg-text dark:bg-bgc gap-4 rounded-[20px] relative`}>
 				<div className="flex flex-col gap-8 w-full">
 					<Link to="/dashboard" className="self-center">
 						{isSideExpanded ? (
@@ -95,7 +94,7 @@ export default function DashboardSidebar() {
 							/>
 						) : (
 							<img
-								className="w-auto h-8 sm:h-[40px] !cursor-pointer"
+								className="w-auto h-8 sm:h-[42px] !cursor-pointer"
 								alt="Dark Weather Logo"
 								src={`/assets/images/dark-weather${isDark ? "-dark" : ""}.svg`}
 							/>
@@ -118,8 +117,9 @@ export default function DashboardSidebar() {
 								<Link
 									key={index}
 									to={item.href}
-									className={`flex items-center gap-4 px-4 py-3 rounded-lg ${isActive ? "bg-primary !text-text" : "text-bgc dark:text-text"
-										}`}>
+									className={`flex items-center gap-4 px-[18px] py-4 rounded-lg ${
+										isActive ? "bg-primary !text-text" : "text-bgc dark:text-text"
+									}`}>
 									<Icon
 										icon={item.icon}
 										className={` shrink-0 w-6 h-6 ${isActive ? "text-text dark:text-textDark" : "text-textDark dark:text-text"}`}

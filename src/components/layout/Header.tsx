@@ -5,7 +5,7 @@ import useAppState from "components/utils/useAppState";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
-export default function DashboardHeader() {
+export default function Header() {
 	const isDark = useAppState(state => state.isDark);
 	const setIsDark = useAppState(state => state.setIsDark);
 	const userDetails = useAppState(state => state.userDetails);
@@ -64,36 +64,18 @@ export default function DashboardHeader() {
 					<Icon icon="search" className="w-5 h-5 text-text dark:text-textDark absolute right-4" />
 				</div>
 
-				<div className="inline-flex items-center gap-6 relative flex-[0_0_auto]">
-					<div className="inline-flex items-center gap-1.5 relative flex-[0_0_auto]">
-						<div className="relative w-[50px] h-[50px]">
-							<div className="relative w-6 h-6 top-[13px] left-[13px]">
-								<div className="h-6">
-									<div className="relative w-6 h-6">
-										<div
-											className="flex items-center cursor-pointer"
-											onClick={() => {
-												localStorage.setItem("theme", !isDark ? "dark" : "light");
-												setThemeMode(!isDark);
-											}}>
-											<Icon
-												className="w-6 h-6 text-text dark:text-textDark"
-												icon={isDark ? "sun" : "moon"}
-											/>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
+				<div className="flex items-center gap-6">
+					<Icon
+						onClick={() => {
+							localStorage.setItem("theme", !isDark ? "dark" : "light");
+							setThemeMode(!isDark);
+						}}
+						className="w-7 h-7 text-text dark:text-textDark cursor-pointer shrink-0"
+						icon={isDark ? "sun" : "moon"}
+					/>
 
-						<div className="relative w-[50px] h-[50px]">
-							<Icon
-								icon="notification-bing"
-								className=" text-text dark:text-textDark absolute w-6 h-6 top-[13px] left-[13px]"
-							/>
-						</div>
-						<ProfileMenu />
-					</div>
+					<Icon icon="notification-bing" className="w-7 h-7 text-text dark:text-textDark shrink-0" />
+					<ProfileMenu />
 				</div>
 			</div>
 		</>

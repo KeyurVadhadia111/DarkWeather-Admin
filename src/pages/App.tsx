@@ -27,13 +27,22 @@ function App() {
 					{/* Header Navigation */}
 
 					{/* Main Content */}
-					<main className={`w-full flex p-0 sm:p-4`}>
+					<main
+						className={`w-full flex ${
+							location.pathname !== "/" && location.pathname !== "/forgot-password" ? "p-0 sm:p-4" : ""
+						}`}>
 						{location.pathname !== "/" && location.pathname !== "/forgot-password" ? <Sidebar /> : ""}
 						<div className="flex flex-col w-full relative pl-0 sm:pl-4">
-							{location.pathname !== "/" && location.pathname !== "/forgot-password" ? <div className={`${isSideExpanded ? "w-[calc(100%-330px)]" : "w-[calc(100%-100px)]"}`}>
-								<Header />
-							</div> : ""}
-							<div className={`p-6 sm:p-0 ${isSideExpanded ? "w-[calc(100%-330px)]" : "w-[calc(100%-100px)]"}`}>
+							{location.pathname !== "/" && location.pathname !== "/forgot-password" ? (
+								<div
+									className={`${isSideExpanded ? "sm:w-[calc(100vw-385px)]" : "sm:w-[calc(100vw-163px)]"}`}>
+									<Header />
+								</div>
+							) : (
+								""
+							)}
+							<div
+								className={`${isSideExpanded ? " sm:w-[calc(100vw-385px)]" : "sm:w-[calc(100vw-163px)]"}}`}>
 								<Outlet />
 							</div>
 						</div>

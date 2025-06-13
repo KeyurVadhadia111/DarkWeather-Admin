@@ -11,7 +11,7 @@ type AppState = {
 	setIsLoading: (isLoading: boolean) => void;
 	setUserDetails: (details: Record<string, any>) => void;
 	setPremiumStep: (step: number) => void;
-	setIsSideExpanded: (step: boolean) => void;
+	setIsSideExpanded: (isSideExpanded: boolean) => void;
 };
 
 const useAppState = create<AppState>(set => ({
@@ -20,14 +20,14 @@ const useAppState = create<AppState>(set => ({
 	isUserDetails: false,
 	userDetails: {},
 	premiumStep: 1,
-	isSideExpanded: false,
+	isSideExpanded: true,
 
 	// Actions
 	setIsDark: isDark => set({ isDark }),
 	setIsLoading: isLoading => set({ isLoading }),
 	setUserDetails: details => set({ userDetails: details, isUserDetails: !!details }),
 	setPremiumStep: step => set({ premiumStep: step }),
-	setIsSideExpanded: step => set({ isSideExpanded: step }),
+	setIsSideExpanded: isSideExpanded => set({ isSideExpanded }),
 }));
 
 export default useAppState;
