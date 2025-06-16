@@ -417,7 +417,7 @@ const AddEditUserPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], setLi
 						</div>
 
 						{/* Status */}
-						<div className={`w-full ${editIndex !== null ? "col-span-2" : ""}	`}>
+						<div className={`w-full ${editIndex !== null ? "sm:col-span-2" : ""}	`}>
 							<Select
 								name="status"
 								label="Status"
