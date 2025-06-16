@@ -7,6 +7,7 @@ import AccessDisabled from "pages/AccessDisabled";
 import ForgotPasswordPage from "pages/ForgotPasswordPage";
 import Dashboard from "pages/Dashboard";
 import UserManagementPage from "pages/UserManagementPage";
+import ActivityLogPage from "pages/ActivityLogPage";
 
 declare global {
 	interface Window {
@@ -87,6 +88,14 @@ const createRoutes: React.FC = () => {
 							element={
 								<ProtectedRoute>
 									<UserManagementPage />
+								</ProtectedRoute>
+							}
+						/>
+						<Route
+							path="/activity-log"
+							element={
+								<ProtectedRoute>
+									<ActivityLogPage />
 								</ProtectedRoute>
 							}
 						/>

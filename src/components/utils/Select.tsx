@@ -12,33 +12,22 @@ interface SelectProps {
 	placeholder?: string;
 }
 
-const Select = ({
-	name,
-	label,
-	required,
-	error,
-	className,
-	items,
-	register,
-	trigger,
-	placeholder,
-}: SelectProps) => {
+const Select = ({ name, label, required, error, className, items, register, trigger, placeholder }: SelectProps) => {
 	return (
 		<div className="relative">
 			{label && (
 				<label
 					htmlFor={name}
-					className="text-base font-medium text-text dark:text-textDark mb-2 block">
+					className="text-xs sm:text-base font-medium text-text dark:text-textDark leading-[18px] sm:leading-[21px] mb-2 sm:mb-3 block">
 					{label} {required && <span className="text-red-500">*</span>}
 				</label>
 			)}
 			<div className="relative">
 				<select
 					name={name}
-					className={`appearance-none block px-4 w-full h-12 rounded-lg text-base bg-white text-gray-500 dark:bg-gray-800 border border-gray-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FFA500] dark:border-gray-700 dark:text-gray-300 ${className || ""} ${error
-						? "!border-red-500 focus-visible:!ring-red-500"
-						: ""
-						}`}
+					className={`appearance-none block px-4 w-full h-12 rounded-lg text-base bg-white text-gray-500 dark:bg-gray-800 border border-gray-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FFA500] dark:border-gray-700 dark:text-gray-300 ${className || ""} ${
+						error ? "!border-red-500 focus-visible:!ring-red-500" : ""
+					}`}
 					{...(register &&
 						register(name, {
 							onChange: () => {
@@ -46,7 +35,7 @@ const Select = ({
 							},
 						}))}>
 					{label && <option value="">{placeholder || `Select ${label}`}</option>}
-					{items?.map((item) => (
+					{items?.map(item => (
 						<option value={item.value} key={item.value}>
 							{item.text}
 						</option>

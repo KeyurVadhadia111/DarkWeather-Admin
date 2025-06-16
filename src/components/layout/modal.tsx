@@ -39,7 +39,7 @@ const Modal: React.FC<RequestType> = ({ openModal, setOpenModal, size, children,
 							leave="ease-in duration-200"
 							leaveFrom="opacity-100"
 							leaveTo="opacity-0">
-							<div className="fixed inset-0 bg-black/50" />
+							<div className="fixed inset-0 bg-black/30 backdrop-blur-sm" />
 						</Transition.Child>
 
 						<div className="overflow-y-auto fixed inset-0">

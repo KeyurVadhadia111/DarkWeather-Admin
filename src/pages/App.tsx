@@ -1,4 +1,3 @@
-import Footer from "components/layout/Footer";
 import { Outlet, useLocation } from "react-router-dom";
 import Header from "components/layout/Header";
 import "swiper/css";
@@ -42,7 +41,7 @@ function App() {
 								""
 							)}
 							<div
-								className={`${isSideExpanded ? " sm:w-[calc(100vw-385px)]" : "sm:w-[calc(100vw-163px)]"}}`}>
+								className={`p-6 sm:p-0 ${isSideExpanded ? " sm:w-[calc(100vw-385px)]" : "sm:w-[calc(100vw-163px)]"}}`}>
 								<Outlet />
 							</div>
 						</div>

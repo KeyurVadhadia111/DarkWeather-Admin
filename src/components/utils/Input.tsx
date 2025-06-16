@@ -12,11 +12,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type 
 	const [showPassword, setShowPassword] = React.useState(false);
 
 	return (
-		<div className="relative ">
+		<div className="relative w-full">
 			<input
 				type={inputType == "password" && showPassword ? "text" : inputType}
 				className={cn(
-					"bg-fgc dark:bg-fgcDark flex w-full rounded-xl text-sm sm:text-base transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-textSecondary dark:placeholder:text-textDark/50  focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm border border-transparent py-[10px] sm:py-[17px] px-5 font-normal text-text dark:text-textDark",
+					"bg-fgc dark:bg-fgcDark flex w-full rounded-xl text-sm sm:text-base transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-textSecondary dark:placeholder:text-textDark/50  focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm border border-transparent py-[10.3px] sm:py-[17.1px] px-5 font-normal text-text dark:text-textDark",
 					error ? "!border !border-red-500 focus-visible:!ring-red-500" : "focus-visible:ring-neutral-300",
 					className,
 				)}

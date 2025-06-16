@@ -1,3 +1,4 @@
+import AddEditUserPopup from "components/popup/AddEditUserPopup";
 import { Menu, Transition } from "@headlessui/react";
 import { Button } from "components/utils/Button";
 import Icon from "components/utils/Icon";
@@ -5,6 +6,10 @@ import { Input } from "components/utils/Input";
 import Pagination from "components/utils/Pagination";
 import useAppState from "components/utils/useAppState";
 import React, { useEffect, useMemo, useState } from "react";
+import DeleteUserPopup from "components/popup/DeleteUserPopup";
+import ResertPasswordPopup from "components/popup/ResertPasswordPopup";
+import { useNavigate } from "react-router-dom";
+import { toast } from "components/utils/toast";
 
 interface User {
 	id: number;
@@ -212,8 +217,26 @@ export default function UserManagementPage() {
 	const startIdx = (currentPage - 1) * usersPerPage;
 	const endIdx = Math.min(startIdx + usersPerPage, users.length);
 
+	const [isDeleteUserPopupOpen, setIsDeleteUserPopupOpen] = useState(false);
+	const [deleteUserIndex, setDeleteUserIndex] = useState<number | null>(null);
+
+	const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
+	const [resetUserEmail, setResetUserEmail] = useState<string>("");
+	const navigate = useNavigate();
+
+	const [searchQuery, setSearchQuery] = useState("");
+
+	// Filter users by search query (name or email)
+	const filteredUsers = useMemo(() => {
+		if (!searchQuery.trim()) return users;
+		const query = searchQuery.toLowerCase();
+		return users.filter(
+			user => user.name.toLowerCase().includes(query) || user.email.toLowerCase().includes(query),
+		);
+	}, [users, searchQuery]);
+
 	const sortedUsers = useMemo(() => {
-		const sorted = [...users].sort((a: User, b: User) => {
+		const sorted = [...filteredUsers].sort((a: User, b: User) => {
 			const key = sortConfig.key;
 			let valA = a[key];
 			let valB = b[key];
@@ -242,7 +265,7 @@ export default function UserManagementPage() {
 			return 0;
 		});
 		return sorted;
-	}, [users, sortConfig]);
+	}, [filteredUsers, sortConfig]);
 
 	const displayedUsers = useMemo(() => {
 		return sortedUsers.slice(startIdx, endIdx);
@@ -279,6 +302,11 @@ export default function UserManagementPage() {
 	};
 	/* End for checkbox */
 
+	// Reset to page 1 when searchQuery changes
+	useEffect(() => {
+		setCurrentPage(1);
+	}, [searchQuery]);
+
 	return (
 		<div
 			className={`${isSideExpanded ? "w-full sm:w-[calc(100vw-385px)]" : "w-full sm:w-[calc(100vw-163px)]"} flex flex-col items-start gap-6 p-2.5 sm:p-6 bg-bgc dark:bg-fgcDark rounded-[10px] sm:rounded-[20px]`}>
@@ -292,15 +320,17 @@ export default function UserManagementPage() {
 				<div className="flex items-center justify-around gap-3 p-2.5 sm:px-6 sm:py-4 relative self-stretch w-full flex-[0_0_auto] bg-bgc dark:bg-bgcDark rounded-2xl shadow-[0px_10px_65px_#0000000d]">
 					<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-4 relative flex-1 grow w-full">
 						<div className="flex items-center gap-3 relative w-full">
-							<div className="flex w-full gap-2 sm:gap-3 h-[42px] sm:h-14 items-center p-4 relative bg-fgc dark:bg-fgcDark rounded-xl">
+							<div className="flex items-center w-full">
 								<Icon
 									icon="search"
-									className="w-5 h-5 sm:w-6 sm:h-6 dark:text-textDark text-text shrink-0"
+									className="w-5 h-5 sm:w-6 sm:h-6 dark:text-textDark text-text shrink-0  absolute left-2.5 sm:left-3.5  z-10"
 								/>
 								<Input
-									className=" font-normal !h-[56px] text-bgcSecondary dark:text-textDark text-sm whitespace-nowrap [background:transparent] border-[none] !p-0 !bg-transparent !outline-0 !ring-0 !self-stretch"
+									className="font-normal !pl-[35px] sm:!pl-[50px] !h-[42px] sm:!h-[56px] text-bgcSecondary dark:text-textDark text-sm whitespace-nowrap border-[none] !p-0 !outline-0 !ring-0 !self-stretch  !bg-fgc dark:!bg-fgcDark "
 									placeholder="Search by name or email"
 									type="text"
+									value={searchQuery}
+									onChange={e => setSearchQuery(e.target.value)}
 								/>
 							</div>
 							<div className="flex items-center justify-center w-[42px] h-[42px] sm:w-14 sm:h-14 rounded-lg sm:rounded-xl overflow-hidden border border-solid border-textSecondary/50">
@@ -343,7 +373,7 @@ export default function UserManagementPage() {
 					</div>
 				</div>
 				<div className="w-full overflow-x-auto overflow-hidden">
-					<div className="flex flex-col items-start gap-2 relative self-stretch min-w-[1150px] w-full flex-[0_0_auto]">
+					<div className="flex flex-col items-start gap-2 relative self-stretch min-w-[1150px] sm:min-w-[1450px] w-full flex-[0_0_auto]">
 						<div className="flex h-[42px] sm:h-[52px] items-start sm:justify-between relative self-stretch w-full bg-fgc dark:bg-fgcDark rounded-xl">
 							{/* Column headers */}
 							<div className="inline-flex flex-col items-start justify-center gap-2.5 px-4 py-3.5 relative self-stretch flex-[0_0_auto]">
@@ -373,7 +403,7 @@ export default function UserManagementPage() {
 								</label>
 							</div>
 							<div
-								className="flex w-[159px] sm:w-[200px] items-center gap-2 px-1.5 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
+								className="flex w-[159px] sm:w-[200px] items-center gap-1 sm:gap-2 px-1.5 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
 								onClick={() => handleSort("name")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Name
@@ -386,11 +416,11 @@ export default function UserManagementPage() {
 												: "up-sort"
 											: "sort"
 									}
-									className={`w-5 h-5 text-text dark:text-textDark ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
+									className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
 								/>
 							</div>
 							<div
-								className="flex w-[168px] sm:w-[232px] items-center gap-2 px-0 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
+								className="flex w-[168px] sm:w-[232px] items-center gap-1 sm:gap-2 px-0 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
 								onClick={() => handleSort("email")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Email
@@ -403,16 +433,16 @@ export default function UserManagementPage() {
 												: "up-sort"
 											: "sort"
 									}
-									className={`w-5 h-5 text-text dark:text-textDark ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
+									className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
 								/>
 							</div>
-							<div className="flex items-center gap-2 mr-[59px] sm:mr-0 px-0 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow">
+							<div className="flex items-center gap-1 sm:gap-2 mr-[59px] sm:mr-0 px-0 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow">
 								<div className="font-medium relative text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Phone Number
 								</div>
 							</div>
 							<div
-								className="flex w-[101px] sm:w-[152px] items-center gap-2 px-5 py-3.5 relative self-stretch cursor-pointer"
+								className="flex w-[101px] sm:w-[152px] items-center gap-1 sm:gap-2 px-5 py-3.5 relative self-stretch cursor-pointer"
 								onClick={() => handleSort("role")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Role
@@ -425,11 +455,11 @@ export default function UserManagementPage() {
 												: "up-sort"
 											: "sort"
 									}
-									className={`w-5 h-5 text-text dark:text-textDark ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
+									className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
 								/>
 							</div>
 							<div
-								className="flex items-center gap-2  mr-[64px] sm:mr-0 px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow cursor-pointer"
+								className="flex items-center gap-1 sm:gap-2  mr-[64px] sm:mr-0 px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow cursor-pointer"
 								onClick={() => handleSort("plan")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Plan
@@ -442,11 +472,11 @@ export default function UserManagementPage() {
 												: "up-sort"
 											: "sort"
 									}
-									className={`w-5 h-5 text-text dark:text-textDark ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
+									className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
 								/>
 							</div>
 							<div
-								className="flex items-center gap-2  mr-[32px] sm:mr-0 px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow cursor-pointer"
+								className="flex items-center gap-1 sm:gap-2  mr-[32px] sm:mr-0 px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow cursor-pointer"
 								onClick={() => handleSort("lastLogin")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Last Login
@@ -459,11 +489,11 @@ export default function UserManagementPage() {
 												: "up-sort"
 											: "sort"
 									}
-									className={`w-5 h-5 text-text dark:text-textDark ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
+									className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
 								/>
 							</div>
 							<div
-								className="flex w-[85px] sm:w-[124px] items-center mr-[27px] sm:mr-0 gap-2 px-5 py-3.5 relative self-stretch cursor-pointer"
+								className="flex w-[85px] sm:w-[124px] items-center mr-[27px] sm:mr-0 gap-1 sm:gap-2 px-5 py-3.5 relative self-stretch cursor-pointer"
 								onClick={() => handleSort("status")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Status
@@ -476,7 +506,7 @@ export default function UserManagementPage() {
 												: "up-sort"
 											: "sort"
 									}
-									className={`w-5 h-5 text-text dark:text-textDark ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
+									className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
 								/>
 							</div>
 							<div className="inline-flex flex-col items-center justify-center gap-2.5 px-5 py-3.5 relative self-stretch flex-[0_0_auto]">
@@ -588,31 +618,61 @@ export default function UserManagementPage() {
 													leaveTo="transform scale-95 opacity-0">
 													<Menu.Items
 														className={`absolute -right-5 mt-2.5 sm:mt-[17px] w-[140px] sm:w-[163px] bg-fgc dark:bg-fgcDark rounded-xl focus:outline-none flex flex-col z-50
-        												${idx >= displayedUsers.length - 3 ? "origin-bottom-right bottom-full mb-2" : "origin-top-right"}`}>
+        												${idx >= displayedUsers.length - 3 ? "origin-bottom-right bottom-full mb-2.5 sm:mb-[17px]" : "origin-top-right"}`}>
 														<div className="flex flex-col items-start px-3 py-2 sm:px-2.5 sm:py-2.5 gap-1">
 															<Menu.Item>
 																<div
 																	className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full"
 																	onClick={() => {
-																		setEditIndex(idx);
+																		const globalIndex = users.findIndex(
+																			u => u.id === user.id,
+																		);
+																		setEditIndex(globalIndex);
 																		setIsAddEditUserPopupOpen(true);
 																	}}>
 																	Edit
 																</div>
 															</Menu.Item>
 															<Menu.Item>
-																<div className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full">
+																<div
+																	className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full"
+																	onClick={() => {
+																		setDeleteUserIndex(
+																			users.findIndex(u => u.id === user.id),
+																		);
+																		setIsDeleteUserPopupOpen(true);
+																	}}>
 																	Delete
 																</div>
 															</Menu.Item>
 															<Menu.Item>
-																<div className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full">
+																<div
+																	className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full"
+																	onClick={() => {
+																		setResetUserEmail(user.email);
+																		setIsResetPasswordOpen(true);
+																	}}>
 																	Reset Password
 																</div>
 															</Menu.Item>
 															<Menu.Item>
-																<div className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full">
-																	Acitity log
+																<div
+																	className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full"
+																	onClick={() => {
+																		navigate("/activity-log", {
+																			state: {
+																				name: user.name,
+																				email: user.email,
+																			},
+																		});
+																		setTimeout(() => {
+																			window.scrollTo({
+																				top: 0,
+																				behavior: "smooth",
+																			});
+																		}, 100);
+																	}}>
+																	Activity log
 																</div>
 															</Menu.Item>
 														</div>
@@ -648,6 +708,34 @@ export default function UserManagementPage() {
 					/>
 				</div>
 			</div>
+			<AddEditUserPopup
+				isOpen={isAddEditUserPopupOpen}
+				setIsOpen={() => {
+					setEditIndex(null);
+					setIsAddEditUserPopupOpen(false);
+				}}
+				list={users}
+				setList={setUsers}
+				editIndex={editIndex}
+			/>
+			<DeleteUserPopup
+				isOpen={isDeleteUserPopupOpen}
+				setIsOpen={setIsDeleteUserPopupOpen}
+				user={deleteUserIndex !== null ? users[deleteUserIndex] : null}
+				onDelete={() => {
+					if (deleteUserIndex !== null) {
+						setUsers(prev => prev.filter((_, idx) => idx !== deleteUserIndex));
+						setDeleteUserIndex(null);
+						setIsDeleteUserPopupOpen(false);
+						toast.success("User deleted successfully");
+					}
+				}}
+			/>
+			<ResertPasswordPopup
+				isOpen={isResetPasswordOpen}
+				setIsOpen={setIsResetPasswordOpen}
+				email={resetUserEmail}
+			/>
 		</div>
 	);
 }

@@ -15,43 +15,82 @@ export default function Sidebar() {
 	const location = useLocation();
 
 	const allMenuItems = [
-		{ title: "Dashboard", icon: "dashboard", href: "/dashboard", roles: ["SuperAdmin", "Analytics", "Support"] },
-		// Add Login Activity for Support role
-		{ title: "Login Activity", icon: "login-activity", href: "", roles: ["Support"] },
+		{
+			title: "Dashboard",
+			icon: "dashboard",
+			href: "/dashboard",
+			roles: ["SuperAdmin", "Analytics", "Support"],
+			active: ["/dashboard"],
+		},
+		{ title: "Login Activity", icon: "login-activity", href: "", roles: ["Support"], active: [""] },
 		{
 			title: "User Management",
 			icon: "user-management",
 			href: "/user-management",
 			roles: ["SuperAdmin", "Support"],
+			active: ["/user-management", "/activity-log"],
 		},
-		{ title: "Override Weather Info", icon: "override-weather-info", href: "", roles: ["SuperAdmin"] },
-		{ title: "Role Management", icon: "role-management", href: "", roles: ["SuperAdmin", "Support"] },
-		{ title: "API Integration", icon: "api-integration", href: "", roles: ["SuperAdmin"] },
-		{ title: "Subscription", icon: "subscription", href: "", roles: ["SuperAdmin"] },
+		{
+			title: "Override Weather Info",
+			icon: "override-weather-info",
+			href: "",
+			roles: ["SuperAdmin"],
+			active: [""],
+		},
+		{ title: "Role Management", icon: "role-management", href: "", roles: ["SuperAdmin", "Support"], active: [""] },
+		{ title: "API Integration", icon: "api-integration", href: "", roles: ["SuperAdmin"], active: [""] },
+		{ title: "Subscription", icon: "subscription", href: "", roles: ["SuperAdmin"], active: [""] },
 		{
 			title: "Alerts & Content Post",
 			icon: "alerts-content-post",
 			href: "",
 			roles: ["SuperAdmin", "Analytics", "Support"],
+			active: [""],
 		},
 		{
 			title: "Social Media Configuration",
 			icon: "social-media-configuration",
 			href: "",
 			roles: ["SuperAdmin", "Analytics"],
+			active: [""],
 		},
-		{ title: "Settings & Configurations", icon: "settings-configurations", href: "", roles: ["SuperAdmin"] },
-		{ title: "Analytics & Reports", icon: "analytics-reports", href: "", roles: ["SuperAdmin", "Analytics"] },
+		{
+			title: "Settings & Configurations",
+			icon: "settings-configurations",
+			href: "",
+			roles: ["SuperAdmin"],
+			active: [""],
+		},
+		{
+			title: "Analytics & Reports",
+			icon: "analytics-reports",
+			href: "",
+			roles: ["SuperAdmin", "Analytics"],
+			active: [""],
+		},
 		{
 			title: "Feedback Manager",
 			icon: "feedback-manager",
 			href: "",
 			roles: ["SuperAdmin", "Analytics", "Support"],
+			active: [""],
 		},
-		{ title: "Notification System", icon: "notification-system", href: "", roles: ["SuperAdmin", "Support"] },
-		{ title: "Audit Trail System", icon: "audit-trail-system", href: "", roles: ["SuperAdmin"] },
-		{ title: "Data Export & Import", icon: "data-export-import", href: "", roles: ["SuperAdmin"] },
-		{ title: "Scheduled Maintenance", icon: "scheduled-maintenance", href: "", roles: ["SuperAdmin"] },
+		{
+			title: "Notification System",
+			icon: "notification-system",
+			href: "",
+			roles: ["SuperAdmin", "Support"],
+			active: [""],
+		},
+		{ title: "Audit Trail System", icon: "audit-trail-system", href: "", roles: ["SuperAdmin"], active: [""] },
+		{ title: "Data Export & Import", icon: "data-export-import", href: "", roles: ["SuperAdmin"], active: [""] },
+		{
+			title: "Scheduled Maintenance",
+			icon: "scheduled-maintenance",
+			href: "",
+			roles: ["SuperAdmin"],
+			active: [""],
+		},
 	];
 
 	const [menuItems, setMenuItems] = useState(allMenuItems);
@@ -112,7 +151,8 @@ export default function Sidebar() {
 
 					<div className="flex flex-col gap-2">
 						{menuItems.map((item, index) => {
-							const isActive = location.pathname === item.href;
+							const activeArray = item.active || [item.href];
+							const isActive = activeArray.includes(location.pathname);
 							return (
 								<Link
 									key={index}
