@@ -13,6 +13,9 @@ const Pagination: React.FC<Props> = ({ totalRecords, recordsPerPage, currentPage
 	const goToPage = (page: number) => {
 		if (page < 1 || page > totalPages) return;
 		handlePageChange(page);
+		setTimeout(() => {
+			window.scrollTo({ top: 0, behavior: "smooth" });
+		}, 100);
 	};
 
 	return (

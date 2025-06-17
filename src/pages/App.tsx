@@ -41,7 +41,11 @@ function App() {
 								""
 							)}
 							<div
-								className={`p-6 sm:p-0 ${isSideExpanded ? " sm:w-[calc(100vw-385px)]" : "sm:w-[calc(100vw-163px)]"}}`}>
+								className={` ${
+									location.pathname !== "/" && location.pathname !== "/forgot-password"
+										? "sm:p-0 p-6"
+										: ""
+								} ${isSideExpanded ? " sm:w-[calc(100vw-385px)]" : "sm:w-[calc(100vw-163px)]"}}`}>
 								<Outlet />
 							</div>
 						</div>

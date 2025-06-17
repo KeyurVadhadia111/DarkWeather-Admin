@@ -267,7 +267,7 @@ export default function ActivityLogPage() {
 					</div>
 				</div>
 				<div className="w-full overflow-x-auto overflow-hidden">
-					<div className="flex flex-col items-start gap-2 relative self-stretch min-w-[800px] sm:min-w-[1450px] w-full flex-[0_0_auto]">
+					<div className="flex flex-col items-start gap-2 relative self-stretch min-w-[800px] sm:min-w-[1450px] w-full flex-[0_0_auto] min-h-[500px] sm:min-h-[700px]">
 						{/* Table header */}
 						<div className="flex h-[42px] sm:h-[52px] items-start sm:justify-between relative self-stretch w-full bg-fgc dark:bg-fgcDark rounded-xl">
 							{/* Checkbox header */}
@@ -405,84 +405,98 @@ export default function ActivityLogPage() {
 							</div>
 						</div>
 						{/* Table rows */}
-						{displayedLogs.map((log, idx) => (
-							<React.Fragment key={log.id}>
-								<div className="flex h-8 sm:h-11 items-start justify-between relative self-stretch w-full">
-									{/* Checkbox */}
-									<div className="inline-flex flex-col items-start justify-center gap-2.5 px-4 py-3.5 relative self-stretch flex-[0_0_auto]">
-										<label className="relative w-6 h-6 flex items-center cursor-pointer">
-											<input
-												type="checkbox"
-												checked={selectedLogs.includes(log.id)}
-												onChange={() => handleCheckbox(log.id)}
-												className="opacity-0 absolute w-6 h-6 cursor-pointer"
-											/>
-											<span
-												className={`w-[17px] h-[17px] rounded-[2px] border border-textSecondary flex items-center justify-center transition-colors duration-150 ${
-													selectedLogs.includes(log.id)
-														? "bg-primary !border-primary "
-														: "bg-transparent"
-												}`}>
-												{selectedLogs.includes(log.id) && (
-													<Icon
-														icon="check"
-														className="w-2.5 h-2.5 sm:w-3 sm:h-3 ml-0 mt-0.5 sm:ml-0.5"
-													/>
-												)}
-											</span>
-										</label>
-									</div>
-									{/* Timestamp */}
-									<div className="flex w-[148px] sm:w-[300px] items-center gap-2.5 sm:px-5 sm:py-4 relative self-stretch">
-										<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
-											{log.timestamp}
-										</div>
-									</div>
-									{/* Action Type */}
-									<div className="flex flex-col w-[168px] sm:w-[259px] items-start justify-center gap-2.5 sm:px-5 sm:py-4 relative self-stretch">
-										<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
-											{log.actionType}
-										</div>
-									</div>
-									{/* Action Description */}
-									<div className="flex flex-col items-start justify-center gap-2.5 sm:px-5 sm:py-4 relative w-[181px] sm:w-auto  sm:flex-1 self-stretch sm:grow">
-										<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
-											{log.actionDescription}
-										</div>
-									</div>
-									{/* IP Address */}
-									<div className="w-[108px] sm:w-[259px] flex flex-col items-start justify-center gap-2.5 sm:px-5 sm:py-4 relative self-stretch">
-										<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
-											{log.ipAddress}
-										</div>
-									</div>
-									{/* Device Info */}
-									<div className="flex flex-col items-start justify-center gap-2.5 sm:px-5 sm:py-4 relative w-[139px] sm:w-auto sm:flex-1 self-stretch sm:grow">
-										<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
-											{log.deviceInfo}
-										</div>
-									</div>
+						<>
+							{displayedLogs.length === 0 ? (
+								<div className="w-full flex items-center justify-center py-11">
+									<span className="text-textSecondary dark:text-textDark text-base sm:text-lg">
+										No data found
+									</span>
 								</div>
-								{idx < displayedLogs.length - 1 && (
-									<div className="w-full h-px bg-textSecondary/10 dark:bg-textSecondary/25 shrink-0" />
-								)}
-							</React.Fragment>
-						))}
+							) : (
+								displayedLogs.map((log, idx) => (
+									<React.Fragment key={log.id}>
+										<div className="flex h-8 sm:h-11 items-start justify-between relative self-stretch w-full">
+											{/* Checkbox */}
+											<div className="inline-flex flex-col items-start justify-center gap-2.5 px-4 py-3.5 relative self-stretch flex-[0_0_auto]">
+												<label className="relative w-6 h-6 flex items-center cursor-pointer">
+													<input
+														type="checkbox"
+														checked={selectedLogs.includes(log.id)}
+														onChange={() => handleCheckbox(log.id)}
+														className="opacity-0 absolute w-6 h-6 cursor-pointer"
+													/>
+													<span
+														className={`w-[17px] h-[17px] rounded-[2px] border border-textSecondary flex items-center justify-center transition-colors duration-150 ${
+															selectedLogs.includes(log.id)
+																? "bg-primary !border-primary "
+																: "bg-transparent"
+														}`}>
+														{selectedLogs.includes(log.id) && (
+															<Icon
+																icon="check"
+																className="w-2.5 h-2.5 sm:w-3 sm:h-3 ml-0 mt-0.5 sm:ml-0.5"
+															/>
+														)}
+													</span>
+												</label>
+											</div>
+											{/* Timestamp */}
+											<div className="flex w-[148px] sm:w-[300px] items-center gap-2.5 sm:px-5 sm:py-4 relative self-stretch">
+												<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
+													{log.timestamp}
+												</div>
+											</div>
+											{/* Action Type */}
+											<div className="flex flex-col w-[168px] sm:w-[259px] items-start justify-center gap-2.5 sm:px-5 sm:py-4 relative self-stretch">
+												<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
+													{log.actionType}
+												</div>
+											</div>
+											{/* Action Description */}
+											<div className="flex flex-col items-start justify-center gap-2.5 sm:px-5 sm:py-4 relative w-[181px] sm:w-auto  sm:flex-1 self-stretch sm:grow">
+												<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
+													{log.actionDescription}
+												</div>
+											</div>
+											{/* IP Address */}
+											<div className="w-[108px] sm:w-[259px] flex flex-col items-start justify-center gap-2.5 sm:px-5 sm:py-4 relative self-stretch">
+												<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
+													{log.ipAddress}
+												</div>
+											</div>
+											{/* Device Info */}
+											<div className="flex flex-col items-start justify-center gap-2.5 sm:px-5 sm:py-4 relative w-[139px] sm:w-auto sm:flex-1 self-stretch sm:grow">
+												<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
+													{log.deviceInfo}
+												</div>
+											</div>
+										</div>
+										{idx < displayedLogs.length - 1 && (
+											<div className="w-full h-px bg-textSecondary/10 dark:bg-textSecondary/25 shrink-0" />
+										)}
+									</React.Fragment>
+								))
+							)}
+						</>
 					</div>
 				</div>
 				{/* Pagination */}
 				<div className="flex flex-col sm:flex-row items-center justify-between w-full gap-2.5 relative flex-[0_0_auto]">
 					<div className="w-full flex items-center">
 						<span className="text-xs sm:text-sm text-textSecondary">
-							Showing {startIdx + 1}-{endIdx} of {activityLogs.length} records
+							{filteredLogs.length === 0
+								? "Showing 0 of 0 users"
+								: `Showing ${startIdx + 1}–${Math.min(endIdx, filteredLogs.length)} of ${filteredLogs.length} users`}
 						</span>
 					</div>
-					<Pagination
-						totalRecords={activityLogs.length}
-						recordsPerPage={recordsPerPage}
-						currentPage={currentPage}
-						handlePageChange={setCurrentPage}
-					/>
+					{filteredLogs.length !== 0 && (
+						<Pagination
+							totalRecords={filteredLogs.length}
+							recordsPerPage={recordsPerPage}
+							currentPage={currentPage}
+							handlePageChange={setCurrentPage}
+						/>
+					)}
 				</div>
 			</div>
 		</div>

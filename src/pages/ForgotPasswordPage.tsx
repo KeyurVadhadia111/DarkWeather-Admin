@@ -123,7 +123,8 @@ function ForgotPasswordPage() {
 	};
 	return (
 		<div className="relative flex items-center bg-bgc dark:bg-bgcDark">
-			<div className={`w-full flex flex-col items-center gap-20 justify-start sm:justify-around  relative h-dvh`}>
+			<div
+				className={`w-full flex flex-col items-center gap-20 justify-start sm:justify-around  relative h-dvh sm:pt-[110px]`}>
 				{/* Header */}
 				<div className="absolute top-[12px] sm:top-[50px] left-auto flex items-center justify-between px-6 w-full max-w-[820px]">
 					<Link to={"/"}>

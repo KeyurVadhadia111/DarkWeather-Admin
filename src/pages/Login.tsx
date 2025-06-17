@@ -121,7 +121,7 @@ function Login() {
 
 	return (
 		<div className="relative flex items-center bg-bgc dark:bg-bgcDark">
-			<div className="w-full flex flex-col items-center gap-20 justify-start sm:justify-around relative h-dvh">
+			<div className="w-full flex flex-col items-center gap-20 justify-start sm:justify-around relative h-dvh sm:pt-[100px]">
 				{/* Header */}
 				<div className="absolute top-[12px] sm:top-[50px] left-auto flex items-center justify-between px-6 w-full max-w-[820px]">
 					<Link to={"/"}>
@@ -168,7 +168,7 @@ function Login() {
 						<div className="flex flex-col gap-6 sm:gap-9 w-full">
 							{/* Role Tabs */}
 							{step === 1 ? (
-								<div className="flex items-center dark:text-textDark dark:bg-fgcDark rounded-[6px] sm:rounded-xl overflow-x-auto">
+								<div className="flex items-center dark:text-textDark dark:bg-fgcDark rounded-[6px] sm:rounded-xl overflow-x-auto shadow-[0_4px_35px_rgba(0,0,0,0.05)]">
 									{roles.map(role => (
 										<button
 											key={role}
