@@ -421,11 +421,11 @@ export default function UserManagementPage() {
 
 	return (
 		<div
-			className={`${isSideExpanded ? "w-full sm:w-[calc(100vw-385px)]" : "w-full sm:w-[calc(100vw-163px)]"} flex flex-col items-start gap-6 p-2.5 sm:p-6 bg-bgc dark:bg-fgcDark rounded-[10px] sm:rounded-[20px]`}>
+			className={`${isSideExpanded ? "w-full sm:w-[calc(100vw-385px)]" : "w-full sm:w-[calc(100vw-163px)]"} flex flex-col items-start gap-5 sm:gap-6 p-2.5 sm:p-6 bg-bgc dark:bg-fgcDark rounded-[10px] sm:rounded-[20px]`}>
 			{/* ...header and search/filter UI... */}
 			<div className="flex flex-col items-center justify-center gap-5 relative self-stretch w-full flex-[0_0_auto]">
 				<div className="flex sm:h-14 items-center w-full">
-					<div className="relative font-medium text-text dark:text-textDark text-xl sm:text-2xl tracking-[0] sm:leading-6 whitespace-nowrap">
+					<div className="relative font-medium text-text dark:text-textDark text-xl sm:text-2xl tracking-[0] leading-5 sm:leading-6 whitespace-nowrap">
 						User Management
 					</div>
 				</div>
@@ -445,7 +445,7 @@ export default function UserManagementPage() {
 									onChange={e => setSearchQuery(e.target.value)}
 								/>
 							</div>
-							<div className="flex items-center justify-center w-[42px] h-[42px] sm:w-14 sm:h-14 rounded-lg sm:rounded-xl overflow-hidden border border-solid border-textSecondary/50">
+							<div className="flex items-center justify-center w-[42px] h-[42px] sm:w-14 sm:h-14 rounded-lg sm:rounded-xl overflow-hidden border border-solid border-textSecondary/50 shrink-0">
 								<Icon
 									icon="filter-user"
 									className="w-5 h-5 sm:w-6 sm:h-6  text-textSecondary dark:text-textDark"
@@ -477,19 +477,21 @@ export default function UserManagementPage() {
 			<div className="flex flex-col w-full items-start gap-4 p-4 relative bg-bgc dark:bg-bgcDark rounded-2xl shadow-[0px_10px_65px_#0000000d]">
 				{/* ...table header... */}
 				<div className="flex items-center justify-between w-full">
-					<div className="text-base sm:text-xl font-medium text-text dark:text-textDark">User List</div>
-					<div className="text-xs sm:text-base text-textSecondary dark:text-textDark">
+					<div className="text-base sm:text-xl font-medium text-text dark:text-textDark leading-[21px] sm:leading-[26px]">
+						User List
+					</div>
+					<div className="text-xs sm:text-base text-textSecondary dark:text-textDark leading-[21px] sm:leading-[26px]">
 						{selectedUsers.length === 0
 							? "0 users selected"
 							: `${selectedUsers.length} user${selectedUsers.length > 1 ? "s" : ""} selected`}
 					</div>
 				</div>
 				<div className="w-full overflow-x-auto overflow-hidden">
-					<div className="flex flex-col items-start gap-2 relative self-stretch min-w-[1150px] sm:min-w-[1450px] w-full flex-[0_0_auto] min-h-[500px] sm:min-h-[700px]">
+					<div className="flex flex-col items-start gap-[5.54px] sm:gap-[7.54px] relative self-stretch min-w-[1027px] sm:min-w-[1450px] w-full flex-[0_0_auto] min-h-[500px] sm:min-h-[700px]">
 						<div className="flex h-[42px] sm:h-[52px] items-start sm:justify-between relative self-stretch w-full bg-fgc dark:bg-fgcDark rounded-xl">
 							{/* Column headers */}
-							<div className="inline-flex flex-col items-start justify-center gap-2.5 px-4 py-3.5 relative self-stretch flex-[0_0_auto]">
-								<label className="relative w-6 h-6 flex items-center cursor-pointer">
+							<div className="inline-flex flex-col items-start justify-center gap-2.5 px-[11px] sm:px-4 py-3.5 relative self-stretch flex-[0_0_auto]">
+								<label className="relative w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center cursor-pointer">
 									<input
 										type="checkbox"
 										checked={allChecked}
@@ -497,7 +499,7 @@ export default function UserManagementPage() {
 											if (el) el.indeterminate = isIndeterminate;
 										}}
 										onChange={handleSelectAll}
-										className="opacity-0 absolute w-6 h-6 cursor-pointer bg-transparent"
+										className="opacity-0 absolute w-5 h-5 sm:w-6 sm:h-6 cursor-pointer bg-transparent"
 									/>
 									<span
 										className={`w-[17px] h-[17px] rounded-[2px] border border-textSecondary flex items-center justify-center transition-colors duration-150 ${
@@ -508,14 +510,14 @@ export default function UserManagementPage() {
 										{(allChecked || isIndeterminate) && (
 											<Icon
 												icon="check"
-												className="w-2.5 h-2.5 sm:w-3 sm:h-3 ml-0 mt-0.5 sm:ml-0.5"
+												className="w-2.5 h-2.5 sm:w-3 sm:h-3 ml-[1px] mt-0.5 sm:ml-0.5"
 											/>
 										)}
 									</span>
 								</label>
 							</div>
 							<div
-								className="flex w-[159px] sm:w-[200px] items-center gap-1 sm:gap-2 px-1.5 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
+								className="flex w-[159px] sm:w-[200px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
 								onClick={() => handleSort("name")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Name
@@ -532,7 +534,7 @@ export default function UserManagementPage() {
 								/>
 							</div>
 							<div
-								className="flex w-[168px] sm:w-[232px] items-center gap-1 sm:gap-2 px-0 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
+								className="flex w-[168px] sm:w-[232px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
 								onClick={() => handleSort("email")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Email
@@ -548,13 +550,13 @@ export default function UserManagementPage() {
 									className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
 								/>
 							</div>
-							<div className="flex items-center gap-1 sm:gap-2 mr-[59px] sm:mr-0 px-0 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow">
+							<div className="flex items-center w-[112px] sm:w-auto gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow">
 								<div className="font-medium relative text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Phone Number
 								</div>
 							</div>
 							<div
-								className="flex w-[101px] sm:w-[152px] items-center gap-1 sm:gap-2 px-5 py-3.5 relative self-stretch cursor-pointer"
+								className="flex w-[101px] sm:w-[152px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
 								onClick={() => handleSort("role")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Role
@@ -571,7 +573,7 @@ export default function UserManagementPage() {
 								/>
 							</div>
 							<div
-								className="flex items-center gap-1 sm:gap-2  mr-[64px] sm:mr-0 px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow cursor-pointer"
+								className="flex items-center w-[149px] sm:w-auto gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow cursor-pointer"
 								onClick={() => handleSort("plan")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Plan
@@ -588,7 +590,7 @@ export default function UserManagementPage() {
 								/>
 							</div>
 							<div
-								className="flex items-center gap-1 sm:gap-2  mr-[32px] sm:mr-0 px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow cursor-pointer"
+								className="flex items-center gap-1 sm:gap-2 w-[136px] sm:w-auto px-3 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow cursor-pointer"
 								onClick={() => handleSort("lastLogin")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Last Login
@@ -605,7 +607,7 @@ export default function UserManagementPage() {
 								/>
 							</div>
 							<div
-								className="flex w-[85px] sm:w-[124px] items-center mr-[27px] sm:mr-0 gap-1 sm:gap-2 px-5 py-3.5 relative self-stretch cursor-pointer"
+								className="flex w-[85px] sm:w-[124px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
 								onClick={() => handleSort("status")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Status
@@ -621,7 +623,7 @@ export default function UserManagementPage() {
 									className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
 								/>
 							</div>
-							<div className="inline-flex flex-col items-center justify-center gap-2.5 px-5 py-3.5 relative self-stretch flex-[0_0_auto]">
+							<div className="inline-flex flex-col items-center w-[72px] sm:w-auto justify-center gap-2.5 px-3 sm:px-5 py-3.5 relative self-stretch flex-[0_0_auto]">
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Actions
 								</div>
@@ -647,13 +649,13 @@ export default function UserManagementPage() {
 										<React.Fragment key={user.id}>
 											<div className="flex h-8 sm:h-11 items-start justify-between relative self-stretch w-full">
 												{/* Checkbox */}
-												<div className="inline-flex flex-col items-start justify-center gap-2.5 px-4 py-3.5 relative self-stretch flex-[0_0_auto]">
-													<label className="relative w-6 h-6 flex items-center cursor-pointer">
+												<div className="inline-flex flex-col items-start justify-center gap-2.5 px-[9px] sm:px-4 py-3.5 relative self-stretch flex-[0_0_auto]">
+													<label className="relative w-6 h-6 flex items-center justify-center cursor-pointer">
 														<input
 															type="checkbox"
 															checked={selectedUsers.includes(user.id)}
 															onChange={() => handleCheckbox(user.id)}
-															className="opacity-0 absolute w-6 h-6 cursor-pointer"
+															className="opacity-0 absolute w-5 h-5 sm:w-6 sm:h-6 cursor-pointer bg-transparent"
 														/>
 														<span
 															className={`w-[17px] h-[17px] rounded-[2px] border border-textSecondary flex items-center justify-center transition-colors duration-150 ${
@@ -664,7 +666,7 @@ export default function UserManagementPage() {
 															{selectedUsers.includes(user.id) && (
 																<Icon
 																	icon="check"
-																	className="w-2.5 h-2.5 sm:w-3 sm:h-3 ml-0 mt-0.5 sm:ml-0.5"
+																	className="w-2.5 h-2.5 sm:w-3 sm:h-3 ml-[1px] mt-0.5 sm:ml-0.5	"
 																/>
 															)}
 														</span>
@@ -672,7 +674,7 @@ export default function UserManagementPage() {
 												</div>
 
 												{/* Name */}
-												<div className="flex w-[159px] sm:w-[200px] items-center gap-2.5 sm:px-5 sm:py-4 relative self-stretch">
+												<div className="flex w-[159px] sm:w-[200px] items-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
 													<div className="relative w-8 h-8 rounded-2xl">
 														<img
 															src={`/assets/images/${user.avatar}.svg`}
@@ -686,30 +688,30 @@ export default function UserManagementPage() {
 												</div>
 
 												{/* Email */}
-												<div className="flex flex-col w-[168px] sm:w-[232px] items-start justify-center gap-2.5 sm:px-5 sm:py-4 relative self-stretch">
+												<div className="flex flex-col w-[168px] sm:w-[232px] items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
 													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
 														{user.email}
 													</div>
 												</div>
 
 												{/* Phone */}
-												<div className="flex flex-col items-start justify-center gap-2.5 sm:px-5 sm:py-4 relative flex-1 self-stretch grow">
+												<div className="flex flex-col w-[112px] sm:w-auto items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow">
 													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
 														{user.phone}
 													</div>
 												</div>
 
 												{/* Role */}
-												<div className="w-[101px] sm:w-[152px] flex flex-col items-start justify-center gap-2.5 sm:px-5 sm:py-4 relative self-stretch">
-													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
-														{user.role}
+												<div className="w-[101px] sm:w-[152px] flex flex-col items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-2 relative self-stretch">
+													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base tracking-[0] leading-6 w-[101px] sm:w-[152px] overflow-auto">
+														{Array.isArray(user.role) ? user.role.join(", ") : user.role}
 													</div>
 												</div>
 
 												{/* Plan */}
-												<div className="flex flex-col items-start justify-center gap-2.5 sm:px-5 sm:py-4 relative flex-1 self-stretch grow">
+												<div className="flex flex-col w-[149px] sm:w-auto items-start justify-center gap-2.5  sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow">
 													<div
-														className={`flex w-[136px] h-8 sm:h-[34px] items-center gap-8 px-4 py-2 relative mt-[-11.00px] mb-[-11.00px] ${user.planBg} rounded-lg`}>
+														className={`flex w-auto sm:w-[136px] h-8 sm:h-[34px] items-center gap-8 px-3 py-1	sm:px-4 sm:py-2  ${user.planBg} rounded-lg`}>
 														<div
 															className={`relative mt-[-2.50px] mb-[-0.50px] font-normal text-xs sm:text-sm ${user.planText} text-sm tracking-[0] sm:leading-[21px] whitespace-nowrap`}>
 															{user.plan}
@@ -718,14 +720,14 @@ export default function UserManagementPage() {
 												</div>
 
 												{/* Last Login */}
-												<div className="flex flex-col items-start justify-center gap-2.5 sm:px-5 sm:py-4 relative flex-1 self-stretch grow">
+												<div className="flex flex-col items-start justify-center w-[136px] sm:w-auto gap-2.5 px-3 sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow">
 													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
 														{user.lastLogin}
 													</div>
 												</div>
 
 												{/* Status */}
-												<div className="w-[85px] sm:w-[124px] flex flex-col items-start justify-center gap-2.5 sm:px-5 sm:py-4 relative self-stretch">
+												<div className="w-[85px] sm:w-[124px] flex flex-col items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
 													<div
 														className={`font-normal ${user.statusColor} text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap`}>
 														{user.status}
@@ -733,7 +735,7 @@ export default function UserManagementPage() {
 												</div>
 
 												{/* Actions */}
-												<div className="flex flex-col w-[100px] items-center justify-center gap-2.5 sm:px-5 sm:py-4 relative self-stretch">
+												<div className="flex flex-col w-[72px] sm:w-[100px] items-center justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
 													<div className="inline-flex items-center justify-center gap-2 px-[7px] sm:p-2.5 bg-fgc dark:bg-fgcDark rounded-[4px] sm:rounded-lg cursor-pointer">
 														<Menu as="div" className="relative inline-block text-left">
 															<Menu.Button>
@@ -830,9 +832,9 @@ export default function UserManagementPage() {
 					</div>
 				</div>
 				{/* Pagination */}
-				<div className="flex flex-col sm:flex-row items-center justify-between w-full gap-2.5 relative flex-[0_0_auto]">
+				<div className="flex flex-col sm:flex-row items-center justify-between w-full gap-4 sm:py-2.5 relative flex-[0_0_auto]">
 					<div className="w-full flex items-center">
-						<span className="text-xs sm:text-sm text-textSecondary">
+						<span className="text-xs sm:text-sm text-textSecondary leading-[18px] sm:leading-[24px]">
 							{filteredUsers.length === 0
 								? "Showing 0 of 0 users"
 								: `Showing ${startIdx + 1}–${Math.min(endIdx, filteredUsers.length)} of ${filteredUsers.length} users`}

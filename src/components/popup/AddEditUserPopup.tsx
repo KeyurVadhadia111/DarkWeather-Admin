@@ -10,6 +10,7 @@ import { Button } from "components/utils/Button";
 import { toast } from "components/utils/toast";
 import Select from "components/utils/Select";
 import useAppState from "components/utils/useAppState";
+import MultiSelect from "components/utils/MultiSelect";
 
 type Props = {
 	isOpen: boolean;
@@ -19,10 +20,17 @@ type Props = {
 	editIndex?: number | null;
 };
 
-const roles = ["Super Admin", "Analytics", "Support", "Operations", "Meteorologist", "User"] as const;
+const roles = [
+	{ value: "User", text: "User" },
+	{ value: "Super Admin", text: "Super Admin" },
+	{ value: "Analytics", text: "Analytics" },
+	{ value: "Support", text: "Support" },
+	{ value: "Operations", text: "Operations" },
+	{ value: "Meteorologist", text: "Meteorologist" },
+] as const;
+
 const statusOptions = ["Active", "Suspend", "Inactive", "Pending"] as const;
 
-type Role = (typeof roles)[number];
 type Status = (typeof statusOptions)[number];
 
 interface FormData {
@@ -31,7 +39,7 @@ interface FormData {
 	countryCode: string;
 	mobile: string | null;
 	password: string;
-	role: Role;
+	role: string[];
 	status: Status;
 	subscriptionPlan: "Free Tier" | "Premium Tier" | "Consultation Tier";
 	profilePicture: string;
@@ -60,7 +68,11 @@ const getSchema = (editIndex: number | null) =>
 							.matches(/[@$!%*?&#]/, "*Password must contain at least one special character.")
 							.required("*Password is required.")
 					: yup.string().default("").notRequired(),
-			role: yup.mixed<Role>().oneOf(roles).required("Role is required"),
+			role: yup
+				.array()
+				.of(yup.string().oneOf(roles.map(r => r.value)))
+				.min(1, "At least one role is required")
+				.required("Role is required"),
 			status: yup.mixed<Status>().oneOf(statusOptions).required("Status is required"),
 			subscriptionPlan: yup
 				.string()
@@ -80,6 +92,7 @@ const AddEditUserPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], setLi
 		{ code: "+86", country: "china", label: "China" },
 		{ code: "+81", country: "japan", label: "Japan" },
 	];
+	const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
 	const [selectedCountry, setSelectedCountry] = useState(countries[0]);
 	const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
 	const dropdownRef = useRef<HTMLDivElement>(null);
@@ -100,7 +113,7 @@ const AddEditUserPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], setLi
 	}, [isDark]);
 
 	const schema = getSchema(editIndex);
-	const resolver: Resolver<FormData> = yupResolver(schema) as Resolver<FormData>;
+	const resolver: Resolver<FormData> = yupResolver(schema) as unknown as Resolver<FormData>;
 
 	const {
 		register,
@@ -122,6 +135,13 @@ const AddEditUserPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], setLi
 	useEffect(() => {
 		if (editIndex !== null && list[editIndex]) {
 			const userData = list[editIndex];
+			setSelectedRoles(
+				Array.isArray(list[editIndex].role)
+					? list[editIndex].role
+					: list[editIndex].role
+						? [list[editIndex].role]
+						: [],
+			);
 			reset({
 				fullName: userData.name || "",
 				email: userData.email || "",
@@ -145,6 +165,7 @@ const AddEditUserPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], setLi
 				profilePicture: getDefaultProfilePicture(isDark),
 			});
 			setProfilePicture(getDefaultProfilePicture(isDark));
+			setSelectedRoles([]);
 		}
 	}, [isOpen, editIndex, list, reset, isDark]);
 	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -297,15 +318,20 @@ const AddEditUserPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], setLi
 						</div>
 
 						{/* Role Selection */}
-						<Select
-							name="role"
-							label="Role"
+						<MultiSelect
+							name="Roles"
+							label="Roles"
 							required
-							register={register}
-							trigger={trigger}
+							items={[...roles]}
+							value={selectedRoles}
+							onChange={vals => {
+								setSelectedRoles(vals);
+								setValue("role", vals, { shouldValidate: true });
+								trigger("role");
+							}}
 							error={errors?.role?.message}
-							items={roles.map(role => ({ value: role, text: role }))}
 							className="!bg-bgc dark:!bg-fgcDark !border-textSecondary/20 !h-[42px] sm:!h-14 !rounded-xl !text-sm sm:!text-base"
+							itemClassName="w-[280px] whitespace-nowrap text-ellipsis overflow-hidden"
 						/>
 
 						{/* Email */}
