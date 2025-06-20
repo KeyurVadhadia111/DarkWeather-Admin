@@ -216,3 +216,8 @@ button {
 ::-webkit-scrollbar-thumb:hover {
 	background: #ffa601;
 }
+
+
+.MuiStack-root{
+	width: 100%;
+}

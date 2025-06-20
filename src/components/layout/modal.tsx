@@ -13,6 +13,7 @@ const ModalSize: ModalSizeType = {
 	lg: "lg:w-7/12 sm:w-10/12 md:w-10/12",
 	lx: "w-full sm:w-[1170px] ",
 	xl: "lg:w-8/12 sm:w-10/12 md:w-10/12",
+	760: "lg:w-[760px] sm:w-10/12 md:w-10/12",
 };
 
 type RequestType = {

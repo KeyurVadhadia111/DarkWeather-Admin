@@ -7,7 +7,9 @@ import AccessDisabled from "pages/AccessDisabled";
 import ForgotPasswordPage from "pages/ForgotPasswordPage";
 import Dashboard from "pages/Dashboard";
 import UserManagementPage from "pages/UserManagementPage";
+import OverrideWeatherInfoPage from "pages/OverrideWeatherInfoPage";
 import ActivityLogPage from "pages/ActivityLogPage";
+import WeatherAlertPage from "pages/WeatherAlertPage";
 
 declare global {
 	interface Window {
@@ -88,6 +90,22 @@ const createRoutes: React.FC = () => {
 							element={
 								<ProtectedRoute>
 									<UserManagementPage />
+								</ProtectedRoute>
+							}
+						/>
+						<Route
+							path="/override-weather-info"
+							element={
+								<ProtectedRoute>
+									<OverrideWeatherInfoPage />
+								</ProtectedRoute>
+							}
+						/>
+						<Route
+							path="/weather-alert"
+							element={
+								<ProtectedRoute>
+									<WeatherAlertPage />
 								</ProtectedRoute>
 							}
 						/>

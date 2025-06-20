@@ -1,4 +1,4 @@
-import AddEditUserPopup from "components/popup/AddEditUserPopup";
+import AddEditWeatherPopup from "components/popup/AddEditWeatherPopup";
 import { Menu, Transition } from "@headlessui/react";
 import { Button } from "components/utils/Button";
 import Icon from "components/utils/Icon";
@@ -11,315 +11,202 @@ import ResertPasswordPopup from "components/popup/ResertPasswordPopup";
 import { useNavigate } from "react-router-dom";
 import { toast } from "components/utils/toast";
 
-interface User {
+interface WeatherCondition {
 	id: number;
-	avatar: string;
-	name: string;
-	email: string;
-	phone: string;
-	role: string;
-	plan: string;
-	planBg: string;
-	planText: string;
-	lastLogin: string;
+	location: string;
+	effectiveFrom: any;
+	temp: string;
+	sky: string;
+	wind: string;
+	precipitation: number;
 	status: string;
 	statusColor: string;
+	skyIcon: string;
 }
 
 interface SortConfig {
-	key: keyof User;
+	key: keyof WeatherCondition;
 	direction: "asc" | "desc";
 }
 
-export default function UserManagementPage() {
+export default function OverrideWeatherInfoPage() {
 	// Example user data array with duplicates removed
-	const [users, setUsers] = useState<User[]>([
+
+	const [weatherCondition, setWeatherCondition] = useState<WeatherCondition[]>([
 		{
 			id: 1,
-			avatar: "avatar-1",
-			name: "Jane Doe",
-			email: "jane.doe@gmail.com",
-			phone: "+1 78568 45621",
-			role: "Support",
-			plan: "Premium Tier",
-			planBg: "bg-primary/10",
-			planText: "text-primary",
-			lastLogin: "Today, 11:42 AM",
+			location: "New York, NY",
+			effectiveFrom: "Jun 9, 10:00 AM – 6:00 PM",
+			temp: "32°C / 22°C",
+			sky: "Clear",
+			wind: "12 km/h NE",
+			precipitation: 10,
 			status: "Active",
 			statusColor: "text-textGreen",
-		},
-		{
+			skyIcon: "Sunny",
+		}, {
 			id: 2,
-			avatar: "avatar-2",
-			name: "Alex Johnson",
-			email: "alex.j@email.com",
-			phone: "+1 4845850121",
-			role: "Analytics",
-			plan: "Free Tier",
-			planBg: "bg-fgc dark:bg-fgcDark",
-			planText: "text-text dark:text-textDark",
-			lastLogin: "May 18, 9:15 AM",
-			status: "Suspend",
+			location: "San Francisco, CA",
+			effectiveFrom: "Jun 10, 8:00 AM – 4:00 PM",
+			temp: "24°C / 16°C",
+			sky: "Cloudy",
+			wind: "8 km/h W",
+			precipitation: 5,
+			status: "Inactive",
 			statusColor: "text-textRed",
-		},
-		{
+			skyIcon: "Cloud Cover",
+		}, {
 			id: 3,
-			avatar: "avatar-3",
-			name: "Maya Patel",
-			email: "maya.patel@wx.com",
-			phone: "-",
-			role: "User",
-			plan: "Premium Tier",
-			planBg: "bg-primary/10",
-			planText: "text-primary",
-			lastLogin: "May 15, 2:31 PM",
+			location: "Miami, FL",
+			effectiveFrom: "Jun 9, 2:00 PM – 8:00 PM",
+			temp: "35°C / 27°C",
+			sky: "Clear",
+			wind: "20 km/h SE",
+			precipitation: 90,
 			status: "Active",
 			statusColor: "text-textGreen",
-		},
-		{
+			skyIcon: "Sunny",
+		}, {
 			id: 4,
-			avatar: "avatar-4",
-			name: "Admin Team",
-			email: "admin@darkweather.com",
-			phone: "+1 8143511542",
-			role: "User",
-			plan: "Consultation Tier",
-			planBg: "bg-bgGreen dark:bg-textGreen/10",
-			planText: "text-textGreen",
-			lastLogin: "Today, 8:06 AM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
+			location: "Seattle, WA",
+			effectiveFrom: "Jun 11, 9:00 AM – 5:00 PM",
+			temp: "20°C / 14°C",
+			sky: "Rainy",
+			wind: "10 km/h NW",
+			precipitation: 70,
+			status: "Inactive",
+			statusColor: "text-textRed",
+			skyIcon: "rain",
+		}, {
 			id: 5,
-			avatar: "avatar-5",
-			name: "John Smith",
-			email: "john.smith@wx.com",
-			phone: "+1 2017083834",
-			role: "Support",
-			plan: "Premium Tier",
-			planBg: "bg-primary/10",
-			planText: "text-primary",
-			lastLogin: "Yesterday, 3:22 PM",
+			location: "Austin, TX",
+			effectiveFrom: "Jun 12, 12:00 PM – 6:00 PM",
+			temp: "38°C / 26°C",
+			sky: "Clear",
+			wind: "15 km/h S",
+			precipitation: 5,
 			status: "Active",
 			statusColor: "text-textGreen",
-		},
-		{
+			skyIcon: "Sunny",
+		}, {
 			id: 6,
-			avatar: "avatar-6",
-			name: "Sarah Wilson",
-			email: "sarah.w@gmail.com",
-			phone: "+1 4844670913",
-			role: "Operations",
-			plan: "Consultation Tier",
-			planBg: "bg-bgGreen dark:bg-textGreen/10",
-			planText: "text-textGreen",
-			lastLogin: "May 20, 10:15 AM",
-			status: "Suspend",
-			statusColor: "text-textRed",
-		},
-		{
+			location: "Denver, CO",
+			effectiveFrom: "Jun 13, 8:00 AM – 3:00 PM",
+			temp: "25°C / 12°C",
+			sky: "Partly Cloudy",
+			wind: "18 km/h W",
+			precipitation: 15,
+			status: "Active",
+			statusColor: "text-textGreen",
+			skyIcon: "Partly Cloudy",
+		}, {
 			id: 7,
-			avatar: "avatar-7",
-			name: "Mike Chen",
-			email: "mike.chen@wx.com",
-			phone: "-",
-			role: "Analytics",
-			plan: "Free Tier",
-			planBg: "bg-fgc dark:bg-fgcDark",
-			planText: "text-text dark:text-textDark",
-			lastLogin: "May 19, 4:45 PM",
+			location: "Chicago, IL",
+			effectiveFrom: "Jun 9, 6:00 AM – 2:00 PM",
+			temp: "28°C / 18°C",
+			sky: "Cloudy",
+			wind: "14 km/h E",
+			precipitation: 20,
 			status: "Active",
 			statusColor: "text-textGreen",
-		},
-		{
+			skyIcon: "Cloud Cover",
+		}, {
 			id: 8,
-			avatar: "avatar-8",
-			name: "Emily Brown",
-			email: "emily.brown@gmail.com",
-			phone: "+1 6102458945",
-			role: "User",
-			plan: "Free Tier",
-			planBg: "bg-fgc dark:bg-fgcDark",
-			planText: "text-text dark:text-textDark",
-			lastLogin: "Today, 7:30 AM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
+			location: "Phoenix, AZ",
+			effectiveFrom: "Jun 14, 10:00 AM – 7:00 PM",
+			temp: "42°C / 30°C",
+			sky: "Clear",
+			wind: "8 km/h NE",
+			precipitation: 0,
+			status: "Inactive",
+			statusColor: "text-textRed",
+			skyIcon: "Sunny",
+		}, {
 			id: 9,
-			avatar: "avatar-9",
-			name: "Rachel Simmons",
-			email: "rachel.s@wx.com",
-			phone: "-",
-			role: "Analytics",
-			plan: "Premium Tier",
-			planBg: "bg-primary/10",
-			planText: "text-primary",
-			lastLogin: "May 30, 10:02 AM",
-			status: "Suspend",
-			statusColor: "text-textRed",
-		},
-		{
+			location: "Boston, MA",
+			effectiveFrom: "Jun 10, 7:00 AM – 5:00 PM",
+			temp: "26°C / 17°C",
+			sky: "Rainy",
+			wind: "16 km/h N",
+			precipitation: 60,
+			status: "Active",
+			statusColor: "text-textGreen",
+			skyIcon: "rain",
+		}, {
 			id: 10,
-			avatar: "avatar-10",
-			name: "Tom Jenkins",
-			email: "tom.jenkins@wx.com",
-			phone: "+1 8147131792",
-			role: "User",
-			plan: "Free Tier",
-			planBg: "bg-fgc dark:bg-fgcDark",
-			planText: "text-text dark:text-textDark",
-			lastLogin: "Today, 12:14 PM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
+			location: "Las Vegas, NV",
+			effectiveFrom: "Jun 15, 2:00 PM – 9:00 PM",
+			temp: "41°C / 29°C",
+			sky: "Clear",
+			wind: "10 km/h SW",
+			precipitation: 2,
+			status: "Inactive",
+			statusColor: "text-textRed",
+			skyIcon: "Sunny",
+		}, {
 			id: 11,
-			avatar: "avatar-11",
-			name: "Linda Brooks",
-			email: "linda.brooks@gmail.com",
-			phone: "+1 4844670913",
-			role: "Meteorologist",
-			plan: "Consultation Tier",
-			planBg: "bg-bgGreen dark:bg-textGreen/10",
-			planText: "text-textGreen",
-			lastLogin: "May 28, 6:18 PM",
+			location: "Portland, OR",
+			effectiveFrom: "Jun 12, 5:00 AM – 1:00 PM",
+			temp: "22°C / 13°C",
+			sky: "Rainy",
+			wind: "12 km/h W",
+			precipitation: 65,
 			status: "Active",
 			statusColor: "text-textGreen",
-		},
-		{
+			skyIcon: "rain",
+		}, {
 			id: 12,
-			avatar: "avatar-12",
-			name: "David Kim",
-			email: "dkim@darkweather.com",
-			phone: "-",
-			role: "Support",
-			plan: "Free Tier",
-			planBg: "bg-fgc dark:bg-fgcDark",
-			planText: "text-text dark:text-textDark",
-			lastLogin: "Yesterday, 4:56 PM",
+			location: "Atlanta, GA",
+			effectiveFrom: "Jun 11, 3:00 PM – 10:00 PM",
+			temp: "31°C / 21°C",
+			sky: "Partly Cloudy",
+			wind: "13 km/h SE",
+			precipitation: 30,
 			status: "Active",
 			statusColor: "text-textGreen",
-		},
-		{
+			skyIcon: "Partly Cloudy",
+		}, {
 			id: 13,
-			avatar: "avatar-1",
-			name: "Jane Doe",
-			email: "jane.doe@gmail.com",
-			phone: "+1 78568 45621",
-			role: "Support",
-			plan: "Premium Tier",
-			planBg: "bg-primary/10",
-			planText: "text-primary",
-			lastLogin: "Today, 11:42 AM",
+			location: "Austin, TX",
+			effectiveFrom: "Jun 12, 12:00 PM – 6:00 PM",
+			temp: "38°C / 26°C",
+			sky: "Clear",
+			wind: "15 km/h S",
+			precipitation: 50,
 			status: "Active",
 			statusColor: "text-textGreen",
-		},
-		{
+			skyIcon: "Sunny",
+		}, {
 			id: 14,
-			avatar: "avatar-2",
-			name: "Alex Johnson",
-			email: "alex.j@email.com",
-			phone: "+1 4845850121",
-			role: "Analytics",
-			plan: "Free Tier",
-			planBg: "bg-fgc dark:bg-fgcDark",
-			planText: "text-text dark:text-textDark",
-			lastLogin: "May 18, 9:15 AM",
-			status: "Suspend",
-			statusColor: "text-textRed",
-		},
-		{
+			location: "Denver, CO",
+			effectiveFrom: "Jun 13, 8:00 AM – 3:00 PM",
+			temp: "25°C / 12°C",
+			sky: "Partly Cloudy",
+			wind: "18 km/h W",
+			precipitation: 75,
+			status: "Active",
+			statusColor: "text-textGreen",
+			skyIcon: "Sunny",
+		}, {
 			id: 15,
-			avatar: "avatar-3",
-			name: "Maya Patel",
-			email: "maya.patel@wx.com",
-			phone: "-",
-			role: "User",
-			plan: "Premium Tier",
-			planBg: "bg-primary/10",
-			planText: "text-primary",
-			lastLogin: "May 15, 2:31 PM",
+			location: "Chicago, IL",
+			effectiveFrom: "Jun 9, 6:00 AM – 2:00 PM",
+			temp: "28°C / 18°C",
+			sky: "Cloudy",
+			wind: "14 km/h E",
+			precipitation: 80,
 			status: "Active",
 			statusColor: "text-textGreen",
+			skyIcon: "Cloud Cover",
 		},
-		{
-			id: 16,
-			avatar: "avatar-4",
-			name: "Admin Team",
-			email: "admin@darkweather.com",
-			phone: "+1 8143511542",
-			role: "User",
-			plan: "Consultation Tier",
-			planBg: "bg-bgGreen dark:bg-textGreen/10",
-			planText: "text-textGreen",
-			lastLogin: "Today, 8:06 AM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 17,
-			avatar: "avatar-5",
-			name: "John Smith",
-			email: "john.smith@wx.com",
-			phone: "+1 2017083834",
-			role: "Support",
-			plan: "Premium Tier",
-			planBg: "bg-primary/10",
-			planText: "text-primary",
-			lastLogin: "Yesterday, 3:22 PM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 18,
-			avatar: "avatar-6",
-			name: "Sarah Wilson",
-			email: "sarah.w@gmail.com",
-			phone: "+1 4844670913",
-			role: "Operations",
-			plan: "Consultation Tier",
-			planBg: "bg-bgGreen dark:bg-textGreen/10",
-			planText: "text-textGreen",
-			lastLogin: "May 20, 10:15 AM",
-			status: "Suspend",
-			statusColor: "text-textRed",
-		},
-		{
-			id: 19,
-			avatar: "avatar-7",
-			name: "Mike Chen",
-			email: "mike.chen@wx.com",
-			phone: "-",
-			role: "Analytics",
-			plan: "Free Tier",
-			planBg: "bg-fgc dark:bg-fgcDark",
-			planText: "text-text dark:text-textDark",
-			lastLogin: "May 19, 4:45 PM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 20,
-			avatar: "avatar-8",
-			name: "Emily Brown",
-			email: "emily.brown@gmail.com",
-			phone: "+1 6102458945",
-			role: "User",
-			plan: "Free Tier",
-			planBg: "bg-fgc dark:bg-fgcDark",
-			planText: "text-text dark:text-textDark",
-			lastLogin: "Today, 7:30 AM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-	]);
+
+	])
+
 	const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [usersPerPage] = useState(12);
 	const [sortConfig, setSortConfig] = useState<SortConfig>({
-		key: "name",
+		key: "effectiveFrom",
 		direction: "asc",
 	});
 	const [editIndex, setEditIndex] = useState<number | null>(null);
@@ -327,7 +214,7 @@ export default function UserManagementPage() {
 	const isSideExpanded = useAppState(state => state.isSideExpanded);
 
 	const startIdx = (currentPage - 1) * usersPerPage;
-	const endIdx = Math.min(startIdx + usersPerPage, users.length);
+	const endIdx = Math.min(startIdx + usersPerPage, weatherCondition.length);
 
 	const [isDeleteUserPopupOpen, setIsDeleteUserPopupOpen] = useState(false);
 	const [deleteUserIndex, setDeleteUserIndex] = useState<number | null>(null);
@@ -340,21 +227,21 @@ export default function UserManagementPage() {
 
 	// Filter users by search query (name or email)
 	const filteredUsers = useMemo(() => {
-		if (!searchQuery.trim()) return users;
+		if (!searchQuery.trim()) return weatherCondition;
 		const query = searchQuery.toLowerCase();
-		return users.filter(
-			user => user.name.toLowerCase().includes(query) || user.email.toLowerCase().includes(query),
+		return weatherCondition.filter(
+			weather => weather.location.toLowerCase().includes(query) || weather.sky.toLowerCase().includes(query),
 		);
-	}, [users, searchQuery]);
+	}, [weatherCondition, searchQuery]);
 
 	const sortedUsers = useMemo(() => {
-		const sorted = [...filteredUsers].sort((a: User, b: User) => {
+		const sorted = [...filteredUsers].sort((a: WeatherCondition, b: WeatherCondition) => {
 			const key = sortConfig.key;
 			let valA = a[key];
 			let valB = b[key];
 
 			if (typeof valA === "string" && typeof valB === "string") {
-				if (key === "lastLogin") {
+				if (key === "effectiveFrom") {
 					const convertToDate = (str: string): number => {
 						if (str.toLowerCase().includes("today")) return new Date().getTime();
 						if (str.toLowerCase().includes("yesterday")) {
@@ -383,7 +270,7 @@ export default function UserManagementPage() {
 		return sortedUsers.slice(startIdx, endIdx);
 	}, [sortedUsers, startIdx, endIdx]);
 
-	const handleSort = (key: keyof User) => {
+	const handleSort = (key: keyof WeatherCondition) => {
 		setSortConfig(prevConfig => ({
 			key,
 			direction: prevConfig.key === key && prevConfig.direction === "asc" ? "desc" : "asc",
@@ -391,16 +278,16 @@ export default function UserManagementPage() {
 	};
 
 	/* Start for checkbox */
-	const allChecked = displayedUsers.length > 0 && displayedUsers.every((u: User) => selectedUsers.includes(u.id));
+	const allChecked = displayedUsers.length > 0 && displayedUsers.every((u: WeatherCondition) => selectedUsers.includes(u.id));
 	const isIndeterminate =
 		displayedUsers.length > 0 && selectedUsers.some(id => displayedUsers.some(u => u.id === id)) && !allChecked;
 
 	const handleSelectAll = () => {
 		if (allChecked) {
-			const pageIds = displayedUsers.map((u: User) => u.id);
+			const pageIds = displayedUsers.map((u: WeatherCondition) => u.id);
 			setSelectedUsers(prev => prev.filter(id => !pageIds.includes(id)));
 		} else {
-			const pageIds = displayedUsers.map((u: User) => u.id);
+			const pageIds = displayedUsers.map((u: WeatherCondition) => u.id);
 			setSelectedUsers(prev => [...new Set([...prev, ...pageIds])]);
 		}
 	};
@@ -426,12 +313,12 @@ export default function UserManagementPage() {
 			<div className="flex flex-col items-center justify-center gap-5 relative self-stretch w-full flex-[0_0_auto]">
 				<div className="flex sm:h-14 items-center w-full">
 					<div className="relative font-medium text-text dark:text-textDark text-xl sm:text-2xl tracking-[0] leading-5 sm:leading-6 whitespace-nowrap">
-						User Management
+						Override Weather Info
 					</div>
 				</div>
 				<div className="flex items-center justify-around gap-3 p-2.5 sm:px-6 sm:py-4 relative self-stretch w-full flex-[0_0_auto] bg-bgc dark:bg-bgcDark rounded-2xl shadow-[0px_10px_65px_#0000000d]">
 					<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-4 relative flex-1 grow w-full">
-						<div className="flex items-center gap-3 relative w-full">
+						<div className="flex items-center gap-3 relative w-full md:w-1/2">
 							<div className="flex items-center w-full">
 								<Icon
 									icon="search"
@@ -439,7 +326,7 @@ export default function UserManagementPage() {
 								/>
 								<Input
 									className="font-normal !pl-[35px] sm:!pl-[50px] !h-[42px] sm:!h-[56px] text-bgcSecondary dark:text-textDark text-sm whitespace-nowrap border-[none] !p-0 !outline-0 !ring-0 !self-stretch  !bg-fgc dark:!bg-fgcDark "
-									placeholder="Search by name or email"
+									placeholder="Search here..."
 									type="text"
 									value={searchQuery}
 									onChange={e => setSearchQuery(e.target.value)}
@@ -453,11 +340,6 @@ export default function UserManagementPage() {
 							</div>
 						</div>
 						<div className="inline-flex items-center gap-3 relative flex-[0_0_auto]">
-							<Button className="flex !bg-transparent hover:!bg-transparent h-[42px] sm:h-14 justify-center sm:px-8 py-3 sm:py-4 flex-[0_0_auto] rounded-lg sm:rounded-xl border border-solid border-textSecondary/50 items-center gap-8 relative">
-								<div className="relative  font-normal text-textSecondary dark:text-textDark text-xs sm:text-base tracking-[0] leading-6 whitespace-nowrap">
-									Export Users
-								</div>
-							</Button>
 							<Button
 								className="flex h-[42px] sm:h-14 items-center justify-center gap-3 sm:px-6 py-3 sm:py-4 relative flex-[0_0_auto] bg-primary rounded-lg sm:rounded-xl"
 								onClick={() => {
@@ -466,7 +348,7 @@ export default function UserManagementPage() {
 								}}>
 								<Icon icon="plus" className="w-5 h-5 sm:w-7 sm:h-7" />
 								<div className="relative  font-semibold text-text text-xs sm:text-base tracking-[0] leading-6 whitespace-nowrap">
-									Add New User
+									Add New Weather Condition
 								</div>
 							</Button>
 						</div>
@@ -478,11 +360,11 @@ export default function UserManagementPage() {
 				{/* ...table header... */}
 				<div className="flex items-center justify-between w-full">
 					<div className="text-base sm:text-xl font-medium text-text dark:text-textDark leading-[21px] sm:leading-[26px]">
-						User List
+						Weather Condition List
 					</div>
 					<div className="text-xs sm:text-base text-textSecondary dark:text-textDark leading-[21px] sm:leading-[26px]">
 						{selectedUsers.length === 0
-							? "0 users selected"
+							? "0 selected"
 							: `${selectedUsers.length} user${selectedUsers.length > 1 ? "s" : ""} selected`}
 					</div>
 				</div>
@@ -517,30 +399,31 @@ export default function UserManagementPage() {
 							</div>
 							<div
 								className="flex w-[159px] sm:w-[200px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
-								onClick={() => handleSort("name")}>
+							// onClick={() => handleSort("location")}
+							>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
-									Name
+									Location
 								</div>
-								<Icon
+								{/* <Icon
 									icon={
-										sortConfig?.key === "name"
+										sortConfig?.key === "location"
 											? sortConfig.direction === "asc"
 												? "up-sort"
 												: "up-sort"
 											: "sort"
 									}
 									className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
-								/>
+								/> */}
 							</div>
 							<div
 								className="flex w-[168px] sm:w-[232px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
-								onClick={() => handleSort("email")}>
+								onClick={() => handleSort("effectiveFrom")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
-									Email
+									Effective From
 								</div>
 								<Icon
 									icon={
-										sortConfig?.key === "email"
+										sortConfig?.key === "effectiveFrom"
 											? sortConfig.direction === "asc"
 												? "up-sort"
 												: "up-sort"
@@ -549,20 +432,32 @@ export default function UserManagementPage() {
 									className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
 								/>
 							</div>
-							<div className="flex items-center w-[112px] sm:w-auto gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow">
+							<div className="flex items-center w-[112px] sm:w-auto gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow"
+								onClick={() => handleSort("temp")}
+							>
 								<div className="font-medium relative text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
-									Phone Number
+									Temp(High/Low)
 								</div>
+								<Icon
+									icon={
+										sortConfig?.key === "temp"
+											? sortConfig.direction === "asc"
+												? "up-sort"
+												: "up-sort"
+											: "sort"
+									}
+									className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
+								/>
 							</div>
 							<div
 								className="flex w-[101px] sm:w-[152px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
-								onClick={() => handleSort("role")}>
+								onClick={() => handleSort("sky")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
-									Role
+									Sky
 								</div>
 								<Icon
 									icon={
-										sortConfig?.key === "role"
+										sortConfig?.key === "sky"
 											? sortConfig.direction === "asc"
 												? "up-sort"
 												: "up-sort"
@@ -572,31 +467,20 @@ export default function UserManagementPage() {
 								/>
 							</div>
 							<div
-								className="flex items-center w-[149px] sm:w-auto gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow cursor-pointer"
-								onClick={() => handleSort("plan")}>
+								className="flex items-center w-[149px] sm:w-auto gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow cursor-pointer">
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
-									Plan
+									Wind
 								</div>
-								<Icon
-									icon={
-										sortConfig?.key === "plan"
-											? sortConfig.direction === "asc"
-												? "up-sort"
-												: "up-sort"
-											: "sort"
-									}
-									className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
-								/>
 							</div>
 							<div
 								className="flex items-center gap-1 sm:gap-2 w-[136px] sm:w-auto px-3 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow cursor-pointer"
-								onClick={() => handleSort("lastLogin")}>
+								onClick={() => handleSort("precipitation")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
-									Last Login
+									Precipitation
 								</div>
 								<Icon
 									icon={
-										sortConfig?.key === "lastLogin"
+										sortConfig?.key === "precipitation"
 											? sortConfig.direction === "asc"
 												? "up-sort"
 												: "up-sort"
@@ -638,30 +522,31 @@ export default function UserManagementPage() {
 									</span>
 								</div>
 							) : (
-								displayedUsers.map((user, idx) => {
+								displayedUsers.map((item, idx) => {
+									console.log("item", item)
 									const usersOnPage = displayedUsers.length;
 									const isLastFour = usersOnPage >= 7 && idx >= usersOnPage - 4;
 									const menuPositionClass = isLastFour
 										? "origin-bottom-right bottom-full mb-2.5 sm:mb-[17px]"
 										: "origin-top-right top-full mt-2.5 sm:mt-[17px]";
 									return (
-										<React.Fragment key={user.id}>
+										<React.Fragment key={item.id}>
 											<div className="flex h-8 sm:h-11 items-start justify-between relative self-stretch w-full">
 												{/* Checkbox */}
 												<div className="inline-flex flex-col items-start justify-center gap-2.5 px-[9px] sm:px-4 py-3.5 relative self-stretch flex-[0_0_auto]">
 													<label className="relative w-6 h-6 flex items-center justify-center cursor-pointer">
 														<input
 															type="checkbox"
-															checked={selectedUsers.includes(user.id)}
-															onChange={() => handleCheckbox(user.id)}
+															checked={selectedUsers.includes(item.id)}
+															onChange={() => handleCheckbox(item.id)}
 															className="opacity-0 absolute w-5 h-5 sm:w-6 sm:h-6 cursor-pointer bg-transparent"
 														/>
 														<span
-															className={`w-[17px] h-[17px] rounded-[2px] border border-textSecondary flex items-center justify-center transition-colors duration-150 ${selectedUsers.includes(user.id)
+															className={`w-[17px] h-[17px] rounded-[2px] border border-textSecondary flex items-center justify-center transition-colors duration-150 ${selectedUsers.includes(item.id)
 																? "bg-primary !border-primary"
 																: "bg-transparent"
 																}`}>
-															{selectedUsers.includes(user.id) && (
+															{selectedUsers.includes(item.id) && (
 																<Icon
 																	icon="check"
 																	className="w-2.5 h-2.5 sm:w-3 sm:h-3 ml-[1px] mt-0.5 sm:ml-0.5	"
@@ -671,66 +556,78 @@ export default function UserManagementPage() {
 													</label>
 												</div>
 
-												{/* Name */}
+												{/* Location */}
 												<div className="flex w-[159px] sm:w-[200px] items-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
-													<div className="relative w-8 h-8 rounded-2xl">
+													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
+														{item.location}
+													</div>
+												</div>
+
+												{/* EffectiveFrom */}
+												<div className="flex flex-col w-[168px] sm:w-[232px] items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
+													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
+														{item.effectiveFrom}
+													</div>
+												</div>
+
+												{/* temp */}
+												<div className="flex flex-col w-[112px] sm:w-auto items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow">
+													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
+														{item.temp}
+													</div>
+												</div>
+
+												{/* Sky */}
+												<div className="flex w-[159px] sm:w-[180px] items-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
+													<div className="relative w-[18px] h-[18px] rounded-2xl">
 														<img
-															src={`/assets/images/${user.avatar}.svg`}
+															src={`/assets/images/${item.skyIcon}.svg`}
 															alt="User Avatar"
 															className="w-full h-full rounded-2xl object-cover"
 														/>
 													</div>
 													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
-														{user.name}
+														{item.sky}
 													</div>
 												</div>
 
-												{/* Email */}
-												<div className="flex flex-col w-[168px] sm:w-[232px] items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
-													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
-														{user.email}
-													</div>
-												</div>
-
-												{/* Phone */}
-												<div className="flex flex-col w-[112px] sm:w-auto items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow">
-													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
-														{user.phone}
-													</div>
-												</div>
-
-												{/* Role */}
-												<div className="w-[101px] sm:w-[152px] flex flex-col items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-2 relative self-stretch">
-													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base tracking-[0] leading-6 w-[101px] sm:w-[152px] overflow-auto">
-														{Array.isArray(user.role) ? user.role.join(", ") : user.role}
-													</div>
-												</div>
-
-												{/* Plan */}
-												<div className="flex flex-col w-[149px] sm:w-auto items-start justify-center gap-2.5  sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow">
-													<div
-														className={`flex w-auto sm:w-[136px] h-8 sm:h-[34px] items-center gap-8 px-3 py-1	sm:px-4 sm:py-2  ${user.planBg} rounded-lg`}>
-														<div
-															className={`relative mt-[-2.50px] mb-[-0.50px] font-normal text-xs sm:text-sm ${user.planText} text-sm tracking-[0] sm:leading-[21px] whitespace-nowrap`}>
-															{user.plan}
-														</div>
-													</div>
-												</div>
-
-												{/* Last Login */}
+												{/* Wind */}
 												<div className="flex flex-col items-start justify-center w-[136px] sm:w-auto gap-2.5 px-3 sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow">
 													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
-														{user.lastLogin}
+														{item.wind}
+													</div>
+												</div>
+
+												{/* Precipitation */}
+												<div className="flex flex-col items-start justify-center w-[136px] sm:w-auto gap-2.5 px-3 sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow">
+													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
+														{item.precipitation}%
 													</div>
 												</div>
 
 												{/* Status */}
-												<div className="w-[85px] sm:w-[124px] flex flex-col items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
+												<div className="w-[85px] sm:w-[148px] flex items-center justify-between px-2 sm:px-4 py-2 sm:py-3 gap-1 sm:gap-2">
+													{/* Status text */}
 													<div
-														className={`font-normal ${user.statusColor} text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap`}>
-														{user.status}
+														className={`font-normal ${item.statusColor} text-[10px] sm:text-base text-center tracking-[0] leading-[1.2] whitespace-nowrap`}
+													>
+														{item.status}
+													</div>
+
+													{/* Switch */}
+													<div
+														className="w-[26px] h-[16px] rounded-full flex items-center px-0.5 transition-all duration-300 bg-[#808080]"
+													>
+														<div
+															className={`w-[14px] h-[14px] rounded-full transition-all duration-300 transform ${item.status === "Active"
+																? "translate-x-[9px] bg-[#FFA500]"
+																: "translate-x-[-1px] bg-[#F8F8F8]"
+																}`}
+														/>
 													</div>
 												</div>
+
+
 
 												{/* Actions */}
 												<div className="flex flex-col w-[72px] sm:w-[100px] items-center justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
@@ -757,8 +654,8 @@ export default function UserManagementPage() {
 																			<div
 																				className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full"
 																				onClick={() => {
-																					const globalIndex = users.findIndex(
-																						u => u.id === user.id,
+																					const globalIndex = weatherCondition.findIndex(
+																						u => u.id === item.id,
 																					);
 																					setEditIndex(globalIndex);
 																					setIsAddEditUserPopupOpen(true);
@@ -768,46 +665,22 @@ export default function UserManagementPage() {
 																		</Menu.Item>
 																		<Menu.Item>
 																			<div
+																				className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full">
+																				view
+																			</div>
+																		</Menu.Item>
+																		<Menu.Item>
+																			<div
 																				className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full"
 																				onClick={() => {
 																					setDeleteUserIndex(
-																						users.findIndex(
-																							u => u.id === user.id,
+																						weatherCondition.findIndex(
+																							u => u.id === item.id,
 																						),
 																					);
 																					setIsDeleteUserPopupOpen(true);
 																				}}>
 																				Delete
-																			</div>
-																		</Menu.Item>
-																		<Menu.Item>
-																			<div
-																				className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full"
-																				onClick={() => {
-																					setResetUserEmail(user.email);
-																					setIsResetPasswordOpen(true);
-																				}}>
-																				Reset Password
-																			</div>
-																		</Menu.Item>
-																		<Menu.Item>
-																			<div
-																				className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full"
-																				onClick={() => {
-																					navigate("/activity-log", {
-																						state: {
-																							name: user.name,
-																							email: user.email,
-																						},
-																					});
-																					setTimeout(() => {
-																						window.scrollTo({
-																							top: 0,
-																							behavior: "smooth",
-																						});
-																					}, 100);
-																				}}>
-																				Activity log
 																			</div>
 																		</Menu.Item>
 																	</div>
@@ -850,34 +723,33 @@ export default function UserManagementPage() {
 					)}
 				</div>
 			</div>
-			<AddEditUserPopup
+			<AddEditWeatherPopup
 				isOpen={isAddEditUserPopupOpen}
 				setIsOpen={() => {
 					setEditIndex(null);
 					setIsAddEditUserPopupOpen(false);
 				}}
-				list={users}
-				setList={setUsers}
+				list={weatherCondition}
+				setList={setWeatherCondition}
 				editIndex={editIndex}
 			/>
 			<DeleteUserPopup
 				isOpen={isDeleteUserPopupOpen}
 				setIsOpen={setIsDeleteUserPopupOpen}
-				user={deleteUserIndex !== null ? users[deleteUserIndex] : null}
-				itemType="User"
+				user={
+					deleteUserIndex !== null
+						? { name: weatherCondition[deleteUserIndex].location }
+						: null
+				}
+				itemType=" Weather Condition"
 				onDelete={() => {
 					if (deleteUserIndex !== null) {
-						setUsers(prev => prev.filter((_, idx) => idx !== deleteUserIndex));
+						setWeatherCondition(prev => prev.filter((_, idx) => idx !== deleteUserIndex));
 						setDeleteUserIndex(null);
 						setIsDeleteUserPopupOpen(false);
 						toast.success("User deleted successfully");
 					}
 				}}
-			/>
-			<ResertPasswordPopup
-				isOpen={isResetPasswordOpen}
-				setIsOpen={setIsResetPasswordOpen}
-				email={resetUserEmail}
 			/>
 		</div>
 	);

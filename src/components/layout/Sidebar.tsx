@@ -33,9 +33,16 @@ export default function Sidebar() {
 		{
 			title: "Override Weather Info",
 			icon: "override-weather-info",
-			href: "",
+			href: "override-weather-info",
 			roles: ["SuperAdmin"],
-			active: [""],
+			active: ["/override-weather-info"],
+		},
+		{
+			title: "Weather Alert",
+			icon: "weather-alert",
+			href: "weather-alert",
+			roles: ["SuperAdmin"],
+			active: ["/weather-alert"],
 		},
 		{ title: "Role Management", icon: "role-management", href: "", roles: ["SuperAdmin", "Support"], active: [""] },
 		{ title: "API Integration", icon: "api-integration", href: "", roles: ["SuperAdmin"], active: [""] },
@@ -157,9 +164,8 @@ export default function Sidebar() {
 								<Link
 									key={index}
 									to={item.href}
-									className={`flex items-center gap-4 px-[18px] py-4 rounded-lg ${
-										isActive ? "bg-primary !text-text" : "text-bgc dark:text-text"
-									}`}>
+									className={`flex items-center gap-4 px-[18px] py-4 rounded-lg ${isActive ? "bg-primary !text-text" : "text-bgc dark:text-text"
+										}`}>
 									<Icon
 										icon={item.icon}
 										className={` shrink-0 w-6 h-6 ${isActive ? "text-text dark:text-textDark" : "text-textDark dark:text-text"}`}
