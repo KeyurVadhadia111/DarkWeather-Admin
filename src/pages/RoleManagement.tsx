@@ -11,182 +11,70 @@ import ResertPasswordPopup from "components/popup/ResertPasswordPopup";
 import { useNavigate } from "react-router-dom";
 import { toast } from "components/utils/toast";
 
-interface weatherAlert {
+interface Role {
 	id: number;
-	alert: string;
-	severity: string;
-	dueTo: string;
-	startDateTime: string;
-	endDateTime: string;
+	role: string;
+	desc: string;
+	totalUsers: number;
 	status: string;
 	statusColor: string;
 }
 
 interface SortConfig {
-	key: keyof weatherAlert;
+	key: keyof Role;
 	direction: "asc" | "desc";
 }
 
-export default function WeatherAlertPage() {
+export default function RoleManagement() {
 	// Example Weather Alert data array with duplicates removed
 
-	const [weatherAlert, setWeatherAlert] = useState<weatherAlert[]>([
+	const [weatherAlert, setWeatherAlert] = useState<Role[]>([
 		{
 			id: 1,
-			alert: "Flash Flood Warning",
-			severity: "High",
-			dueTo: "Heavy rain causing possible flooding",
-			startDateTime: "Jun 18, 2:00 PM",
-			endDateTime: "Jun 18, 6:00 PM",
+			role: "Super Admin",
+			desc: "Stakeholders & Internal Team Leads",
+			totalUsers: 3,
 			status: "Active",
 			statusColor: "text-textGreen",
 		},
 		{
 			id: 2,
-			alert: "Excessive Heat Alert",
-			severity: "Extreme",
-			dueTo: "Temperatures expected above 45°C",
-			startDateTime: "Jun 19, 11:00 AM",
-			endDateTime: "Jun 19, 7:00 PM",
+			role: "Analytics",
+			desc: "SEO and Marketing Analytics team",
+			totalUsers: 21,
 			status: "Inactive",
 			statusColor: "text-textRed",
 		},
 		{
 			id: 3,
-			alert: "Snowstorm Alert",
-			severity: "Moderate",
-			dueTo: "Light to moderate snowfall expected",
-			startDateTime: "Jun 20, 6:00 AM",
-			endDateTime: "Jun 20, 3:00 PM",
+			role: "Support",
+			desc: "Customer Support & Back-office team",
+			totalUsers: 16,
 			status: "Active",
 			statusColor: "text-textGreen",
 		},
 		{
 			id: 4,
-			alert: "Thunderstorm Warning",
-			severity: "High",
-			dueTo: "Lightning & hailstorms possible",
-			startDateTime: "Jun 18, 4:00 PM",
-			endDateTime: "Jun 18, 9:00 PM",
+			role: "Operations",
+			desc: "IT & Infrastructure technical team",
+			totalUsers: 32,
 			status: "Inactive",
 			statusColor: "text-textRed",
 		},
 		{
 			id: 5,
-			alert: "Wind Advisory",
-			severity: "Low",
-			dueTo: "Winds reaching up to 40 km/h",
-			startDateTime: "Jun 19, 9:00 AM",
-			endDateTime: "Jun 19, 5:00 PM",
+			role: "Meteorologist",
+			desc: "Lorem Ipsum is simply dummy text ",
+			totalUsers: 12,
 			status: "Active",
 			statusColor: "text-textGreen",
 		},
-		{
-			id: 6,
-			alert: "Rainfall Alert",
-			severity: "Moderate",
-			dueTo: "Moderate rainfall in the area",
-			startDateTime: "Jun 18, 8:00 AM",
-			endDateTime: "Jun 18, 12:00 PM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 7,
-			alert: "Coastal Flood Watch",
-			severity: "High",
-			dueTo: "Tidal flooding due to storm surge",
-			startDateTime: "Jun 21, 2:00 AM",
-			endDateTime: "Jun 21, 6:00 AM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 8,
-			alert: "Heat Warning",
-			severity: "Extreme",
-			dueTo: "Health risk due to prolonged heat",
-			startDateTime: "Jun 19, 12:00 PM",
-			endDateTime: "Jun 19, 8:00 PM",
-			status: "Inactive",
-			statusColor: "text-textRed",
-		},
-		{
-			id: 9,
-			alert: "Ice Warning",
-			severity: "Moderate",
-			dueTo: "Icy road conditions expected",
-			startDateTime: "Jun 20, 7:00 AM",
-			endDateTime: "Jun 20, 11:00 AM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 10,
-			alert: "Tropical Storm Alert",
-			severity: "Extreme",
-			dueTo: "Risk of tropical cyclone impact",
-			startDateTime: "Jun 22, 3:00 PM",
-			endDateTime: "Jun 22, 10:00 PM",
-			status: "Inactive",
-			statusColor: "text-textRed",
-		},
-		{
-			id: 11,
-			alert: "Dust Storm Warning",
-			severity: "High",
-			dueTo: "Reduced visibility due to dust storm",
-			startDateTime: "Jun 18, 1:00 PM",
-			endDateTime: "Jun 18, 4:00 PM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 12,
-			alert: "Thunderstorm Risk",
-			severity: "Low",
-			dueTo: "Low chance of isolated thunderstorms",
-			startDateTime: "Jun 19, 5:00 PM",
-			endDateTime: "Jun 19, 9:00 PM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 13,
-			alert: "Rainfall Alert",
-			severity: "Moderate",
-			dueTo: "Moderate rainfall in the area",
-			startDateTime: "Jun 18, 8:00 AM",
-			endDateTime: "Jun 18, 12:00 PM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 14,
-			alert: "Coastal Flood Watch",
-			severity: "High",
-			dueTo: "Tidal flooding due to storm surge",
-			startDateTime: "Jun 21, 2:00 AM",
-			endDateTime: "Jun 21, 6:00 AM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 15,
-			alert: "Heat Warning",
-			severity: "Extreme",
-			dueTo: "Health risk due to prolonged heat",
-			startDateTime: "Jun 19, 12:00 PM",
-			endDateTime: "Jun 19, 8:00 PM",
-			status: "Inactive",
-			statusColor: "text-textRed",
-		}
 	]);
 	const [selectedWeatherAlert, setSelectedWeatherAlert] = useState<number[]>([]);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [weatherAlertPerPage] = useState(12);
 	const [sortConfig, setSortConfig] = useState<SortConfig>({
-		key: "alert",
+		key: "role",
 		direction: "asc",
 	});
 	const [editIndex, setEditIndex] = useState<number | null>(null);
@@ -209,35 +97,15 @@ export default function WeatherAlertPage() {
 		if (!searchQuery.trim()) return weatherAlert;
 		const query = searchQuery.toLowerCase();
 		return weatherAlert.filter(
-			weather => weather.alert.toLowerCase().includes(query) || weather.severity.toLowerCase().includes(query),
+			weather => weather.role.toLowerCase().includes(query),
 		);
 	}, [weatherAlert, searchQuery]);
 
 	const sortedWeatherAlert = useMemo(() => {
-		const sorted = [...filteredWeatherAlert].sort((a: weatherAlert, b: weatherAlert) => {
+		const sorted = [...filteredWeatherAlert].sort((a: Role, b: Role) => {
 			const key = sortConfig.key;
 			let valA = a[key];
 			let valB = b[key];
-
-			if (typeof valA === "string" && typeof valB === "string") {
-				if (key === "startDateTime") {
-					const convertToDate = (str: string): number => {
-						if (str.toLowerCase().includes("today")) return new Date().getTime();
-						if (str.toLowerCase().includes("yesterday")) {
-							const date = new Date();
-							date.setDate(date.getDate() - 1);
-							return date.getTime();
-						}
-						return new Date(str).getTime();
-					};
-					return sortConfig.direction === "asc"
-						? convertToDate(valA) - convertToDate(valB)
-						: convertToDate(valB) - convertToDate(valA);
-				}
-				valA = valA.toLowerCase();
-				valB = valB.toLowerCase();
-			}
-
 			if (valA < valB) return sortConfig.direction === "asc" ? -1 : 1;
 			if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
 			return 0;
@@ -249,36 +117,12 @@ export default function WeatherAlertPage() {
 		return sortedWeatherAlert.slice(startIdx, endIdx);
 	}, [sortedWeatherAlert, startIdx, endIdx]);
 
-	const handleSort = (key: keyof weatherAlert) => {
+	const handleSort = (key: keyof Role) => {
 		setSortConfig(prevConfig => ({
 			key,
 			direction: prevConfig.key === key && prevConfig.direction === "asc" ? "desc" : "asc",
 		}));
 	};
-
-	/* Start for checkbox */
-	const allChecked = displayedWeatherAlert.length > 0 && displayedWeatherAlert.every((u: weatherAlert) => selectedWeatherAlert.includes(u.id));
-	const isIndeterminate =
-		displayedWeatherAlert.length > 0 && selectedWeatherAlert.some(id => displayedWeatherAlert.some(u => u.id === id)) && !allChecked;
-
-	const handleSelectAll = () => {
-		if (allChecked) {
-			const pageIds = displayedWeatherAlert.map((u: weatherAlert) => u.id);
-			setSelectedWeatherAlert(prev => prev.filter(id => !pageIds.includes(id)));
-		} else {
-			const pageIds = displayedWeatherAlert.map((u: weatherAlert) => u.id);
-			setSelectedWeatherAlert(prev => [...new Set([...prev, ...pageIds])]);
-		}
-	};
-
-	const handleCheckbox = (id: number) => {
-		if (selectedWeatherAlert.includes(id)) {
-			setSelectedWeatherAlert(prev => prev.filter(weatherId => weatherId !== id));
-		} else {
-			setSelectedWeatherAlert(prev => [...prev, id]);
-		}
-	};
-	/* End for checkbox */
 
 	// Reset to page 1 when searchQuery changes
 	useEffect(() => {
@@ -292,7 +136,7 @@ export default function WeatherAlertPage() {
 			<div className="flex flex-col items-center justify-center gap-5 relative self-stretch w-full flex-[0_0_auto]">
 				<div className="flex sm:h-14 items-center w-full">
 					<div className="relative font-medium text-text dark:text-textDark text-xl sm:text-2xl tracking-[0] leading-5 sm:leading-6 whitespace-nowrap">
-						Weather Alert
+						Role Management
 					</div>
 				</div>
 				<div className="flex items-center justify-around gap-3 p-2.5 sm:px-6 sm:py-4 relative self-stretch w-full flex-[0_0_auto] bg-bgc dark:bg-bgcDark rounded-2xl shadow-[0px_10px_65px_#0000000d]">
@@ -311,12 +155,6 @@ export default function WeatherAlertPage() {
 									onChange={e => setSearchQuery(e.target.value)}
 								/>
 							</div>
-							<div className="flex items-center justify-center w-[42px] h-[42px] sm:w-14 sm:h-14 rounded-lg sm:rounded-xl overflow-hidden border border-solid border-textSecondary/50 shrink-0">
-								<Icon
-									icon="filter-user"
-									className="w-5 h-5 sm:w-6 sm:h-6  text-textSecondary dark:text-textDark"
-								/>
-							</div>
 						</div>
 						<div className="inline-flex items-center gap-3 relative flex-[0_0_auto]">
 							<Button
@@ -327,7 +165,7 @@ export default function WeatherAlertPage() {
 								}}>
 								<Icon icon="plus" className="w-5 h-5 sm:w-7 sm:h-7" />
 								<div className="relative  font-semibold text-text text-xs sm:text-base tracking-[0] leading-6 whitespace-nowrap">
-									Add New Weather Alert
+									Add New Role
 								</div>
 							</Button>
 						</div>
@@ -339,52 +177,26 @@ export default function WeatherAlertPage() {
 				{/* ...table header... */}
 				<div className="flex items-center justify-between w-full">
 					<div className="text-base sm:text-xl font-medium text-text dark:text-textDark leading-[21px] sm:leading-[26px]">
-						weather Alert
+						Role Management
 					</div>
-					<div className="text-xs sm:text-base text-textSecondary dark:text-textDark leading-[21px] sm:leading-[26px]">
+					{/* <div className="text-xs sm:text-base text-textSecondary dark:text-textDark leading-[21px] sm:leading-[26px]">
 						{selectedWeatherAlert.length === 0
 							? "0 Weather Alert selected"
 							: `${selectedWeatherAlert.length} Weather Alert${selectedWeatherAlert.length > 1 ? "s" : ""} selected`}
-					</div>
+					</div> */}
 				</div>
 				<div className="w-full overflow-x-auto overflow-hidden">
 					<div className="flex flex-col items-start gap-[5.54px] sm:gap-[7.54px] relative self-stretch min-w-[1027px] sm:min-w-[1450px] w-full flex-[0_0_auto] min-h-[500px] sm:min-h-[700px]">
 						<div className="flex h-[42px] sm:h-[52px] items-start sm:justify-between relative self-stretch w-full bg-fgc dark:bg-fgcDark rounded-xl">
-							{/* Column headers */}
-							<div className="inline-flex flex-col items-start justify-center gap-2.5 px-[11px] sm:px-4 py-3.5 relative self-stretch flex-[0_0_auto]">
-								<label className="relative w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center cursor-pointer">
-									<input
-										type="checkbox"
-										checked={allChecked}
-										ref={el => {
-											if (el) el.indeterminate = isIndeterminate;
-										}}
-										onChange={handleSelectAll}
-										className="opacity-0 absolute w-5 h-5 sm:w-6 sm:h-6 cursor-pointer bg-transparent"
-									/>
-									<span
-										className={`w-[17px] h-[17px] rounded-[2px] border border-textSecondary flex items-center justify-center transition-colors duration-150 ${allChecked || isIndeterminate
-											? "bg-primary !border-primary "
-											: "bg-transparent "
-											}`}>
-										{(allChecked || isIndeterminate) && (
-											<Icon
-												icon="check"
-												className="w-2.5 h-2.5 sm:w-3 sm:h-3 ml-[1px] mt-0.5 sm:ml-0.5"
-											/>
-										)}
-									</span>
-								</label>
-							</div>
 							<div
 								className="flex w-[152px] sm:w-[220px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
-								onClick={() => handleSort("alert")}>
+								onClick={() => handleSort("role")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
-									Alert
+									Role
 								</div>
 								<Icon
 									icon={
-										sortConfig?.key === "alert"
+										sortConfig?.key === "role"
 											? sortConfig.direction === "asc"
 												? "up-sort"
 												: "up-sort"
@@ -394,60 +206,15 @@ export default function WeatherAlertPage() {
 								/>
 							</div>
 							<div
-								className="flex w-[95px] sm:w-[140px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
-								onClick={() => handleSort("severity")}>
+								className="flex w-[95px] sm:w-[140px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer">
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
-									Severity
+									Description
 								</div>
-								<Icon
-									icon={
-										sortConfig?.key === "severity"
-											? sortConfig.direction === "asc"
-												? "up-sort"
-												: "up-sort"
-											: "sort"
-									}
-									className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
-								/>
 							</div>
 							<div className="flex items-center w-[227px] sm:w-auto gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow">
 								<div className="font-medium relative text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
-									Due to
+									Total Users
 								</div>
-							</div>
-							<div
-								className="flex w-[137px] sm:w-[220px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
-								onClick={() => handleSort("startDateTime")}>
-								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
-									Start Date Time
-								</div>
-								<Icon
-									icon={
-										sortConfig?.key === "startDateTime"
-											? sortConfig.direction === "asc"
-												? "up-sort"
-												: "up-sort"
-											: "sort"
-									}
-									className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
-								/>
-							</div>
-							<div
-								className="flex items-center w-[129px] sm:w-[220px] gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative cursor-pointer"
-								onClick={() => handleSort("endDateTime")}>
-								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
-									End Date Time
-								</div>
-								<Icon
-									icon={
-										sortConfig?.key === "endDateTime"
-											? sortConfig.direction === "asc"
-												? "up-sort"
-												: "up-sort"
-											: "sort"
-									}
-									className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
-								/>
 							</div>
 							<div
 								className="flex w-[85px] sm:w-[124px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
@@ -491,64 +258,27 @@ export default function WeatherAlertPage() {
 									return (
 										<React.Fragment key={weather.id}>
 											<div className="flex h-8 sm:h-11 items-start justify-start relative self-stretch w-full">
-												{/* Checkbox */}
-												<div className="inline-flex flex-col items-start justify-center gap-2.5 px-[9px] sm:px-4 py-3.5 relative self-stretch flex-[0_0_auto]">
-													<label className="relative w-6 h-6 flex items-center justify-center cursor-pointer">
-														<input
-															type="checkbox"
-															checked={selectedWeatherAlert.includes(weather.id)}
-															onChange={() => handleCheckbox(weather.id)}
-															className="opacity-0 absolute w-5 h-5 sm:w-6 sm:h-6 cursor-pointer bg-transparent"
-														/>
-														<span
-															className={`w-[17px] h-[17px] rounded-[2px] border border-textSecondary flex items-center justify-center transition-colors duration-150 ${selectedWeatherAlert.includes(weather.id)
-																? "bg-primary !border-primary"
-																: "bg-transparent"
-																}`}>
-															{selectedWeatherAlert.includes(weather.id) && (
-																<Icon
-																	icon="check"
-																	className="w-2.5 h-2.5 sm:w-3 sm:h-3 ml-[1px] mt-0.5 sm:ml-0.5	"
-																/>
-															)}
-														</span>
-													</label>
-												</div>
-
 												{/* Name */}
 												<div className="flex w-[152px] sm:w-[220px] items-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
 													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
-														{weather.alert}
+														{weather.role}
 													</div>
 												</div>
 
-												{/* Email */}
+												{/* Description */}
 												<div className="flex flex-col w-[95px] sm:w-[140px] items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
 													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
-														{weather.severity}
+														{weather.desc}
 													</div>
 												</div>
 
-												{/* Phone */}
+												{/* totalUsers */}
 												<div className="flex flex-col w-[227px] sm:w-auto items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow">
 													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
-														{weather.dueTo}
+														{weather.totalUsers}
 													</div>
 												</div>
 
-												{/* Role */}
-												<div className="w-[137px] sm:w-[220px] flex flex-col items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-2 relative self-stretch">
-													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base tracking-[0] leading-6 w-[101px] sm:w-[152px] overflow-auto">
-														{weather.startDateTime}
-													</div>
-												</div>
-
-												{/* Last Login */}
-												<div className="flex flex-col items-start justify-center w-[129px] sm:w-[220px] gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
-													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
-														{weather.endDateTime}
-													</div>
-												</div>
 
 												{/* Status */}
 												<div className="w-[85px] sm:w-[124px] flex flex-col items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
@@ -661,10 +391,10 @@ export default function WeatherAlertPage() {
 				setIsOpen={setIsDeleteUserPopupOpen}
 				user={
 					deleteUserIndex !== null
-						? { name: weatherAlert[deleteUserIndex].alert }
+						? { name: weatherAlert[deleteUserIndex].role }
 						: null
 				}
-				itemType=" Weather Alert"
+				itemType=" Role"
 				onDelete={() => {
 					if (deleteUserIndex !== null) {
 						setWeatherAlert(prev => prev.filter((_, idx) => idx !== deleteUserIndex));

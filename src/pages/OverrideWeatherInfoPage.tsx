@@ -31,7 +31,7 @@ interface SortConfig {
 
 export default function OverrideWeatherInfoPage() {
 	// Example user data array with duplicates removed
-
+	const [popupMode, setPopupMode] = useState<"view">("view");
 	const [weatherCondition, setWeatherCondition] = useState<WeatherCondition[]>([
 		{
 			id: 1,
@@ -566,7 +566,9 @@ export default function OverrideWeatherInfoPage() {
 												{/* EffectiveFrom */}
 												<div className="flex flex-col w-[168px] sm:w-[232px] items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
 													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
-														{item.effectiveFrom}
+														{typeof item.effectiveFrom === 'string'
+															? item.effectiveFrom
+															: `${item.effectiveFrom.startDate} – ${item.effectiveFrom.endDate}`}
 													</div>
 												</div>
 
@@ -665,6 +667,14 @@ export default function OverrideWeatherInfoPage() {
 																		</Menu.Item>
 																		<Menu.Item>
 																			<div
+																				onClick={() => {
+																					const globalIndex = weatherCondition.findIndex(
+																						u => u.id === item.id,
+																					);
+																					setEditIndex(globalIndex);
+																					setPopupMode("view");
+																					setIsAddEditUserPopupOpen(true);
+																				}}
 																				className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full">
 																				view
 																			</div>
@@ -732,6 +742,7 @@ export default function OverrideWeatherInfoPage() {
 				list={weatherCondition}
 				setList={setWeatherCondition}
 				editIndex={editIndex}
+				mode={popupMode}
 			/>
 			<DeleteUserPopup
 				isOpen={isDeleteUserPopupOpen}

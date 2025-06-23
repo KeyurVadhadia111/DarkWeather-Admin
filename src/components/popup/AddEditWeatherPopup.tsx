@@ -13,8 +13,9 @@ import useAppState from "components/utils/useAppState";
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+// import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs from 'dayjs';
+import TimePicker from '../common/TimePicker';
 
 type Props = {
 	isOpen: boolean;
@@ -22,11 +23,11 @@ type Props = {
 	list?: any[];
 	setList?: (val: any[]) => void;
 	editIndex?: number | null;
+	mode?: "view";
 };
 
 const statusOptions = ["Active", "Suspend", "Inactive", "Pending"] as const;
 
-type Status = (typeof statusOptions)[number];
 
 interface FormData {
 	// Location & Time
@@ -34,11 +35,11 @@ interface FormData {
 	city: string;
 	zipCode: string;
 	effectiveFrom: {
-		startDate: string; // ISO string (e.g., 2025-06-20)
+		startDate: string;
 		endDate: string;
 	};
 	timeRange: {
-		startTime: string; // 'hh:mm A' or ISO time string
+		startTime: string;
 		endTime: string;
 	};
 
@@ -79,7 +80,7 @@ const getSchema = (editIndex: number | null) =>
 		})
 		.required();
 
-const AddEditWeatherPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], setList, editIndex = null }) => {
+const AddEditWeatherPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], setList, editIndex = null, mode = "view" }) => {
 	const isDark = useAppState(state => state.isDark);
 
 	const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
@@ -92,8 +93,8 @@ const AddEditWeatherPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], se
 	// Update profile picture if theme changes and current is default
 	useEffect(() => {
 		if (
-			profilePicture === getDefaultProfilePicture(!isDark) || // previously set default
-			profilePicture === getDefaultProfilePicture(isDark) // or current default
+			profilePicture === getDefaultProfilePicture(!isDark) ||
+			profilePicture === getDefaultProfilePicture(isDark)
 		) {
 			setProfilePicture(getDefaultProfilePicture(isDark));
 		}
@@ -262,11 +263,17 @@ const AddEditWeatherPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], se
 		);
 	};
 
-	const [openSection, setOpenSection] = useState("Location & Time");
+	const [openSections, setOpenSections] = useState<string[]>([]);
+
 
 	const toggleSection = (section: string) => {
-		setOpenSection(prev => (prev === section ? "" : section));
+		setOpenSections(prev =>
+			prev.includes(section)
+				? prev.filter(s => s !== section)
+				: [...prev, section]
+		);
 	};
+
 
 	const highTemperatureOptions = [
 		{ value: "40", text: "40 °C" },
@@ -489,40 +496,16 @@ const AddEditWeatherPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], se
 		"Sun & Moon": (
 			<div className="flex flex-col gap-6">
 				<div className="flex gap-6 w-full">
-					<div className="w-full">
-						<label className="text-xs sm:text-sm font-medium text-text dark:text-textDark">Sunrise</label>
-						<input
-							{...register("sunrise")}
-							type="time"
-							className="w-full border border-textSecondary/20 rounded-xl px-3 py-2"
-						/>
-					</div>
-					<div className="w-full">
-						<label className="text-xs sm:text-sm font-medium text-text dark:text-textDark">Sunset</label>
-						<input
-							{...register("sunset")}
-							type="time"
-							className="w-full border border-textSecondary/20 rounded-xl px-3 py-2"
-						/>
-					</div>
+					<TimePicker name="sunrise" label="Sunrise" register={register} setValue={setValue}
+						getValues={getValues} />
+					<TimePicker name="sunset" label="Sunset" register={register} setValue={setValue}
+						getValues={getValues} />
 				</div>
 				<div className="flex gap-6 w-full">
-					<div className="w-full">
-						<label className="text-xs sm:text-sm font-medium text-text dark:text-textDark">Moonrise</label>
-						<input
-							{...register("moonrise")}
-							type="time"
-							className="w-full border border-textSecondary/20 rounded-xl px-3 py-2"
-						/>
-					</div>
-					<div className="w-full">
-						<label className="text-xs sm:text-sm font-medium text-text dark:text-textDark">Moonset</label>
-						<input
-							{...register("moonset")}
-							type="time"
-							className="w-full border border-textSecondary/20 rounded-xl px-3 py-2"
-						/>
-					</div>
+					<TimePicker name="moonrise" label="Moonrise" register={register} setValue={setValue}
+						getValues={getValues} />
+					<TimePicker name="moonset" label="Moonset" register={register} setValue={setValue}
+						getValues={getValues} />
 				</div>
 				<div className="relative w-full">
 					<Select
@@ -563,7 +546,7 @@ const AddEditWeatherPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], se
 				<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 sm:gap-6">
 					<AccordionItem
 						title="Location & Time"
-						isOpen={openSection === "Location & Time"}
+						isOpen={openSections.includes("Location & Time")}
 						onToggle={() => toggleSection("Location & Time")}
 					>
 						<div className="flex flex-col gap-6 sm:gap-6 w-full">
@@ -574,6 +557,7 @@ const AddEditWeatherPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], se
 								</label>
 								<Input
 									{...register("location")}
+									disabled={mode === "view"}
 									placeholder="Enter Location"
 									className="!bg-transparent !border-textSecondary/20 !w-full"
 								/>
@@ -588,6 +572,7 @@ const AddEditWeatherPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], se
 								<div className="w-full">
 									<Select
 										label="City"
+										disabled={mode === "view"}
 										items={[{ value: "NY", text: "New York" }, { value: "LDN", text: "London" }]}
 										className="!bg-transparent !border-textSecondary/20 !w-full"
 										{...register("city")}
@@ -601,6 +586,7 @@ const AddEditWeatherPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], se
 									<Input
 										{...register("zipCode")}
 										placeholder="Enter Zip Code"
+										disabled={mode === "view"}
 										className="!bg-transparent h-[48px] !border-textSecondary/20 !w-full"
 									/>
 									<Icon
@@ -614,70 +600,19 @@ const AddEditWeatherPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], se
 								<div className="flex flex-col gap-3">
 									<label className="text-xs sm:text-sm font-medium text-text dark:text-textDark">Effective From</label>
 									<div className="flex gap-3">
-										<input {...register("effectiveFrom.startDate")} type="date" className="w-full sm:h-14 text-textSecondary border border-textSecondary/20 rounded-xl px-3 py-2" />
-										<input {...register("effectiveFrom.endDate")} type="date" className="w-full sm:h-14 text-textSecondary border border-textSecondary/20 rounded-xl px-3 py-2" />
+										<input {...register("effectiveFrom.startDate")} type="date" disabled={mode === "view"} className="w-full sm:h-14 text-textSecondary border border-textSecondary/20 rounded-xl px-3 py-2" />
+										<input {...register("effectiveFrom.endDate")} type="date" disabled={mode === "view"} className="w-full sm:h-14 text-textSecondary border border-textSecondary/20 rounded-xl px-3 py-2" />
 									</div>
 								</div>
 
 								{/* Time Range */}
-								<div className="flex flex-col gap-3 w-[50%]">
+								<div className="flex flex-col gap-3 w-full">
 									<label className="text-xs sm:text-sm font-medium text-text dark:text-textDark">Time Range</label>
-									<div className="flex -mt-2 gap-3 w-full">
-										<LocalizationProvider dateAdapter={AdapterDayjs}>
-											<DemoContainer components={['TimePicker']}>
-												<Controller
-													control={control}
-													name="timeRange.startTime"
-													render={({ field }) => (
-														<TimePicker
-															ampm
-															minutesStep={1}
-															value={field.value ? dayjs(field.value, 'HH:mm') : null}
-															onChange={(time) => field.onChange(time?.format("HH:mm"))}
-															slotProps={{
-																textField: {
-																	placeholder: '',
-																	sx: {
-																		'& .MuiOutlinedInput-notchedOutline': { border: 'none' },
-																		'& .css-vycme6-MuiPickersInputBase-root-MuiPickersOutlinedInput-root': {
-																			borderRadius: '15px', width: "100%",
-																		}
-																	},
-																},
-															}}
-														/>
-													)}
-												/>
-											</DemoContainer>
-										</LocalizationProvider>
-
-										<LocalizationProvider dateAdapter={AdapterDayjs}>
-											<DemoContainer components={['TimePicker']}>
-												<Controller
-													control={control}
-													name="timeRange.endTime"
-													render={({ field }) => (
-														<TimePicker
-															ampm
-															minutesStep={1}
-															value={field.value ? dayjs(field.value, 'HH:mm') : null}
-															onChange={(time) => field.onChange(time?.format("HH:mm"))}
-															slotProps={{
-																textField: {
-																	placeholder: '',
-																	sx: {
-																		'& .MuiOutlinedInput-notchedOutline': { border: 'none' },
-																		'& .css-vycme6-MuiPickersInputBase-root-MuiPickersOutlinedInput-root': {
-																			borderRadius: '15px', width: "100%",
-																		}
-																	},
-																},
-															}}
-														/>
-													)}
-												/>
-											</DemoContainer>
-										</LocalizationProvider>
+									<div className="flex gap-3 w-full">
+										<TimePicker name="timeRange.startTime" register={register} setValue={setValue}
+											getValues={getValues} />
+										<TimePicker name="timeRange.endTime" register={register} setValue={setValue}
+											getValues={getValues} />
 									</div>
 								</div>
 							</div>
@@ -689,7 +624,7 @@ const AddEditWeatherPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], se
 						<AccordionItem
 							key={section}
 							title={section}
-							isOpen={openSection === section}
+							isOpen={openSections.includes(section)}
 							onToggle={() => toggleSection(section)}
 						>
 							{accordionContent[section]}
@@ -702,11 +637,13 @@ const AddEditWeatherPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], se
 							onClick={() => setIsOpen(false)}>
 							Cancel
 						</Button>
-						<Button
-							type="submit"
-							className="text-sm sm:text-base w-full sm:w-auto px-6 !py-[10.3px] sm:!py-[15.1px] bg-primary rounded-xl font-semibold text-text">
-							{editIndex === null ? "Add Override" : "save"}
-						</Button>
+						{mode !== "view" && (
+							<Button
+								type="submit"
+								className="text-sm sm:text-base w-full sm:w-auto px-6 !py-[10.3px] sm:!py-[15.1px] bg-primary rounded-xl font-semibold text-text">
+								{editIndex === null ? "Add Override" : "save"}
+							</Button>
+						)}
 					</div>
 				</form>
 			</div>
