@@ -186,7 +186,7 @@ export default function RoleManagement() {
 					</div> */}
 				</div>
 				<div className="w-full overflow-x-auto overflow-hidden">
-					<div className="flex flex-col items-start gap-[5.54px] sm:gap-[7.54px] relative self-stretch min-w-[1027px] sm:min-w-[1450px] w-full flex-[0_0_auto] min-h-[500px] sm:min-h-[700px]">
+					<div className="flex flex-col items-start gap-[5.54px] sm:gap-[7.54px] relative self-stretch min-w-[650px] sm:min-w-[1450px] w-full flex-[0_0_auto] min-h-[500px] sm:min-h-[700px]">
 						<div className="flex h-[42px] sm:h-[52px] items-start sm:justify-between relative self-stretch w-full bg-fgc dark:bg-fgcDark rounded-xl">
 							<div
 								className="flex w-[152px] sm:w-[220px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
@@ -206,18 +206,18 @@ export default function RoleManagement() {
 								/>
 							</div>
 							<div
-								className="flex w-[95px] sm:w-[140px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer">
+								className="flex w-[227px] sm:w-[682px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer">
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Description
 								</div>
 							</div>
-							<div className="flex items-center w-[227px] sm:w-auto gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow">
+							<div className="flex items-center w-[89px] sm:w-[250px] gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow">
 								<div className="font-medium relative text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Total Users
 								</div>
 							</div>
 							<div
-								className="flex w-[85px] sm:w-[124px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
+								className="flex w-[96.5px] sm:w-[180px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
 								onClick={() => handleSort("status")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Status
@@ -233,7 +233,7 @@ export default function RoleManagement() {
 									className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
 								/>
 							</div>
-							<div className="inline-flex flex-col items-center w-[72px] sm:w-auto justify-center gap-2.5 px-3 sm:px-5 py-3.5 relative self-stretch flex-[0_0_auto]">
+							<div className="inline-flex flex-col items-center w-[72px] sm:w-[130px] justify-center gap-2.5 px-3 sm:px-5 py-3.5 relative self-stretch flex-[0_0_auto]">
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Actions
 								</div>
@@ -266,14 +266,14 @@ export default function RoleManagement() {
 												</div>
 
 												{/* Description */}
-												<div className="flex flex-col w-[95px] sm:w-[140px] items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
+												<div className="flex flex-col w-[227px] sm:w-[682px] items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
 													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
 														{weather.desc}
 													</div>
 												</div>
 
 												{/* totalUsers */}
-												<div className="flex flex-col w-[227px] sm:w-auto items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow">
+												<div className="flex flex-col w-[89px] sm:w-[250px] items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow">
 													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
 														{weather.totalUsers}
 													</div>
@@ -281,7 +281,7 @@ export default function RoleManagement() {
 
 
 												{/* Status */}
-												<div className="w-[85px] sm:w-[124px] flex flex-col items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
+												<div className="w-[96.5px] sm:w-[180px] flex flex-col items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
 													<div
 														className={`font-normal ${weather.statusColor} text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap`}>
 														{weather.status}
@@ -289,7 +289,7 @@ export default function RoleManagement() {
 												</div>
 
 												{/* Actions */}
-												<div className="flex flex-col w-[72px] sm:w-[100px] items-center justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
+												<div className="flex flex-col w-[72px] sm:w-[130px] items-center justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
 													<div className="inline-flex items-center justify-center gap-2 px-[7px] sm:p-2.5 bg-fgc dark:bg-fgcDark rounded-[4px] sm:rounded-lg cursor-pointer">
 														<Menu as="div" className="relative inline-block text-left">
 															<Menu.Button>

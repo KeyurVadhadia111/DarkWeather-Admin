@@ -44,7 +44,7 @@ export default function Sidebar() {
 			roles: ["SuperAdmin"],
 			active: ["/weather-alert"],
 		},
-		{ title: "Role Management", icon: "role-management", href: "", roles: ["SuperAdmin", "Support"], active: [""] },
+		{ title: "Role Management", icon: "role-management", href: "role", roles: ["SuperAdmin", "Support"], active: ["/role"] },
 		{ title: "API Integration", icon: "api-integration", href: "", roles: ["SuperAdmin"], active: [""] },
 		{ title: "Subscription", icon: "subscription", href: "", roles: ["SuperAdmin"], active: [""] },
 		{

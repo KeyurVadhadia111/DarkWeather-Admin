@@ -14,6 +14,7 @@ import { toast } from "components/utils/toast";
 interface weatherAlert {
 	id: number;
 	alert: string;
+	location: string;
 	severity: string;
 	dueTo: string;
 	startDateTime: string;
@@ -34,6 +35,7 @@ export default function WeatherAlertPage() {
 		{
 			id: 1,
 			alert: "Flash Flood Warning",
+			location: "New York, NY",
 			severity: "High",
 			dueTo: "Heavy rain causing possible flooding",
 			startDateTime: "Jun 18, 2:00 PM",
@@ -44,6 +46,7 @@ export default function WeatherAlertPage() {
 		{
 			id: 2,
 			alert: "Excessive Heat Alert",
+			location: "San Francisco, CA",
 			severity: "Extreme",
 			dueTo: "Temperatures expected above 45°C",
 			startDateTime: "Jun 19, 11:00 AM",
@@ -54,6 +57,7 @@ export default function WeatherAlertPage() {
 		{
 			id: 3,
 			alert: "Snowstorm Alert",
+			location: "Miami, FL",
 			severity: "Moderate",
 			dueTo: "Light to moderate snowfall expected",
 			startDateTime: "Jun 20, 6:00 AM",
@@ -64,6 +68,7 @@ export default function WeatherAlertPage() {
 		{
 			id: 4,
 			alert: "Thunderstorm Warning",
+			location: "Seattle, WA",
 			severity: "High",
 			dueTo: "Lightning & hailstorms possible",
 			startDateTime: "Jun 18, 4:00 PM",
@@ -74,6 +79,7 @@ export default function WeatherAlertPage() {
 		{
 			id: 5,
 			alert: "Wind Advisory",
+			location: "Austin, TX",
 			severity: "Low",
 			dueTo: "Winds reaching up to 40 km/h",
 			startDateTime: "Jun 19, 9:00 AM",
@@ -84,6 +90,7 @@ export default function WeatherAlertPage() {
 		{
 			id: 6,
 			alert: "Rainfall Alert",
+			location: "Denver, CO",
 			severity: "Moderate",
 			dueTo: "Moderate rainfall in the area",
 			startDateTime: "Jun 18, 8:00 AM",
@@ -94,6 +101,7 @@ export default function WeatherAlertPage() {
 		{
 			id: 7,
 			alert: "Coastal Flood Watch",
+			location: "Chicago, IL",
 			severity: "High",
 			dueTo: "Tidal flooding due to storm surge",
 			startDateTime: "Jun 21, 2:00 AM",
@@ -104,6 +112,7 @@ export default function WeatherAlertPage() {
 		{
 			id: 8,
 			alert: "Heat Warning",
+			location: "Phoenix, AZ",
 			severity: "Extreme",
 			dueTo: "Health risk due to prolonged heat",
 			startDateTime: "Jun 19, 12:00 PM",
@@ -114,6 +123,7 @@ export default function WeatherAlertPage() {
 		{
 			id: 9,
 			alert: "Ice Warning",
+			location: "Boston, MA",
 			severity: "Moderate",
 			dueTo: "Icy road conditions expected",
 			startDateTime: "Jun 20, 7:00 AM",
@@ -124,6 +134,7 @@ export default function WeatherAlertPage() {
 		{
 			id: 10,
 			alert: "Tropical Storm Alert",
+			location: "Las Vegas, NV",
 			severity: "Extreme",
 			dueTo: "Risk of tropical cyclone impact",
 			startDateTime: "Jun 22, 3:00 PM",
@@ -134,6 +145,7 @@ export default function WeatherAlertPage() {
 		{
 			id: 11,
 			alert: "Dust Storm Warning",
+			location: "Portland, OR",
 			severity: "High",
 			dueTo: "Reduced visibility due to dust storm",
 			startDateTime: "Jun 18, 1:00 PM",
@@ -144,6 +156,7 @@ export default function WeatherAlertPage() {
 		{
 			id: 12,
 			alert: "Thunderstorm Risk",
+			location: "Atlanta, GA",
 			severity: "Low",
 			dueTo: "Low chance of isolated thunderstorms",
 			startDateTime: "Jun 19, 5:00 PM",
@@ -154,6 +167,7 @@ export default function WeatherAlertPage() {
 		{
 			id: 13,
 			alert: "Rainfall Alert",
+			location: "Austin, TX",
 			severity: "Moderate",
 			dueTo: "Moderate rainfall in the area",
 			startDateTime: "Jun 18, 8:00 AM",
@@ -164,6 +178,7 @@ export default function WeatherAlertPage() {
 		{
 			id: 14,
 			alert: "Coastal Flood Watch",
+			location: "Denver, CO",
 			severity: "High",
 			dueTo: "Tidal flooding due to storm surge",
 			startDateTime: "Jun 21, 2:00 AM",
@@ -174,6 +189,7 @@ export default function WeatherAlertPage() {
 		{
 			id: 15,
 			alert: "Heat Warning",
+			location: "Chicago, IL",
 			severity: "Extreme",
 			dueTo: "Health risk due to prolonged heat",
 			startDateTime: "Jun 19, 12:00 PM",
@@ -394,6 +410,13 @@ export default function WeatherAlertPage() {
 								/>
 							</div>
 							<div
+								className="flex w-[132px] sm:w-[180px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
+							>
+								<div className="relative font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
+									Location
+								</div>
+							</div>
+							<div
 								className="flex w-[95px] sm:w-[140px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
 								onClick={() => handleSort("severity")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
@@ -416,7 +439,7 @@ export default function WeatherAlertPage() {
 								</div>
 							</div>
 							<div
-								className="flex w-[137px] sm:w-[220px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
+								className="flex w-[137px] sm:w-[180px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
 								onClick={() => handleSort("startDateTime")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Start Date Time
@@ -433,7 +456,7 @@ export default function WeatherAlertPage() {
 								/>
 							</div>
 							<div
-								className="flex items-center w-[129px] sm:w-[220px] gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative cursor-pointer"
+								className="flex items-center w-[129px] sm:w-[180px] gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative cursor-pointer"
 								onClick={() => handleSort("endDateTime")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									End Date Time
@@ -450,7 +473,7 @@ export default function WeatherAlertPage() {
 								/>
 							</div>
 							<div
-								className="flex w-[85px] sm:w-[124px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
+								className="flex w-[96.5px] sm:w-[120px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
 								onClick={() => handleSort("status")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Status
@@ -522,6 +545,13 @@ export default function WeatherAlertPage() {
 													</div>
 												</div>
 
+												{/* Location */}
+												<div className="flex w-[132px] sm:w-[180px] items-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
+													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
+														{weather.location}
+													</div>
+												</div>
+
 												{/* Email */}
 												<div className="flex flex-col w-[95px] sm:w-[140px] items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
 													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
@@ -530,28 +560,28 @@ export default function WeatherAlertPage() {
 												</div>
 
 												{/* Phone */}
-												<div className="flex flex-col w-[227px] sm:w-auto items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow">
-													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
+												<div className="flex flex-col w-[227px] sm:w-[275px] items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative">
+													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap overflow-hidden text-ellipsis truncate w-full">
 														{weather.dueTo}
 													</div>
 												</div>
 
 												{/* Role */}
-												<div className="w-[137px] sm:w-[220px] flex flex-col items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-2 relative self-stretch">
+												<div className="w-[137px] sm:w-[180px] flex flex-col items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-2 relative self-stretch">
 													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base tracking-[0] leading-6 w-[101px] sm:w-[152px] overflow-auto">
 														{weather.startDateTime}
 													</div>
 												</div>
 
 												{/* Last Login */}
-												<div className="flex flex-col items-start justify-center w-[129px] sm:w-[220px] gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
+												<div className="flex flex-col items-start justify-center w-[129px] sm:w-[180px] gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
 													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
 														{weather.endDateTime}
 													</div>
 												</div>
 
 												{/* Status */}
-												<div className="w-[85px] sm:w-[124px] flex flex-col items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
+												<div className="w-[96.5px] sm:w-[124px] flex flex-col items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
 													<div
 														className={`font-normal ${weather.statusColor} text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap`}>
 														{weather.status}
