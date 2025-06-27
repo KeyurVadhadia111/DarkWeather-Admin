@@ -46,7 +46,7 @@ export default function Sidebar() {
 		},
 		{ title: "Role Management", icon: "role-management", href: "role", roles: ["SuperAdmin", "Support"], active: ["/role"] },
 		{ title: "API Integration", icon: "api-integration", href: "", roles: ["SuperAdmin"], active: [""] },
-		{ title: "Subscription", icon: "subscription", href: "", roles: ["SuperAdmin"], active: [""] },
+		{ title: "Subscription", icon: "subscription", href: "subscription", roles: ["SuperAdmin"], active: ["/subscription"] },
 		{
 			title: "Alerts & Content Post",
 			icon: "alerts-content-post",

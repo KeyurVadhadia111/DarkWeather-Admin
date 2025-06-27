@@ -62,7 +62,7 @@ const getSchema = (editIndex: number | null) =>
 		.required();
 
 
-const AddEditWeatherAlertPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], setList, editIndex = null }) => {
+const AddEditSubscription: React.FC<Props> = ({ isOpen, setIsOpen, list = [], setList, editIndex = null }) => {
 	const isDark = useAppState(state => state.isDark);
 
 	const schema = getSchema(editIndex);
@@ -124,105 +124,121 @@ const AddEditWeatherAlertPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [
 				setIsOpen(false);
 				reset();
 			}}
-			size="760">
+			size="940">
 			<div className="">
 				<Dialog.Title className="text-base sm:text-2xl font-semibold text-text dark:text-textDark leading-[16px] sm:leading-[24px] mb-4 sm:mb-8">
-					{editIndex !== null ? "Edit Weather Alert" : "Add Weather Alert"}
+					{editIndex !== null ? "Edit Free Plan" : "Add New Plan"}
 				</Dialog.Title>
 
 				<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 sm:gap-6">
-					<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-						{/* Alert */}
-						<div className="col-span-2 flex flex-col gap-2 sm:gap-3">
-							<label className="text-xs sm:text-base font-medium text-text dark:text-textDark leading-[18px] sm:leading-[21px]">
-								Alert
-							</label>
-							<Input
-								{...register("alert")}
-								placeholder="Add Alert"
-								className="!bg-transparent !border-textSecondary/20 !w-full "
-								error={errors?.alert?.message}
-							/>
-						</div>
-						{/* Due To */}
-						<div className="col-span-2 flex flex-col gap-2 sm:gap-3">
-							<label className="text-xs sm:text-base font-medium text-text dark:text-textDark leading-[18px] sm:leading-[21px]">
-								Due To
-							</label>
-							<Input
-								{...register("dueTo")}
-								placeholder="Add Here"
-								className="!bg-transparent !border-textSecondary/20 !w-full "
-								error={errors?.dueTo?.message}
-							/>
-						</div>
-						<div className="col-span-2 flex flex-col gap-2 sm:gap-3">
-							<label htmlFor="" className="text-xs sm:text-base text-text dark:text-textDark">
-								Location
-							</label>
-							<Input
-								{...register("location")}
-								placeholder="Enter Location"
-								className="!bg-transparent !border-textSecondary/20 !w-full"
-								error={errors?.location?.message}
-							/>
-							<Icon
-								icon="location"
-								className="absolute right-3 top-1/2 transform translate-y-1 w-5 h-5 text-textTurnery"
-							/>
-						</div>
-
-						{/* Severity */}
-						<div className={`col-span-2 sm:col-span-1 flex flex-col gap-2 sm:gap-3`}>
-							<Select
-								name="severity"
-								label="Severity"
-								required
-								register={register}
-								trigger={trigger}
-								error={errors?.severity?.message}
-								items={severityOptions.map(severity => ({ value: severity, text: severity }))}
-								className="!bg-bgc dark:!bg-fgcDark !border-textSecondary/20 !h-[42px] sm:!h-14 !rounded-xl !text-sm sm:!text-base"
-							/>
-						</div>
-
-						{/* Status */}
-						<div className={`col-span-2 sm:col-span-1 flex flex-col gap-2 sm:gap-3`}>
-							<Select
-								name="status"
-								label="Status"
-								required
-								register={register}
-								trigger={trigger}
-								error={errors?.status?.message}
-								items={statusOptions.map(status => ({ value: status, text: status }))}
-								className="!bg-bgc dark:!bg-fgcDark !border-textSecondary/20 !h-[42px] sm:!h-14 !rounded-xl !text-sm sm:!text-base"
-							/>
-						</div>
-
-						<div className="col-span-2 sm:col-span-1 flex flex-col gap-3">
-							<label className="text-xs sm:text-sm font-medium text-text dark:text-textDark">Start Date Time</label>
-							<div className="flex gap-3">
-								<input {...register("startDateTime.startDate")} type="date" className="w-full sm:h-14 text-textSecondary border border-textSecondary/20 rounded-xl px-3 py-2" />
-								<TimePicker
-									name="startDateTime.startTime"
-									register={register}
-									setValue={setValue}
-									getValues={getValues}
+					<div className="flex flex-col gap-6">
+						<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+							{/* Alert */}
+							<div className="col-span-2 flex flex-col gap-2 sm:gap-3">
+								<label className="text-xs sm:text-base font-medium text-text dark:text-textDark leading-[18px] sm:leading-[21px]">
+									Plan Name
+								</label>
+								<Input
+									{...register("alert")}
+									placeholder="Add Plan Name"
+									className="!bg-transparent !border-textSecondary/20 !w-full "
+									error={errors?.alert?.message}
 								/>
+							</div>
 
+							<div className={`col-span-2 sm:col-span-1 flex flex-col gap-2 sm:gap-3`}>
+								<Select
+									name="severity"
+									label="Duration"
+									required
+									register={register}
+									trigger={trigger}
+									error={errors?.severity?.message}
+									items={severityOptions.map(severity => ({ value: severity, text: severity }))}
+									className="!bg-bgc dark:!bg-fgcDark !border-textSecondary/20 !h-[42px] sm:!h-14 !rounded-xl !text-sm sm:!text-base"
+								/>
+							</div>
 
+							{/* Due To */}
+							<div className="col-span-2 sm:col-span-1 flex flex-col gap-2 sm:gap-3">
+								<label className="text-xs sm:text-base font-medium text-text dark:text-textDark leading-[18px] sm:leading-[21px]">
+									Pricing
+								</label>
+								<Input
+									{...register("dueTo")}
+									placeholder="Add Pricing"
+									className="!bg-transparent !border-textSecondary/20 !w-full "
+									error={errors?.dueTo?.message}
+								/>
+							</div>
+							<div className="col-span-2 flex flex-col gap-2 sm:gap-3">
+								<label htmlFor="" className="text-xs sm:text-base text-text dark:text-textDark">
+									Description
+								</label>
+								<Input
+									{...register("location")}
+									placeholder="Add Here"
+									className="!bg-transparent !border-textSecondary/20 !w-full"
+									error={errors?.location?.message}
+								/>
 							</div>
 						</div>
-						<div className="col-span-2 sm:col-span-1 flex flex-col gap-3">
-							<label className="text-xs sm:text-sm font-medium text-text dark:text-textDark">End Date Time</label>
-							<div className="flex gap-3">
-								<input {...register("endDateTime.startDate")} type="date" className="w-full sm:h-14 text-textSecondary border border-textSecondary/20 rounded-xl px-3 py-2" />
-								<TimePicker name="endDateTime.startDate" register={register} setValue={setValue}
-									getValues={getValues} />
-
+						<div>
+							<div className="font-medium text-text dark:text-textDark mb-4">Features</div>
+							<div className="grid grid-cols-2 sm:grid-cols-2 p-4 gap-x-4 rounded-xl gap-y-4 bg-[#F8F8F8] dark:bg-bgcDark">
+								{[
+									"30 questions/month",
+									"Casual users",
+									"Basic email support",
+									"Unlimited questions",
+									"Daily weather checks, occasional planning",
+									"Early access to Dark Weather Al projects",
+									"Weather enthusiasts & frequent users",
+									"Priority email support",
+									"Unlimited forecasts, beta feature testing",
+									"Direct access to meteorologist for tailored insights",
+									"Businesses, professionals, & high-demand users",
+									"Dedicated account manager & phone support",
+									"Event planning, agriculture, logistics"
+								].map((perm, index) => (
+									<label
+										key={index}
+										className="relative flex items-center gap-3 text-xs sm:text-sm text-textSecondary dark:text-textDark cursor-pointer sm:w-full"
+									>
+										<input
+											type="checkbox"
+											className="peer hidden"
+										/>
+										<span
+											className="
+            w-5 h-5 rounded-md border border-[#808080] dark:border-white
+            flex items-center justify-center
+            bg-transparent
+            peer-checked:bg-[#FFA500] peer-checked:border-[#FFA500]
+            relative
+          "
+										></span>
+										<svg
+											className="
+            w-3 h-3 text-black
+            absolute left-1
+            opacity-0 peer-checked:opacity-100
+            transition-opacity duration-150 ease-in-out
+            pointer-events-none
+          "
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="3"
+											viewBox="0 0 24 24"
+										>
+											<path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+										</svg>
+										{perm}
+									</label>
+								))}
 							</div>
 						</div>
+
 					</div>
 
 					{/* Action Buttons */}
@@ -246,4 +262,4 @@ const AddEditWeatherAlertPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [
 	);
 };
 
-export default AddEditWeatherAlertPopup;
+export default AddEditSubscription;

@@ -91,6 +91,10 @@
 	}
 }
 
+svg {
+    display: inline-block !important; /* This would break your hidden class */
+}
+
 @theme {
 	--color-text: #1c282b;
 	--color-textSecondary: #808080;

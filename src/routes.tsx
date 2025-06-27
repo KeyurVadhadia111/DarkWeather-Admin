@@ -11,6 +11,7 @@ import OverrideWeatherInfoPage from "pages/OverrideWeatherInfoPage";
 import ActivityLogPage from "pages/ActivityLogPage";
 import WeatherAlertPage from "pages/WeatherAlertPage";
 import RoleManagement from "pages/RoleManagement";
+import Subscription from "pages/Subscription";
 
 declare global {
 	interface Window {
@@ -115,6 +116,14 @@ const createRoutes: React.FC = () => {
 							element={
 								<ProtectedRoute>
 									<RoleManagement />
+								</ProtectedRoute>
+							}
+						/>
+						<Route
+							path="/subscription"
+							element={
+								<ProtectedRoute>
+									<Subscription />
 								</ProtectedRoute>
 							}
 						/>

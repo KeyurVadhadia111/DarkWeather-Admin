@@ -10,6 +10,7 @@ import DeleteUserPopup from "components/popup/DeleteUserPopup";
 import ResertPasswordPopup from "components/popup/ResertPasswordPopup";
 import { useNavigate } from "react-router-dom";
 import { toast } from "components/utils/toast";
+import AddEditRoleManagement from "components/popup/AddEditRoleManagement";
 
 interface Role {
 	id: number;
@@ -376,7 +377,7 @@ export default function RoleManagement() {
 					)}
 				</div>
 			</div>
-			<AddEditWeatherAlertPopup
+			<AddEditRoleManagement
 				isOpen={isAddEditWeatherAlertPopupOpen}
 				setIsOpen={() => {
 					setEditIndex(null);
@@ -394,7 +395,7 @@ export default function RoleManagement() {
 						? { name: weatherAlert[deleteUserIndex].role }
 						: null
 				}
-				itemType=" Role"
+				itemType="Role"
 				onDelete={() => {
 					if (deleteUserIndex !== null) {
 						setWeatherAlert(prev => prev.filter((_, idx) => idx !== deleteUserIndex));

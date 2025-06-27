@@ -21,7 +21,7 @@ const DeleteUserPopup: React.FC<DeleteUserPopupProps> = ({ isOpen, setIsOpen, on
 
 				<div className="flex flex-col items-center w-full gap-2 sm:gap-3">
 					<p className="text-base sm:text-xl font-medium text-text dark:text-textDark">
-						Are you sure you want to delete {itemType.toLowerCase()}?
+						Are you sure you want to delete this {itemType.toLowerCase()}?
 					</p>
 					<p className="text-sm sm:text-base text-textSecondary dark:text-textDark">
 						Permanently remove this {itemType.toLowerCase()}. This action cannot be undone.

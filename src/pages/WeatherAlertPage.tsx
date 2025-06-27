@@ -364,297 +364,210 @@ export default function WeatherAlertPage() {
 					</div>
 				</div>
 				<div className="w-full overflow-x-auto overflow-hidden">
-					<div className="flex flex-col items-start gap-[5.54px] sm:gap-[7.54px] relative self-stretch min-w-[1027px] sm:min-w-[1450px] w-full flex-[0_0_auto] min-h-[500px] sm:min-h-[700px]">
-						<div className="flex h-[42px] sm:h-[52px] items-start sm:justify-between relative self-stretch w-full bg-fgc dark:bg-fgcDark rounded-xl">
-							{/* Column headers */}
-							<div className="inline-flex flex-col items-start justify-center gap-2.5 px-[11px] sm:px-4 py-3.5 relative self-stretch flex-[0_0_auto]">
-								<label className="relative w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center cursor-pointer">
-									<input
-										type="checkbox"
-										checked={allChecked}
-										ref={el => {
-											if (el) el.indeterminate = isIndeterminate;
-										}}
-										onChange={handleSelectAll}
-										className="opacity-0 absolute w-5 h-5 sm:w-6 sm:h-6 cursor-pointer bg-transparent"
-									/>
-									<span
-										className={`w-[17px] h-[17px] rounded-[2px] border border-textSecondary flex items-center justify-center transition-colors duration-150 ${allChecked || isIndeterminate
-											? "bg-primary !border-primary "
-											: "bg-transparent "
-											}`}>
-										{(allChecked || isIndeterminate) && (
-											<Icon
-												icon="check"
-												className="w-2.5 h-2.5 sm:w-3 sm:h-3 ml-[1px] mt-0.5 sm:ml-0.5"
-											/>
-										)}
-									</span>
-								</label>
-							</div>
-							<div
-								className="flex w-[152px] sm:w-[220px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
-								onClick={() => handleSort("alert")}>
-								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
-									Alert
-								</div>
-								<Icon
-									icon={
-										sortConfig?.key === "alert"
-											? sortConfig.direction === "asc"
-												? "up-sort"
-												: "up-sort"
-											: "sort"
-									}
-									className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
-								/>
-							</div>
-							<div
-								className="flex w-[132px] sm:w-[180px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
-							>
-								<div className="relative font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
-									Location
-								</div>
-							</div>
-							<div
-								className="flex w-[95px] sm:w-[140px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
-								onClick={() => handleSort("severity")}>
-								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
-									Severity
-								</div>
-								<Icon
-									icon={
-										sortConfig?.key === "severity"
-											? sortConfig.direction === "asc"
-												? "up-sort"
-												: "up-sort"
-											: "sort"
-									}
-									className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
-								/>
-							</div>
-							<div className="flex items-center w-[227px] sm:w-auto gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow">
-								<div className="font-medium relative text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
-									Due to
-								</div>
-							</div>
-							<div
-								className="flex w-[137px] sm:w-[180px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
-								onClick={() => handleSort("startDateTime")}>
-								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
-									Start Date Time
-								</div>
-								<Icon
-									icon={
-										sortConfig?.key === "startDateTime"
-											? sortConfig.direction === "asc"
-												? "up-sort"
-												: "up-sort"
-											: "sort"
-									}
-									className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
-								/>
-							</div>
-							<div
-								className="flex items-center w-[129px] sm:w-[180px] gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative cursor-pointer"
-								onClick={() => handleSort("endDateTime")}>
-								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
-									End Date Time
-								</div>
-								<Icon
-									icon={
-										sortConfig?.key === "endDateTime"
-											? sortConfig.direction === "asc"
-												? "up-sort"
-												: "up-sort"
-											: "sort"
-									}
-									className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
-								/>
-							</div>
-							<div
-								className="flex w-[96.5px] sm:w-[120px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
-								onClick={() => handleSort("status")}>
-								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
-									Status
-								</div>
-								<Icon
-									icon={
-										sortConfig?.key === "status"
-											? sortConfig.direction === "asc"
-												? "up-sort"
-												: "up-sort"
-											: "sort"
-									}
-									className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
-								/>
-							</div>
-							<div className="inline-flex flex-col items-center w-[72px] sm:w-auto justify-center gap-2.5 px-3 sm:px-5 py-3.5 relative self-stretch flex-[0_0_auto]">
-								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
-									Actions
-								</div>
-							</div>
-						</div>
+					<table className="min-w-[1027px] sm:min-w-[1450px] w-full text-left border-separate border-spacing-0">
+						<thead>
+							<tr className="h-[42px] sm:h-[52px] bg-fgc dark:bg-fgcDark rounded-xl">
+								<th className="px-[11px] sm:px-4 py-3.5">
+									<label className="relative w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center cursor-pointer">
+										<input
+											type="checkbox"
+											checked={allChecked}
+											ref={(el) => {
+												if (el) el.indeterminate = isIndeterminate;
+											}}
+											onChange={handleSelectAll}
+											className="opacity-0 absolute w-5 h-5 sm:w-6 sm:h-6 cursor-pointer bg-transparent"
+										/>
+										<span
+											className={`w-[17px] h-[17px] rounded-[2px] border border-textSecondary flex items-center justify-center transition-colors duration-150 ${allChecked || isIndeterminate
+												? "bg-primary !border-primary"
+												: "bg-transparent"
+												}`}
+										>
+											{(allChecked || isIndeterminate) && (
+												<Icon
+													icon="check"
+													className="w-2.5 h-2.5 sm:w-3 sm:h-3 ml-[1px] mt-0.5 sm:ml-0.5"
+												/>
+											)}
+										</span>
+									</label>
+								</th>
+								<th className="w-[152px] sm:w-[220px] px-3 sm:px-5 py-3.5 cursor-pointer" onClick={() => handleSort("alert")}>
+									<div className="flex items-center gap-2">
+										<span className="text-text dark:text-textDark text-xs sm:text-base font-medium whitespace-nowrap">Alert</span>
+										<Icon
+											icon={sortConfig?.key === "alert" ? "up-sort" : "sort"}
+											className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"
+												}`}
+										/>
+									</div>
+								</th>
+								<th className="w-[132px] sm:w-[180px] px-3 sm:px-5 py-3.5">
+									<span className="text-text dark:text-textDark text-xs sm:text-base font-medium whitespace-nowrap">Location</span>
+								</th>
+								<th className="w-[95px] sm:w-[140px] px-3 sm:px-5 py-3.5 cursor-pointer" onClick={() => handleSort("severity")}>
+									<div className="flex items-center gap-2">
+										<span className="text-text dark:text-textDark text-xs sm:text-base font-medium whitespace-nowrap">Severity</span>
+										<Icon
+											icon={sortConfig?.key === "severity" ? "up-sort" : "sort"}
+											className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"
+												}`}
+										/>
+									</div>
+								</th>
+								<th className="w-[227px] sm:w-auto px-3 sm:px-5 py-3.5">
+									<span className="text-text dark:text-textDark text-xs sm:text-base font-medium whitespace-nowrap">Due to</span>
+								</th>
+								<th className="w-[137px] sm:w-[180px] px-3 sm:px-5 py-3.5 cursor-pointer" onClick={() => handleSort("startDateTime")}>
+									<div className="flex items-center gap-2">
+										<span className="text-text dark:text-textDark text-xs sm:text-base font-medium whitespace-nowrap">
+											Start Date Time
+										</span>
+										<Icon
+											icon={sortConfig?.key === "startDateTime" ? "up-sort" : "sort"}
+											className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"
+												}`}
+										/>
+									</div>
+								</th>
+								<th className="w-[129px] sm:w-[180px] px-3 sm:px-5 py-3.5 cursor-pointer" onClick={() => handleSort("endDateTime")}>
+									<div className="flex items-center gap-2">
+										<span className="text-text dark:text-textDark text-xs sm:text-base font-medium whitespace-nowrap">
+											End Date Time
+										</span>
+										<Icon
+											icon={sortConfig?.key === "endDateTime" ? "up-sort" : "sort"}
+											className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"
+												}`}
+										/>
+									</div>
+								</th>
+								<th className="w-[96.5px] sm:w-[120px] px-3 sm:px-5 py-3.5 cursor-pointer" onClick={() => handleSort("status")}>
+									<div className="flex items-center gap-2">
+										<span className="text-text dark:text-textDark text-xs sm:text-base font-medium whitespace-nowrap">Status</span>
+										<Icon
+											icon={sortConfig?.key === "status" ? "up-sort" : "sort"}
+											className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"
+												}`}
+										/>
+									</div>
+								</th>
+								<th className="w-[72px] sm:w-auto px-3 sm:px-5 py-3.5">
+									<span className="text-text dark:text-textDark text-xs sm:text-base font-medium whitespace-nowrap">Actions</span>
+								</th>
+							</tr>
+						</thead>
 
-						{/* Render weather Alert rows dynamically */}
-						<>
+						<tbody>
 							{displayedWeatherAlert.length === 0 ? (
-								<div className="w-full flex items-center justify-center py-11">
-									<span className="text-textSecondary dark:text-textDark text-base sm:text-lg">
+								<tr>
+									<td colSpan={9} className="text-center py-11 text-textSecondary dark:text-textDark text-base sm:text-lg">
 										No data found
-									</span>
-								</div>
+									</td>
+								</tr>
 							) : (
 								displayedWeatherAlert.map((weather, idx) => {
-									const weatherAlertOnPage = displayedWeatherAlert.length;
-									const isLastFour = weatherAlertOnPage >= 7 && idx >= weatherAlertOnPage - 4;
+									const isLastFour = displayedWeatherAlert.length >= 7 && idx >= displayedWeatherAlert.length - 4;
 									const menuPositionClass = isLastFour
 										? "origin-bottom-right bottom-full mb-2.5 sm:mb-[17px]"
 										: "origin-top-right top-full mt-2.5 sm:mt-[17px]";
 									return (
-										<React.Fragment key={weather.id}>
-											<div className="flex h-8 sm:h-11 items-start justify-start relative self-stretch w-full">
-												{/* Checkbox */}
-												<div className="inline-flex flex-col items-start justify-center gap-2.5 px-[9px] sm:px-4 py-3.5 relative self-stretch flex-[0_0_auto]">
-													<label className="relative w-6 h-6 flex items-center justify-center cursor-pointer">
-														<input
-															type="checkbox"
-															checked={selectedWeatherAlert.includes(weather.id)}
-															onChange={() => handleCheckbox(weather.id)}
-															className="opacity-0 absolute w-5 h-5 sm:w-6 sm:h-6 cursor-pointer bg-transparent"
+										<tr key={weather.id} className="h-8 sm:h-11">
+											<td className="px-[9px] sm:px-4 py-3.5">
+												<label className="relative w-6 h-6 flex items-center justify-center cursor-pointer">
+													<input
+														type="checkbox"
+														checked={selectedWeatherAlert.includes(weather.id)}
+														onChange={() => handleCheckbox(weather.id)}
+														className="opacity-0 absolute w-5 h-5 sm:w-6 sm:h-6 cursor-pointer bg-transparent"
+													/>
+													<span
+														className={`w-[17px] h-[17px] rounded-[2px] border border-textSecondary flex items-center justify-center transition-colors duration-150 ${selectedWeatherAlert.includes(weather.id)
+															? "bg-primary !border-primary"
+															: "bg-transparent"
+															}`}
+													>
+														{selectedWeatherAlert.includes(weather.id) && (
+															<Icon
+																icon="check"
+																className="w-2.5 h-2.5 sm:w-3 sm:h-3 ml-[1px] mt-0.5 sm:ml-0.5"
+															/>
+														)}
+													</span>
+												</label>
+											</td>
+											<td className="px-3 sm:px-5 py-4 text-text dark:text-textDark text-xs sm:text-base whitespace-nowrap">{weather.alert}</td>
+											<td className="px-3 sm:px-5 py-4 text-text dark:text-textDark text-xs sm:text-base whitespace-nowrap">{weather.location}</td>
+											<td className="px-3 sm:px-5 py-4 text-text dark:text-textDark text-xs sm:text-base whitespace-nowrap">{weather.severity}</td>
+											<td className="px-3 sm:px-5 py-4 text-text dark:text-textDark text-xs sm:text-base">
+												<div className="truncate whitespace-nowrap overflow-hidden max-w-[250px]">
+													{weather.dueTo}
+												</div>
+											</td>
+
+											<td className="px-3 sm:px-5 py-4 text-text dark:text-textDark text-xs sm:text-base whitespace-nowrap">{weather.startDateTime}</td>
+											<td className="px-3 sm:px-5 py-4 text-text dark:text-textDark text-xs sm:text-base whitespace-nowrap">{weather.endDateTime}</td>
+											<td className="px-3 sm:px-5 py-4 text-xs sm:text-base whitespace-nowrap">
+												<span className={`${weather.statusColor}`}>{weather.status}</span>
+											</td>
+											<td className="px-3 sm:px-5 py-4">
+												<Menu as="div" className="relative inline-block text-left">
+													<Menu.Button>
+														<Icon
+															icon="action-icon"
+															className="w-[11px] h-[11px] sm:w-5 sm:h-5 text-textSecondary dark:text-textDark"
 														/>
-														<span
-															className={`w-[17px] h-[17px] rounded-[2px] border border-textSecondary flex items-center justify-center transition-colors duration-150 ${selectedWeatherAlert.includes(weather.id)
-																? "bg-primary !border-primary"
-																: "bg-transparent"
-																}`}>
-															{selectedWeatherAlert.includes(weather.id) && (
-																<Icon
-																	icon="check"
-																	className="w-2.5 h-2.5 sm:w-3 sm:h-3 ml-[1px] mt-0.5 sm:ml-0.5	"
-																/>
-															)}
-														</span>
-													</label>
-												</div>
+													</Menu.Button>
 
-												{/* Name */}
-												<div className="flex w-[152px] sm:w-[220px] items-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
-													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
-														{weather.alert}
-													</div>
-												</div>
-
-												{/* Location */}
-												<div className="flex w-[132px] sm:w-[180px] items-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
-													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
-														{weather.location}
-													</div>
-												</div>
-
-												{/* Email */}
-												<div className="flex flex-col w-[95px] sm:w-[140px] items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
-													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
-														{weather.severity}
-													</div>
-												</div>
-
-												{/* Phone */}
-												<div className="flex flex-col w-[227px] sm:w-[275px] items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative">
-													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap overflow-hidden text-ellipsis truncate w-full">
-														{weather.dueTo}
-													</div>
-												</div>
-
-												{/* Role */}
-												<div className="w-[137px] sm:w-[180px] flex flex-col items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-2 relative self-stretch">
-													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base tracking-[0] leading-6 w-[101px] sm:w-[152px] overflow-auto">
-														{weather.startDateTime}
-													</div>
-												</div>
-
-												{/* Last Login */}
-												<div className="flex flex-col items-start justify-center w-[129px] sm:w-[180px] gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
-													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
-														{weather.endDateTime}
-													</div>
-												</div>
-
-												{/* Status */}
-												<div className="w-[96.5px] sm:w-[124px] flex flex-col items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
-													<div
-														className={`font-normal ${weather.statusColor} text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap`}>
-														{weather.status}
-													</div>
-												</div>
-
-												{/* Actions */}
-												<div className="flex flex-col w-[72px] sm:w-[100px] items-center justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
-													<div className="inline-flex items-center justify-center gap-2 px-[7px] sm:p-2.5 bg-fgc dark:bg-fgcDark rounded-[4px] sm:rounded-lg cursor-pointer">
-														<Menu as="div" className="relative inline-block text-left">
-															<Menu.Button>
-																<Icon
-																	icon="action-icon"
-																	className="w-[11px] h-[11px] sm:w-5 sm:h-5 text-textSecondary dark:text-textDark"
-																/>
-															</Menu.Button>
-
-															<Transition
-																enter="transition ease-out duration-100"
-																enterFrom="transform scale-95 opacity-0"
-																enterTo="transform scale-100 opacity-100"
-																leave="transition ease-in duration-75"
-																leaveFrom="transform scale-100 opacity-100"
-																leaveTo="transform scale-95 opacity-0">
-																<Menu.Items
-																	className={`absolute -right-5 w-[140px] sm:w-[163px] bg-fgc dark:bg-fgcDark rounded-xl focus:outline-none flex flex-col z-50 transition ${menuPositionClass}`}>
-																	<div className="flex flex-col items-start px-3 py-2 sm:px-2.5 sm:py-2.5 gap-1">
-																		<Menu.Item>
-																			<div
-																				className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full"
-																				onClick={() => {
-																					const globalIndex = weatherAlert.findIndex(
-																						u => u.id === weather.id,
-																					);
-																					setEditIndex(globalIndex);
-																					setIsAddEditWeatherAlertPopupOpen(true);
-																				}}>
-																				Edit
-																			</div>
-																		</Menu.Item>
-																		<Menu.Item>
-																			<div
-																				className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full"
-																				onClick={() => {
-																					setDeleteUserIndex(
-																						weatherAlert.findIndex(
-																							u => u.id === weather.id,
-																						),
-																					);
-																					setIsDeleteUserPopupOpen(true);
-																				}}>
-																				Delete
-																			</div>
-																		</Menu.Item>
+													<Transition
+														enter="transition ease-out duration-100"
+														enterFrom="transform scale-95 opacity-0"
+														enterTo="transform scale-100 opacity-100"
+														leave="transition ease-in duration-75"
+														leaveFrom="transform scale-100 opacity-100"
+														leaveTo="transform scale-95 opacity-0"
+													>
+														<Menu.Items
+															className={`absolute -right-5 w-[140px] sm:w-[163px] bg-fgc dark:bg-fgcDark rounded-xl focus:outline-none flex flex-col z-50 transition ${menuPositionClass}`}
+														>
+															<div className="flex flex-col items-start px-3 py-2 sm:px-2.5 sm:py-2.5 gap-1">
+																<Menu.Item>
+																	<div
+																		className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full"
+																		onClick={() => {
+																			const globalIndex = weatherAlert.findIndex((u) => u.id === weather.id);
+																			setEditIndex(globalIndex);
+																			setIsAddEditWeatherAlertPopupOpen(true);
+																		}}
+																	>
+																		Edit
 																	</div>
-																</Menu.Items>
-															</Transition>
-														</Menu>
-													</div>
-												</div>
-											</div>
-
-											{/* Divider */}
-											{idx < displayedWeatherAlert.length - 1 && (
-												<div className="w-full h-px bg-textSecondary/10 dark:bg-textSecondary/25 shrink-0" />
-											)}
-										</React.Fragment>
+																</Menu.Item>
+																<Menu.Item>
+																	<div
+																		className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full"
+																		onClick={() => {
+																			setDeleteUserIndex(weatherAlert.findIndex((u) => u.id === weather.id));
+																			setIsDeleteUserPopupOpen(true);
+																		}}
+																	>
+																		Delete
+																	</div>
+																</Menu.Item>
+															</div>
+														</Menu.Items>
+													</Transition>
+												</Menu>
+											</td>
+										</tr>
 									);
 								})
 							)}
-						</>
-					</div>
+						</tbody>
+					</table>
 				</div>
+
 				{/* Pagination */}
 				<div className="flex flex-col sm:flex-row items-center justify-between w-full gap-4 sm:py-2.5 relative flex-[0_0_auto]">
 					<div className="w-full flex items-center">
