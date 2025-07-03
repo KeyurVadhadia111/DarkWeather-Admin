@@ -11,15 +11,10 @@ import { toast } from "components/utils/toast";
 import Icon from "components/utils/Icon";
 import OtpInput from "components/common/otpInput";
 import CountDown from "components/common/CountDown";
-import { apiClient } from "api/client";
-import { FaSpinner } from "react-icons/fa";
 
 function Login() {
 	const isDark = useAppState(state => state.isDark);
 	const setIsDark = useAppState(state => state.setIsDark);
-	const isLoading = useAppState(state => state.isLoading);
-	const setIsLoading = useAppState(state => state.setIsLoading);
-	// const [isLoading, setIsLoading] = useState(false);
 	const userDetails = useAppState(state => state.userDetails);
 	const setUserDetails = useAppState(state => state.setUserDetails);
 
@@ -40,7 +35,7 @@ function Login() {
 
 	const schema = yup.object({
 		email: yup.string().email("Invalid email").required("Email is required"),
-		password: yup.string().required("Password is required"),
+		password: yup.string().min(8, "Password must be at least 8 characters").required("Password is required"),
 		remember: yup.boolean().default(false).required(),
 		otp: yup
 			.string()
@@ -57,7 +52,6 @@ function Login() {
 		handleSubmit,
 		reset,
 		setValue,
-		getValues,
 		trigger,
 		formState: { errors },
 	} = useForm<ILoginFormData>({
@@ -71,17 +65,14 @@ function Login() {
 	});
 
 	useEffect(() => {
-		const stored = localStorage.getItem("auth");
-		if (stored) {
-			setUserDetails(JSON.parse(stored));
-		}
+		setUserDetails(JSON.parse(localStorage.getItem("auth") || "{}"));
 		if (localStorage.theme === "dark") {
 			setThemeMode(true);
 		}
 		if (window.matchMedia("(prefers-color-scheme: dark)").matches && localStorage?.theme === undefined) {
 			setThemeMode(true);
 		}
-	}, []);
+	}, [setUserDetails]);
 
 	const setThemeMode = (dark: boolean) => {
 		if (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches) {
@@ -110,59 +101,22 @@ function Login() {
 		toast.success("OTP resent!");
 	};
 
-	const onSubmit = async (data: ILoginFormData) => {
+	const onSubmit = (data: ILoginFormData) => {
 		if (step === 1) {
-			await handleStepOneLogin(data.email, data.password);
-			return;
-		}
-		verifyOtp(data);
-	};
-
-	const verifyOtp = async (data: ILoginFormData) => {
-		const otp = data.otp;
-		if (otp) {
-			setIsLoading(true);
-			const response = await apiClient.post('api/admin/login', {
-				json: {
-					email: data.email,
-					pincode: otp,
-				},
-			});
-
-			if (response.ok) {
-				const resJson = await response.json();
-				console.log("resJson", resJson)
-				userDetails.access_token = resJson.data.access_token;
-				userDetails.refresh_token = resJson.data.refresh_token;
-				userDetails.user_id = resJson.data.user_id;
-				userDetails.email = resJson.data.email;
-				userDetails.username = resJson.data.username;
-				userDetails.role = "SuperAdmin";
-				setUserDetails(userDetails);
-				localStorage.setItem("auth", JSON.stringify(userDetails));
-
-				toast.success("Login successful!");
-				reset();
-				setStep(1);
-				navigate("/dashboard");
-			}
-			setIsLoading(false);
-		}
-	};
-
-	const handleStepOneLogin = async (email: string, password: string) => {
-		setIsLoading(true);
-		const response = await apiClient.post('api/admin/request-login-code', {
-			json: { email, password },
-		});
-		if (response.ok) {
 			setStep(2);
 			setCountDownTimer(Date.now() + 60000);
-			toast.success(response.message);
-		} else {
-			toast.error(response.message);
+			toast.success("OTP sent to your email!");
+			return;
 		}
-		setIsLoading(false);
+		const userDetails = JSON.parse(JSON.stringify(data));
+		userDetails._id = Math.floor(Math.random() * 10000000000).toString();
+		userDetails.role = activeRole.replace(/\s/g, ""); // Remove all spaces between words
+		localStorage.setItem("auth", JSON.stringify(userDetails));
+		setUserDetails(userDetails);
+		toast.success("Login successful!");
+		reset();
+		setStep(1);
+		navigate("/dashboard");
 	};
 
 	return (
@@ -213,7 +167,7 @@ function Login() {
 						{/* Role Selection */}
 						<div className="flex flex-col gap-6 sm:gap-9 w-full">
 							{/* Role Tabs */}
-							{/* {step === 1 ? (
+							{step === 1 ? (
 								<div className="flex items-center dark:text-textDark dark:bg-fgcDark rounded-[6px] sm:rounded-xl overflow-x-auto shadow-[0_4px_35px_rgba(0,0,0,0.05)]">
 									{roles.map(role => (
 										<button
@@ -221,8 +175,8 @@ function Login() {
 											type="button"
 											onClick={() => setActiveRole(role)}
 											className={`text-xs sm:text-base px-2 py-1.5 sm:px-5 sm:py-2.5 rounded-md transition whitespace-nowrap ${activeRole === role
-												? "bg-primary text-text font-semibold rounded-[6px] sm:rounded-lg"
-												: "text-text dark:text-textDark font-normal"
+													? "bg-primary text-text font-semibold rounded-[6px] sm:rounded-lg"
+													: "text-text dark:text-textDark font-normal"
 												}`}>
 											{role}
 										</button>
@@ -230,7 +184,7 @@ function Login() {
 								</div>
 							) : (
 								""
-							)} */}
+							)}
 							{/* Login Form */}
 							<form
 								className={`flex flex-col ${step === 1 ? "gap-3 sm:gap-4" : "gap-2 sm:gap-[52px]"} w-full`}
@@ -277,17 +231,8 @@ function Login() {
 								)}
 								<Button
 									type="submit"
-									disabled={isLoading}
-									className={`w-full bg-primary hover:bg-primary/80 text-text font-bold rounded-lg !py-[10px] sm:!py-[17px] text-lg transition flex items-center justify-center gap-2 ${step === 1 ? "mt-2" : "mt-[30px] sm:mt-0"} ${isLoading ? "opacity-70 cursor-not-allowed" : ""}`}
-								>
-									{isLoading ? (
-										<>
-											<FaSpinner className="animate-spin" />
-											Loading...
-										</>
-									) : (
-										step === 1 ? "Verify" : "Submit"
-									)}
+									className={`w-full bg-primary hover:bg-primary/80 text-text font-bold rounded-lg !py-[10px] sm:!py-[17px] text-lg transition ${step === 1 ? "mt-2" : "mt-[30px] sm:mt-0"}`}>
+									{step === 1 ? "Verify" : "Submit"}
 								</Button>
 								{step === 2 && (
 									<div className="flex items-center justify-center gap-2 text-sm sm:text-base ">
@@ -296,15 +241,7 @@ function Login() {
 										</span>
 										<button
 											type="button"
-											onClick={async () => {
-												const values = getValues(); // useForm hook method
-												if (!values.email || !values.password) {
-													toast.error("Please enter your email and password again.");
-													return;
-												}
-												await handleStepOneLogin(values.email, values.password);
-												setValue("otp", ""); // Clear OTP input
-											}}
+											onClick={() => setValue("otp", "")}
 											className="text-primary hover:underline font-medium">
 											Click to resend
 										</button>

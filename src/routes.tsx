@@ -111,81 +111,81 @@ const createRoutes: React.FC = () => {
 						<Route
 							path="/"
 							element={
-								<ProtectedRoute>
-									<Login />
-								</ProtectedRoute>
+								//<ProtectedRoute>
+								<Login />
+								//</ProtectedRoute>
 							}
 						/>
 						<Route
 							path="/forgot-password"
 							element={
-								<ProtectedRoute>
-									<ForgotPasswordPage />
-								</ProtectedRoute>
+								// <ProtectedRoute>
+								<ForgotPasswordPage />
+								// //</ProtectedRoute>
 							}
 						/>
 						<Route
 							path="/dashboard"
 							element={
-								<ProtectedRoute>
-									<Dashboard />
-								</ProtectedRoute>
+								//<ProtectedRoute>
+								<Dashboard />
+								//</ProtectedRoute>
 							}
 						/>
 						<Route
 							path="/user-management"
 							element={
-								<ProtectedRoute>
-									<UserManagementPage />
-								</ProtectedRoute>
+								//<ProtectedRoute>
+								<UserManagementPage />
+								//</ProtectedRoute>
 							}
 						/>
 						<Route
 							path="/override-weather-info"
 							element={
-								<ProtectedRoute>
-									<OverrideWeatherInfoPage />
-								</ProtectedRoute>
+								//<ProtectedRoute>
+								<OverrideWeatherInfoPage />
+								//</ProtectedRoute>
 							}
 						/>
 						<Route
 							path="/weather-alert"
 							element={
-								<ProtectedRoute>
-									<WeatherAlertPage />
-								</ProtectedRoute>
+								//<ProtectedRoute>
+								<WeatherAlertPage />
+								//</ProtectedRoute>
 							}
 						/>
 						<Route
 							path="/role"
 							element={
-								<ProtectedRoute>
-									<RoleManagement />
-								</ProtectedRoute>
+								//<ProtectedRoute>
+								<RoleManagement />
+								//</ProtectedRoute>
 							}
 						/>
 						<Route
 							path="/subscription"
 							element={
-								<ProtectedRoute>
-									<Subscription />
-								</ProtectedRoute>
+								//<ProtectedRoute>
+								<Subscription />
+								//</ProtectedRoute>
 							}
 						/>
 						<Route
 							path="/posts-articles"
 							element={
-								<ProtectedRoute>
-									<PostsArticlesPage />
-								</ProtectedRoute>
+								//<ProtectedRoute>
+								<PostsArticlesPage />
+								//</ProtectedRoute>
 							}
 						/>
 						<Route
 							path="/activity-log"
 							element={
-								<ProtectedRoute>
-									<ActivityLogPage />
-								</ProtectedRoute>
+								//<ProtectedRoute>
+								<ActivityLogPage />
+								//</ProtectedRoute>
 							}
 						/>
 						<Route path="access_disabled" element={<AccessDisabled />} />
