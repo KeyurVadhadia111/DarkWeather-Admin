@@ -8,6 +8,7 @@ interface TimePickerProps {
 	register: UseFormRegister<any>;
 	setValue: UseFormSetValue<any>;
 	getValues: UseFormGetValues<any>;
+	error?: string;
 }
 
 const TimePicker: React.FC<TimePickerProps> = ({
@@ -15,6 +16,7 @@ const TimePicker: React.FC<TimePickerProps> = ({
 	label,
 	register,
 	setValue,
+	error
 }) => {
 	const [hour, setHour] = useState("00");
 	const [minute, setMinute] = useState("00");
@@ -124,6 +126,9 @@ const TimePicker: React.FC<TimePickerProps> = ({
 						{renderWheel(["AM", "PM"], period, (val) => setPeriod(val as "AM" | "PM"), "period")}
 					</div>
 				</div>
+			)}
+			{error && (
+				<p className="text-red-500 text-xs mt-1">{error}</p>
 			)}
 		</div>
 	);

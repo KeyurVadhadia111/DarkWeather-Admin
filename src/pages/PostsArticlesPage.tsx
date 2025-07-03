@@ -8,9 +8,13 @@ import useAppState from "components/utils/useAppState";
 import React, { useEffect, useMemo, useState } from "react";
 import DeleteUserPopup from "components/popup/DeleteUserPopup";
 import PostArticleArchivePopup from "components/popup/PostArticleArchivePopup";
-import ResertPasswordPopup from "components/popup/ResertPasswordPopup";
 import { useNavigate } from "react-router-dom";
 import { toast } from "components/utils/toast";
+import ArticleSelectionSection from "components/ArticleSelectionSection";
+import * as yup from "yup";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import ScheduleConfirmation from "components/popup/ScheduleConfirmation";
 
 interface PostArticle {
 	id: number;
@@ -27,6 +31,69 @@ interface SortConfig {
 	key: keyof PostArticle;
 	direction: "asc" | "desc";
 }
+
+const articleOptions1 = [
+	{
+		id: 1,
+		title: "Climate Change Updates"
+	},
+	{
+		id: 2,
+		title: "June Weather Summary"
+	},
+	{
+		id: 3,
+		title: "Tips for Rainy Season"
+	},
+	{
+		id: 4,
+		title: "Storm Preparedness Guide"
+	},
+	{
+		id: 5,
+		title: "Summer Heat Alert Blog"
+	},
+	{
+		id: 6,
+		title: "Coastal Flooding Explained"
+	},
+	{
+		id: 7,
+		title: "Heatwave Advisory for Summer"
+	},
+	{
+		id: 8,
+		title: "Real-time Weather Insights"
+	},
+	{
+		id: 9,
+		title: "How to Stay Cool This July"
+	},
+	{
+		id: 10,
+		title: "Weekend Storm Tracker"
+	}
+];
+
+const articleSchema = yup.object({
+	article1: yup.number().required("Article 1 is required"),
+	article2: yup.number().required("Article 2 is required"),
+	article3: yup.number().required("Article 3 is required"),
+	article4: yup.number().required("Article 4 is required"),
+	article5: yup.number().required("Article 5 is required"),
+	article6: yup.number().required("Article 6 is required"),
+	article7: yup.number().required("Article 7 is required"),
+});
+type ArticleFormData = {
+	article1: any
+	article2: any
+	article3: any
+	article4: any
+	article5: any
+	article6: any
+	article7: any
+}
+
 
 export default function PostsArticlesPage() {
 
@@ -182,6 +249,61 @@ export default function PostsArticlesPage() {
 			statusColor: "text-textSecondary",
 		},
 	]);
+
+
+	const {
+		handleSubmit: handleSubmitTop,
+		formState: { errors: errorsTop },
+		setValue: setValueTop,
+		register: registerTop,
+		reset: resetTop,
+		trigger: triggerTop,
+	} = useForm<ArticleFormData>({
+		resolver: yupResolver(articleSchema),
+		defaultValues: {
+			article1: undefined,
+			article2: undefined,
+			article3: undefined,
+			article4: undefined,
+			article5: undefined,
+			article6: undefined,
+			article7: undefined,
+		},
+	});
+
+	const {
+		handleSubmit: handleSubmitSevere,
+		formState: { errors: errorsSevere },
+		setValue: setValueSevere,
+		register: registerSevere,
+		reset: resetSevere,
+		trigger: triggerSevere,
+	} = useForm<ArticleFormData>({
+		resolver: yupResolver(articleSchema),
+		defaultValues: {
+			article1: undefined,
+			article2: undefined,
+			article3: undefined,
+			article4: undefined,
+			article5: undefined,
+			article6: undefined,
+			article7: undefined,
+		},
+	});
+
+	useEffect(() => {
+		const articleKeys = [
+			"article1", "article2", "article3", "article4",
+			"article5", "article6", "article7",
+		] as (keyof ArticleFormData)[];
+		articleKeys.forEach(key => {
+			registerTop(key);
+			registerSevere(key);
+		});
+	}, [registerTop, registerSevere]);
+
+
+
 	const [selectedPostArticle, setSelectedPostArticle] = useState<number[]>([]);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [PostArticlePerPage] = useState(12);
@@ -200,11 +322,50 @@ export default function PostsArticlesPage() {
 	const [deleteUserIndex, setDeleteUserIndex] = useState<number | null>(null);
 	const [isArchivePopupOpen, setIsArchivePopupOpen] = useState(false);
 	const [selectedArchiveItem, setSelectedArchiveItem] = useState<PostArticle | null>(null);
+	const [showScheduleConfirm, setShowScheduleConfirm] = useState(false);
+	const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
 
-	const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
-	const navigate = useNavigate();
 
 	const [searchQuery, setSearchQuery] = useState("");
+
+	const [topStoriesSelections, setTopStoriesSelections] = useState<Record<string, number | null>>({});
+	const [severeWeatherSelections, setSevereWeatherSelections] = useState<Record<string, number | null>>({});
+
+
+	const allSelectedIds = [
+		...Object.values(topStoriesSelections),
+		...Object.values(severeWeatherSelections),
+	].filter((id): id is number => id !== null);
+
+
+	const getFilteredOptions = (currentName: string, group: "top" | "severe") => {
+		const currentSelections = group === "top" ? topStoriesSelections : severeWeatherSelections;
+
+		const selectedIds = Object.entries(currentSelections)
+			.filter(([key, value]) => key !== currentName && value !== null)
+			.map(([_, value]) => value as number);
+
+		const currentValue = currentSelections[currentName];
+
+		return articleOptions1.map(option => ({
+			value: option.id,
+			text: option.title,
+			disabled: option.id !== currentValue && selectedIds.includes(option.id),
+		}));
+	};
+
+	const handleSelectChange = (name: string, value: number, group: "top" | "severe") => {
+		if (group === "top") {
+			setTopStoriesSelections(prev => ({ ...prev, [name]: value }));
+			setValueTop(name as keyof ArticleFormData, value);
+			triggerTop(name as keyof ArticleFormData);
+		} else {
+			setSevereWeatherSelections(prev => ({ ...prev, [name]: value }));
+			setValueSevere(name as keyof ArticleFormData, value);
+			triggerSevere(name as keyof ArticleFormData);
+		}
+	};
+
 
 	// Filter PostArticle by search query (name or email)
 	const filteredPostArticle = useMemo(() => {
@@ -303,9 +464,32 @@ export default function PostsArticlesPage() {
 					: article
 			)
 		);
-
+		toast.success("Item published successfully!");
 		setSelectedArchiveItem(null);
 	};
+
+
+	const onSubmitTop: SubmitHandler<ArticleFormData> = async () => {
+		Object.entries(topStoriesSelections).forEach(([key, val]) => {
+			setValueTop(key as keyof ArticleFormData, val ?? undefined);
+		});
+		const isValid = await triggerTop();
+		if (isValid) {
+			console.log("Top Stories:", topStoriesSelections);
+		}
+	};
+
+	const onSubmitSevere: SubmitHandler<ArticleFormData> = async () => {
+		Object.entries(severeWeatherSelections).forEach(([key, val]) => {
+			setValueSevere(key as keyof ArticleFormData, val ?? undefined);
+		});
+		const isValid = await triggerSevere();
+		if (isValid) {
+			console.log("Severe Weather:", severeWeatherSelections);
+		}
+	};
+
+
 
 
 	// Reset to page 1 when searchQuery changes
@@ -364,18 +548,6 @@ export default function PostsArticlesPage() {
 			</div>
 
 			<div className="flex flex-col w-full items-start gap-4 p-4 relative bg-bgc dark:bg-bgcDark rounded-2xl shadow-[0px_10px_65px_#0000000d]">
-				{/* ...table header... */}
-				{/* <div className="flex items-center justify-between w-full">
-					<div className="text-base sm:text-xl font-medium text-text dark:text-textDark leading-[21px] sm:leading-[26px]">
-						Post \ Article
-					</div>
-					<div className="text-xs sm:text-base text-textSecondary dark:text-textDark leading-[21px] sm:leading-[26px]">
-
-						{selectedPostArticle.length === 0
-							? "0 Post / Article selected"
-							: `${selectedPostArticle.length} Post / Article${selectedPostArticle.length > 1 ? "s" : ""} selected`}
-					</div>
-				</div> */}
 				<div className="w-full overflow-x-auto overflow-hidden">
 					<table className="min-w-[950px] sm:min-w-[130px] w-full text-left border-separate border-spacing-0">
 						<thead>
@@ -525,20 +697,9 @@ export default function PostsArticlesPage() {
 
 											<td className="flex items-center justify-between px-3 sm:px-5 py-4 text-xs sm:text-base whitespace-nowrap">
 												<span className={`${item.statusColor}`}>{item.status}</span>
-												{/* Switch */}
-												{/* <div
-													className="w-[26px] h-[16px] rounded-full flex items-center px-0.5 transition-all duration-300 bg-[#808080]"
-												>
-													<div
-														className={`w-[14px] h-[14px] rounded-full transition-all duration-300 transform ${item.status === "Active"
-															? "translate-x-[9px] bg-[#FFA500]"
-															: "translate-x-[-1px] bg-[#F8F8F8]"
-															}`}
-													/>
-												</div> */}
 											</td>
-											<td className="px-3 sm:px-5 py-4">
-												<Menu as="div" className="flex justify-center relative  text-left">
+											<td className="px-3 sm:px-5 py-4 sm:w-auto">
+												<Menu as="div" className="sm:w-[72px] flex justify-center relative text-left">
 													<Menu.Button>
 														<Icon
 															icon="action-icon"
@@ -599,7 +760,9 @@ export default function PostsArticlesPage() {
 																		<div
 																			className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full"
 																			onClick={() => {
-																				handleDraft(item.id)
+																				setSelectedItemId(item.id);
+
+																				setShowScheduleConfirm(true);
 																			}}
 																		>
 																			Publish
@@ -640,6 +803,36 @@ export default function PostsArticlesPage() {
 					)}
 				</div>
 			</div>
+			<div className="w-full flex lg:flex-row flex-col justify-between gap-6">
+				<ArticleSelectionSection
+					title="Top Stories"
+					sectionKey="top"
+					articleSelections={topStoriesSelections}
+					getFilteredOptions={getFilteredOptions}
+					handleSelectChange={handleSelectChange}
+					onReset={() => {
+						setTopStoriesSelections({});
+						resetTop();
+					}}
+					onSave={handleSubmitTop(onSubmitTop)}
+					errors={errorsTop}
+				/>
+
+				<ArticleSelectionSection
+					title="Severe Weather"
+					sectionKey="severe"
+					articleSelections={severeWeatherSelections}
+					getFilteredOptions={getFilteredOptions}
+					handleSelectChange={handleSelectChange}
+					onReset={() => {
+						setSevereWeatherSelections({});
+						resetSevere();
+					}}
+					onSave={handleSubmitSevere(onSubmitSevere)}
+					errors={errorsSevere}
+				/>
+
+			</div>
 
 			<AddEditPostArticlePopup
 				isOpen={isAddEditPostArticlePopupOpen}
@@ -650,6 +843,18 @@ export default function PostsArticlesPage() {
 				list={PostArticle}
 				setList={setPostArticle}
 				editIndex={editIndex}
+			/>
+
+			<ScheduleConfirmation
+				isOpen={showScheduleConfirm}
+				setIsOpen={setShowScheduleConfirm}
+				itemType="article"
+				onConfirm={() => {
+					if (selectedItemId) {
+						handleDraft(selectedItemId);
+						setSelectedItemId(null);
+					}
+				}}
 			/>
 
 			{selectedArchiveItem && (

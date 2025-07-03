@@ -32,7 +32,7 @@ const Modal: React.FC<RequestType> = ({ openModal, setOpenModal, size, children,
 		<>
 			{size && (
 				<Transition.Root show={openModal} as={Fragment}>
-					<Dialog as="div" className="relative z-[100]" initialFocus={cancelButtonRef} onClose={setOpenModal}>
+					<Dialog as="div" className="relative z-[1000]" initialFocus={cancelButtonRef} onClose={setOpenModal}>
 						<Transition.Child
 							as={Fragment}
 							enter="ease-out duration-300"

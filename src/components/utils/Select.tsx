@@ -6,13 +6,15 @@ interface SelectProps {
 	required?: boolean;
 	error?: string;
 	className?: string;
-	items: { value: string; text: string }[];
+	items: { value: any; text: string, disabled?: boolean }[];
 	register?: any;
 	trigger?: (name: any) => void;
 	placeholder?: string;
+	value?: string | number;
+	onChange?: (value: any) => void;
 }
 
-const Select = ({ name, label, required, error, className, items, register, trigger, placeholder }: SelectProps) => {
+const Select = ({ name, label, required, error, className, items, register, trigger, placeholder, value, onChange }: SelectProps) => {
 	return (
 		<div className="relative">
 			{label && (
@@ -25,9 +27,16 @@ const Select = ({ name, label, required, error, className, items, register, trig
 			<div className="relative">
 				<select
 					name={name}
-					className={`appearance-none block px-4 w-full h-12 rounded-lg text-base bg-white text-gray-500 dark:bg-gray-800 border border-gray-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FFA500] dark:border-gray-700 dark:text-gray-300 ${className || ""} ${
-						error ? "!border-red-500 focus-visible:!ring-red-500" : ""
-					}`}
+					value={value}
+					onChange={(e) => {
+						const val = e.target.value;
+						onChange?.(val);
+						if (register) {
+							trigger?.(name);
+						}
+					}}
+					className={`appearance-none block px-4 w-full h-12 rounded-lg text-base bg-white text-gray-500 dark:bg-gray-800 border border-gray-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FFA500] dark:border-gray-700 dark:text-gray-300 ${className || ""} ${error ? "!border-red-500 focus-visible:!ring-red-500" : ""
+						}`}
 					{...(register &&
 						register(name, {
 							onChange: () => {
@@ -36,7 +45,7 @@ const Select = ({ name, label, required, error, className, items, register, trig
 						}))}>
 					{label && <option value="">{placeholder || `Select ${label}`}</option>}
 					{items?.map(item => (
-						<option value={item.value} key={item.value}>
+						<option value={item.value} key={item.value} disabled={item.disabled}>
 							{item.text}
 						</option>
 					))}
