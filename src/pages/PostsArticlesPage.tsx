@@ -1,4 +1,4 @@
-import AddEditWeatherAlertPopup from "components/popup/AddEditWeatherAlertPopup";
+import AddEditPostArticlePopup from "components/popup/AddEditPostArticlePopup";
 import { Menu, Transition } from "@headlessui/react";
 import { Button } from "components/utils/Button";
 import Icon from "components/utils/Icon";
@@ -7,236 +7,222 @@ import Pagination from "components/utils/Pagination";
 import useAppState from "components/utils/useAppState";
 import React, { useEffect, useMemo, useState } from "react";
 import DeleteUserPopup from "components/popup/DeleteUserPopup";
+import PostArticleArchivePopup from "components/popup/PostArticleArchivePopup";
 import ResertPasswordPopup from "components/popup/ResertPasswordPopup";
 import { useNavigate } from "react-router-dom";
 import { toast } from "components/utils/toast";
 
-interface weatherAlert {
+interface PostArticle {
 	id: number;
-	alert: string;
-	location: string;
-	severity: string;
-	dueTo: string;
-	startDateTime: string;
-	endDateTime: string;
+	title: string;
+	type: string;
+	scheduledFor: string;
+	createdBy: string;
+	createdOn: string;
 	status: string;
 	statusColor: string;
 }
 
 interface SortConfig {
-	key: keyof weatherAlert;
+	key: keyof PostArticle;
 	direction: "asc" | "desc";
 }
 
-export default function WeatherAlertPage() {
-	// Example Weather Alert data array with duplicates removed
+export default function PostsArticlesPage() {
 
-	const [weatherAlert, setWeatherAlert] = useState<weatherAlert[]>([
+	const [PostArticle, setPostArticle] = useState<PostArticle[]>([
 		{
 			id: 1,
-			alert: "Flash Flood Warning",
-			location: "New York, NY",
-			severity: "High",
-			dueTo: "Heavy rain causing possible flooding",
-			startDateTime: "Jun 18, 2:00 PM",
-			endDateTime: "Jun 18, 6:00 PM",
-			status: "Active",
+			title: "Climate Change Updates",
+			type: "Top Stories",
+			scheduledFor: "Jun 28, 2025, 10:00 AM",
+			createdBy: "John Smith",
+			createdOn: "Jun 26, 2025",
+			status: "Published",
 			statusColor: "text-textGreen",
 		},
 		{
 			id: 2,
-			alert: "Excessive Heat Alert",
-			location: "San Francisco, CA",
-			severity: "Extreme",
-			dueTo: "Temperatures expected above 45°C",
-			startDateTime: "Jun 19, 11:00 AM",
-			endDateTime: "Jun 19, 7:00 PM",
-			status: "Inactive",
-			statusColor: "text-textRed",
+			title: "June Weather Summary",
+			type: "Severe Weather",
+			scheduledFor: "Jun 28, 2025, 3:00 PM",
+			createdBy: "Admin Team",
+			createdOn: "Jun 25, 2025",
+			status: "Scheduled",
+			statusColor: "text-warning",
 		},
 		{
 			id: 3,
-			alert: "Snowstorm Alert",
-			location: "Miami, FL",
-			severity: "Moderate",
-			dueTo: "Light to moderate snowfall expected",
-			startDateTime: "Jun 20, 6:00 AM",
-			endDateTime: "Jun 20, 3:00 PM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 4,
-			alert: "Thunderstorm Warning",
-			location: "Seattle, WA",
-			severity: "High",
-			dueTo: "Lightning & hailstorms possible",
-			startDateTime: "Jun 18, 4:00 PM",
-			endDateTime: "Jun 18, 9:00 PM",
-			status: "Inactive",
+			title: "Tips for Rainy Season",
+			type: "Severe Weather",
+			scheduledFor: "-",
+			createdBy: "Emily Brown",
+			createdOn: "Jun 24, 2025",
+			status: "Cancelled",
 			statusColor: "text-textRed",
 		},
 		{
+			id: 4,
+			title: "Storm Preparedness Guide",
+			type: "Top Stories",
+			scheduledFor: "Jun 30, 2025, 9:00 AM",
+			createdBy: "Alex Johnson",
+			createdOn: "Jun 20, 2025",
+			status: "Draft",
+			statusColor: "text-textSecondary",
+		},
+		{
 			id: 5,
-			alert: "Wind Advisory",
-			location: "Austin, TX",
-			severity: "Low",
-			dueTo: "Winds reaching up to 40 km/h",
-			startDateTime: "Jun 19, 9:00 AM",
-			endDateTime: "Jun 19, 5:00 PM",
-			status: "Active",
-			statusColor: "text-textGreen",
+			title: "Summer Heat Alert Blog",
+			type: "Severe Weather",
+			scheduledFor: "-",
+			createdBy: "Sarah Wilson",
+			createdOn: "Jun 18, 2025",
+			status: "Scheduled",
+			statusColor: "text-warning",
 		},
 		{
 			id: 6,
-			alert: "Rainfall Alert",
-			location: "Denver, CO",
-			severity: "Moderate",
-			dueTo: "Moderate rainfall in the area",
-			startDateTime: "Jun 18, 8:00 AM",
-			endDateTime: "Jun 18, 12:00 PM",
-			status: "Active",
-			statusColor: "text-textGreen",
+			title: "Coastal Flooding Explained",
+			type: "Top Stories",
+			scheduledFor: "-",
+			createdBy: "Mike Chen",
+			createdOn: "Jun 22, 2025",
+			status: "Draft",
+			statusColor: "text-textSecondary",
 		},
 		{
 			id: 7,
-			alert: "Coastal Flood Watch",
-			location: "Chicago, IL",
-			severity: "High",
-			dueTo: "Tidal flooding due to storm surge",
-			startDateTime: "Jun 21, 2:00 AM",
-			endDateTime: "Jun 21, 6:00 AM",
-			status: "Active",
+			title: "Heatwave Advisory for Summer",
+			type: "Top Stories",
+			scheduledFor: "-",
+			createdBy: "Maya Patel",
+			createdOn: "Jun 20, 2025",
+			status: "Published",
 			statusColor: "text-textGreen",
 		},
 		{
 			id: 8,
-			alert: "Heat Warning",
-			location: "Phoenix, AZ",
-			severity: "Extreme",
-			dueTo: "Health risk due to prolonged heat",
-			startDateTime: "Jun 19, 12:00 PM",
-			endDateTime: "Jun 19, 8:00 PM",
-			status: "Inactive",
-			statusColor: "text-textRed",
+			title: "Real-time Weather Insights",
+			type: "Severe Weather",
+			scheduledFor: "Today, 2:00 PM",
+			createdBy: "Emily Brown",
+			createdOn: "Jun 18, 2025",
+			status: "Archived",
+			statusColor: "text-textSecondary",
 		},
 		{
 			id: 9,
-			alert: "Ice Warning",
-			location: "Boston, MA",
-			severity: "Moderate",
-			dueTo: "Icy road conditions expected",
-			startDateTime: "Jun 20, 7:00 AM",
-			endDateTime: "Jun 20, 11:00 AM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 10,
-			alert: "Tropical Storm Alert",
-			location: "Las Vegas, NV",
-			severity: "Extreme",
-			dueTo: "Risk of tropical cyclone impact",
-			startDateTime: "Jun 22, 3:00 PM",
-			endDateTime: "Jun 22, 10:00 PM",
-			status: "Inactive",
+			title: "How to Stay Cool This July",
+			type: "Top Stories",
+			scheduledFor: "Jun 20, 2025, 7:00 AM",
+			createdBy: "Ton Jenkins",
+			createdOn: "Jun 12, 2025",
+			status: "Cancelled",
 			statusColor: "text-textRed",
 		},
 		{
-			id: 11,
-			alert: "Dust Storm Warning",
-			location: "Portland, OR",
-			severity: "High",
-			dueTo: "Reduced visibility due to dust storm",
-			startDateTime: "Jun 18, 1:00 PM",
-			endDateTime: "Jun 18, 4:00 PM",
-			status: "Active",
+			id: 10,
+			title: "Weekend Storm Tracker",
+			type: "Top Stories",
+			scheduledFor: "-",
+			createdBy: "Rachel Simmons",
+			createdOn: "Jun 8, 2025",
+			status: "Published",
 			statusColor: "text-textGreen",
 		},
 		{
+			id: 11,
+			title: "Drought Watch Announcement |",
+			type: "Severe Weather",
+			scheduledFor: "-",
+			createdBy: "Sarah Wilson",
+			createdOn: "Jun 4, 2025",
+			status: "Archived",
+			statusColor: "text-textSecondary",
+		},
+		{
 			id: 12,
-			alert: "Thunderstorm Risk",
-			location: "Atlanta, GA",
-			severity: "Low",
-			dueTo: "Low chance of isolated thunderstorms",
-			startDateTime: "Jun 19, 5:00 PM",
-			endDateTime: "Jun 19, 9:00 PM",
-			status: "Active",
+			title: "Behind the Forecast",
+			type: "Severe Weather",
+			scheduledFor: "-",
+			createdBy: "Linda Brooks",
+			createdOn: "May 26, 2025",
+			status: "Published",
 			statusColor: "text-textGreen",
 		},
 		{
 			id: 13,
-			alert: "Rainfall Alert",
-			location: "Austin, TX",
-			severity: "Moderate",
-			dueTo: "Moderate rainfall in the area",
-			startDateTime: "Jun 18, 8:00 AM",
-			endDateTime: "Jun 18, 12:00 PM",
-			status: "Active",
-			statusColor: "text-textGreen",
+			title: "Storm Preparedness Guide",
+			type: "Top Stories",
+			scheduledFor: "Jun 30, 2025, 9:00 AM",
+			createdBy: "Alex Johnson",
+			createdOn: "Jun 20, 2025",
+			status: "Draft",
+			statusColor: "text-textSecondary",
 		},
 		{
 			id: 14,
-			alert: "Coastal Flood Watch",
-			location: "Denver, CO",
-			severity: "High",
-			dueTo: "Tidal flooding due to storm surge",
-			startDateTime: "Jun 21, 2:00 AM",
-			endDateTime: "Jun 21, 6:00 AM",
-			status: "Active",
-			statusColor: "text-textGreen",
+			title: "Summer Heat Alert Blog",
+			type: "Severe Weather",
+			scheduledFor: "-",
+			createdBy: "Sarah Wilson",
+			createdOn: "Jun 18, 2025",
+			status: "Scheduled",
+			statusColor: "text-warning",
 		},
 		{
 			id: 15,
-			alert: "Heat Warning",
-			location: "Chicago, IL",
-			severity: "Extreme",
-			dueTo: "Health risk due to prolonged heat",
-			startDateTime: "Jun 19, 12:00 PM",
-			endDateTime: "Jun 19, 8:00 PM",
-			status: "Inactive",
-			statusColor: "text-textRed",
-		}
+			title: "Coastal Flooding Explained",
+			type: "Top Stories",
+			scheduledFor: "-",
+			createdBy: "Mike Chen",
+			createdOn: "Jun 22, 2025",
+			status: "Draft",
+			statusColor: "text-textSecondary",
+		},
 	]);
-	const [selectedWeatherAlert, setSelectedWeatherAlert] = useState<number[]>([]);
+	const [selectedPostArticle, setSelectedPostArticle] = useState<number[]>([]);
 	const [currentPage, setCurrentPage] = useState(1);
-	const [weatherAlertPerPage] = useState(12);
+	const [PostArticlePerPage] = useState(12);
 	const [sortConfig, setSortConfig] = useState<SortConfig>({
-		key: "alert",
+		key: "title",
 		direction: "asc",
 	});
 	const [editIndex, setEditIndex] = useState<number | null>(null);
-	const [isAddEditWeatherAlertPopupOpen, setIsAddEditWeatherAlertPopupOpen] = useState(false);
+	const [isAddEditPostArticlePopupOpen, setIsAddEditPostArticlePopupOpen] = useState(false);
 	const isSideExpanded = useAppState(state => state.isSideExpanded);
 
-	const startIdx = (currentPage - 1) * weatherAlertPerPage;
-	const endIdx = Math.min(startIdx + weatherAlertPerPage, weatherAlert.length);
+	const startIdx = (currentPage - 1) * PostArticlePerPage;
+	const endIdx = Math.min(startIdx + PostArticlePerPage, PostArticle.length);
 
 	const [isDeleteUserPopupOpen, setIsDeleteUserPopupOpen] = useState(false);
 	const [deleteUserIndex, setDeleteUserIndex] = useState<number | null>(null);
+	const [isArchivePopupOpen, setIsArchivePopupOpen] = useState(false);
+	const [selectedArchiveItem, setSelectedArchiveItem] = useState<PostArticle | null>(null);
 
 	const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
 	const navigate = useNavigate();
 
 	const [searchQuery, setSearchQuery] = useState("");
 
-	// Filter weatherAlert by search query (name or email)
-	const filteredWeatherAlert = useMemo(() => {
-		if (!searchQuery.trim()) return weatherAlert;
+	// Filter PostArticle by search query (name or email)
+	const filteredPostArticle = useMemo(() => {
+		if (!searchQuery.trim()) return PostArticle;
 		const query = searchQuery.toLowerCase();
-		return weatherAlert.filter(
-			weather => weather.alert.toLowerCase().includes(query) || weather.severity.toLowerCase().includes(query),
+		return PostArticle.filter(
+			item => item.title.toLowerCase().includes(query) || item.type.toLowerCase().includes(query),
 		);
-	}, [weatherAlert, searchQuery]);
+	}, [PostArticle, searchQuery]);
 
-	const sortedWeatherAlert = useMemo(() => {
-		const sorted = [...filteredWeatherAlert].sort((a: weatherAlert, b: weatherAlert) => {
+	const sortedPostArticle = useMemo(() => {
+		const sorted = [...filteredPostArticle].sort((a: PostArticle, b: PostArticle) => {
 			const key = sortConfig.key;
 			let valA = a[key];
 			let valB = b[key];
 
 			if (typeof valA === "string" && typeof valB === "string") {
-				if (key === "startDateTime") {
+				if (key === "createdOn") {
 					const convertToDate = (str: string): number => {
 						if (str.toLowerCase().includes("today")) return new Date().getTime();
 						if (str.toLowerCase().includes("yesterday")) {
@@ -259,13 +245,13 @@ export default function WeatherAlertPage() {
 			return 0;
 		});
 		return sorted;
-	}, [filteredWeatherAlert, sortConfig]);
+	}, [filteredPostArticle, sortConfig]);
 
-	const displayedWeatherAlert = useMemo(() => {
-		return sortedWeatherAlert.slice(startIdx, endIdx);
-	}, [sortedWeatherAlert, startIdx, endIdx]);
+	const displayedPostArticle = useMemo(() => {
+		return sortedPostArticle.slice(startIdx, endIdx);
+	}, [sortedPostArticle, startIdx, endIdx]);
 
-	const handleSort = (key: keyof weatherAlert) => {
+	const handleSort = (key: keyof PostArticle) => {
 		setSortConfig(prevConfig => ({
 			key,
 			direction: prevConfig.key === key && prevConfig.direction === "asc" ? "desc" : "asc",
@@ -273,28 +259,54 @@ export default function WeatherAlertPage() {
 	};
 
 	/* Start for checkbox */
-	const allChecked = displayedWeatherAlert.length > 0 && displayedWeatherAlert.every((u: weatherAlert) => selectedWeatherAlert.includes(u.id));
+	const allChecked = displayedPostArticle.length > 0 && displayedPostArticle.every((u: PostArticle) => selectedPostArticle.includes(u.id));
 	const isIndeterminate =
-		displayedWeatherAlert.length > 0 && selectedWeatherAlert.some(id => displayedWeatherAlert.some(u => u.id === id)) && !allChecked;
+		displayedPostArticle.length > 0 && selectedPostArticle.some(id => displayedPostArticle.some(u => u.id === id)) && !allChecked;
 
 	const handleSelectAll = () => {
 		if (allChecked) {
-			const pageIds = displayedWeatherAlert.map((u: weatherAlert) => u.id);
-			setSelectedWeatherAlert(prev => prev.filter(id => !pageIds.includes(id)));
+			const pageIds = displayedPostArticle.map((u: PostArticle) => u.id);
+			setSelectedPostArticle(prev => prev.filter(id => !pageIds.includes(id)));
 		} else {
-			const pageIds = displayedWeatherAlert.map((u: weatherAlert) => u.id);
-			setSelectedWeatherAlert(prev => [...new Set([...prev, ...pageIds])]);
+			const pageIds = displayedPostArticle.map((u: PostArticle) => u.id);
+			setSelectedPostArticle(prev => [...new Set([...prev, ...pageIds])]);
 		}
 	};
 
 	const handleCheckbox = (id: number) => {
-		if (selectedWeatherAlert.includes(id)) {
-			setSelectedWeatherAlert(prev => prev.filter(weatherId => weatherId !== id));
+		if (selectedPostArticle.includes(id)) {
+			setSelectedPostArticle(prev => prev.filter(itemId => itemId !== id));
 		} else {
-			setSelectedWeatherAlert(prev => [...prev, id]);
+			setSelectedPostArticle(prev => [...prev, id]);
 		}
 	};
-	/* End for checkbox */
+
+	const handleArchive = () => {
+		if (!selectedArchiveItem) return;
+
+		setPostArticle((prev) =>
+			prev.map((article) =>
+				article.id === selectedArchiveItem.id
+					? { ...article, status: "Archived", statusColor: "text-gray-400" }
+					: article
+			)
+		);
+
+		setSelectedArchiveItem(null);
+	};
+
+	const handleDraft = (id: any) => {
+		setPostArticle((prev) =>
+			prev.map((article) =>
+				article.id === id
+					? { ...article, status: "Published", statusColor: "text-textGreen" }
+					: article
+			)
+		);
+
+		setSelectedArchiveItem(null);
+	};
+
 
 	// Reset to page 1 when searchQuery changes
 	useEffect(() => {
@@ -308,7 +320,7 @@ export default function WeatherAlertPage() {
 			<div className="flex flex-col items-center justify-center gap-5 relative self-stretch w-full flex-[0_0_auto]">
 				<div className="flex sm:h-14 items-center w-full">
 					<div className="relative font-medium text-text dark:text-textDark text-xl sm:text-2xl tracking-[0] leading-5 sm:leading-6 whitespace-nowrap">
-						Weather Alert
+						Content Post Management
 					</div>
 				</div>
 				<div className="flex items-center justify-around gap-3 p-2.5 sm:px-6 sm:py-4 relative self-stretch w-full flex-[0_0_auto] bg-bgc dark:bg-bgcDark rounded-2xl shadow-[0px_10px_65px_#0000000d]">
@@ -339,11 +351,11 @@ export default function WeatherAlertPage() {
 								className="flex h-[42px] sm:h-14 items-center justify-center gap-3 sm:px-6 py-3 sm:py-4 relative flex-[0_0_auto] bg-primary rounded-lg sm:rounded-xl"
 								onClick={() => {
 									setEditIndex(null);
-									setIsAddEditWeatherAlertPopupOpen(true);
+									setIsAddEditPostArticlePopupOpen(true);
 								}}>
 								<Icon icon="plus" className="w-5 h-5 sm:w-7 sm:h-7" />
 								<div className="relative  font-semibold text-text text-xs sm:text-base tracking-[0] leading-6 whitespace-nowrap">
-									Add New Weather Alert
+									Add Post \ Article
 								</div>
 							</Button>
 						</div>
@@ -353,18 +365,19 @@ export default function WeatherAlertPage() {
 
 			<div className="flex flex-col w-full items-start gap-4 p-4 relative bg-bgc dark:bg-bgcDark rounded-2xl shadow-[0px_10px_65px_#0000000d]">
 				{/* ...table header... */}
-				<div className="flex items-center justify-between w-full">
+				{/* <div className="flex items-center justify-between w-full">
 					<div className="text-base sm:text-xl font-medium text-text dark:text-textDark leading-[21px] sm:leading-[26px]">
-						weather Alert
+						Post \ Article
 					</div>
 					<div className="text-xs sm:text-base text-textSecondary dark:text-textDark leading-[21px] sm:leading-[26px]">
-						{selectedWeatherAlert.length === 0
-							? "0 Weather Alert selected"
-							: `${selectedWeatherAlert.length} Weather Alert${selectedWeatherAlert.length > 1 ? "s" : ""} selected`}
+
+						{selectedPostArticle.length === 0
+							? "0 Post / Article selected"
+							: `${selectedPostArticle.length} Post / Article${selectedPostArticle.length > 1 ? "s" : ""} selected`}
 					</div>
-				</div>
+				</div> */}
 				<div className="w-full overflow-x-auto overflow-hidden">
-					<table className="min-w-[1027px] sm:min-w-[1450px] w-full text-left border-separate border-spacing-0">
+					<table className="min-w-[950px] sm:min-w-[130px] w-full text-left border-separate border-spacing-0">
 						<thead>
 							<tr className="h-[42px] sm:h-[52px] bg-fgc dark:bg-fgcDark rounded-xl">
 								<th className="px-[11px] sm:px-4 py-3.5">
@@ -393,51 +406,48 @@ export default function WeatherAlertPage() {
 										</span>
 									</label>
 								</th>
-								<th className="w-[152px] sm:w-[220px] px-3 sm:px-5 py-3.5 cursor-pointer" onClick={() => handleSort("alert")}>
+								<th className="w-[152px] sm:w-[260px] px-3 sm:px-5 py-3.5 cursor-pointer" onClick={() => handleSort("title")}>
 									<div className="flex items-center gap-2">
-										<span className="text-text dark:text-textDark text-xs sm:text-base font-medium whitespace-nowrap">Alert</span>
+										<span className="text-text dark:text-textDark text-xs sm:text-base font-medium whitespace-nowrap">Title</span>
 										<Icon
-											icon={sortConfig?.key === "alert" ? "up-sort" : "sort"}
+											icon={sortConfig?.key === "title" ? "up-sort" : "sort"}
 											className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"
 												}`}
 										/>
 									</div>
 								</th>
-								<th className="w-[132px] sm:w-[180px] px-3 sm:px-5 py-3.5">
-									<span className="text-text dark:text-textDark text-xs sm:text-base font-medium whitespace-nowrap">Location</span>
-								</th>
-								<th className="w-[95px] sm:w-[140px] px-3 sm:px-5 py-3.5 cursor-pointer" onClick={() => handleSort("severity")}>
+								<th className="w-[95px] sm:w-[140px] px-3 sm:px-5 py-3.5 cursor-pointer" onClick={() => handleSort("type")}>
 									<div className="flex items-center gap-2">
-										<span className="text-text dark:text-textDark text-xs sm:text-base font-medium whitespace-nowrap">Severity</span>
+										<span className="text-text dark:text-textDark text-xs sm:text-base font-medium whitespace-nowrap">Type</span>
 										<Icon
-											icon={sortConfig?.key === "severity" ? "up-sort" : "sort"}
+											icon={sortConfig?.key === "type" ? "up-sort" : "sort"}
 											className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"
 												}`}
 										/>
 									</div>
 								</th>
-								<th className="w-[227px] sm:w-auto px-3 sm:px-5 py-3.5">
-									<span className="text-text dark:text-textDark text-xs sm:text-base font-medium whitespace-nowrap">Due to</span>
+								<th className="w-[180px] sm:w-[220px] px-3 sm:px-5 py-3.5">
+									<span className="text-text dark:text-textDark text-xs sm:text-base font-medium whitespace-nowrap">Scheduled For</span>
 								</th>
-								<th className="w-[137px] sm:w-[180px] px-3 sm:px-5 py-3.5 cursor-pointer" onClick={() => handleSort("startDateTime")}>
+								<th className="w-[137px] sm:w-[180px] px-3 sm:px-5 py-3.5 cursor-pointer" onClick={() => handleSort("createdBy")}>
 									<div className="flex items-center gap-2">
 										<span className="text-text dark:text-textDark text-xs sm:text-base font-medium whitespace-nowrap">
-											Start Date Time
+											Created By
 										</span>
 										<Icon
-											icon={sortConfig?.key === "startDateTime" ? "up-sort" : "sort"}
+											icon={sortConfig?.key === "createdBy" ? "up-sort" : "sort"}
 											className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"
 												}`}
 										/>
 									</div>
 								</th>
-								<th className="w-[129px] sm:w-[180px] px-3 sm:px-5 py-3.5 cursor-pointer" onClick={() => handleSort("endDateTime")}>
+								<th className="w-[129px] sm:w-[180px] px-3 sm:px-5 py-3.5 cursor-pointer" onClick={() => handleSort("createdOn")}>
 									<div className="flex items-center gap-2">
 										<span className="text-text dark:text-textDark text-xs sm:text-base font-medium whitespace-nowrap">
-											End Date Time
+											Created On
 										</span>
 										<Icon
-											icon={sortConfig?.key === "endDateTime" ? "up-sort" : "sort"}
+											icon={sortConfig?.key === "createdOn" ? "up-sort" : "sort"}
 											className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"
 												}`}
 										/>
@@ -460,35 +470,35 @@ export default function WeatherAlertPage() {
 						</thead>
 
 						<tbody>
-							{displayedWeatherAlert.length === 0 ? (
+							{displayedPostArticle.length === 0 ? (
 								<tr>
 									<td colSpan={9} className="text-center py-11 text-textSecondary dark:text-textDark text-base sm:text-lg">
 										No data found
 									</td>
 								</tr>
 							) : (
-								displayedWeatherAlert.map((weather, idx) => {
-									const isLastFour = displayedWeatherAlert.length >= 7 && idx >= displayedWeatherAlert.length - 4;
+								displayedPostArticle.map((item: any, idx) => {
+									const isLastFour = displayedPostArticle.length >= 7 && idx >= displayedPostArticle.length - 4;
 									const menuPositionClass = isLastFour
 										? "origin-bottom-right bottom-full mb-2.5 sm:mb-[17px]"
 										: "origin-top-right top-full mt-2.5 sm:mt-[17px]";
 									return (
-										<tr key={weather.id} className="h-8 sm:h-11">
+										<tr key={item.id} className="h-8 sm:h-11">
 											<td className="px-[9px] sm:px-4 py-3.5">
 												<label className="relative w-6 h-6 flex items-center justify-center cursor-pointer">
 													<input
 														type="checkbox"
-														checked={selectedWeatherAlert.includes(weather.id)}
-														onChange={() => handleCheckbox(weather.id)}
+														checked={selectedPostArticle.includes(item.id)}
+														onChange={() => handleCheckbox(item.id)}
 														className="opacity-0 absolute w-5 h-5 sm:w-6 sm:h-6 cursor-pointer bg-transparent"
 													/>
 													<span
-														className={`w-[17px] h-[17px] rounded-[2px] border border-textSecondary flex items-center justify-center transition-colors duration-150 ${selectedWeatherAlert.includes(weather.id)
+														className={`w-[17px] h-[17px] rounded-[2px] border border-textSecondary flex items-center justify-center transition-colors duration-150 ${selectedPostArticle.includes(item.id)
 															? "bg-primary !border-primary"
 															: "bg-transparent"
 															}`}
 													>
-														{selectedWeatherAlert.includes(weather.id) && (
+														{selectedPostArticle.includes(item.id) && (
 															<Icon
 																icon="check"
 																className="w-2.5 h-2.5 sm:w-3 sm:h-3 ml-[1px] mt-0.5 sm:ml-0.5"
@@ -497,30 +507,35 @@ export default function WeatherAlertPage() {
 													</span>
 												</label>
 											</td>
-											<td className="px-3 sm:px-5 py-4 text-text dark:text-textDark text-xs sm:text-base whitespace-nowrap">{weather.alert}</td>
-											<td className="px-3 sm:px-5 py-4 text-text dark:text-textDark text-xs sm:text-base whitespace-nowrap">{weather.location}</td>
-											<td className="px-3 sm:px-5 py-4 text-text dark:text-textDark text-xs sm:text-base whitespace-nowrap">{weather.severity}</td>
+											<td className="px-3 sm:px-5 py-4 text-text dark:text-textDark text-xs sm:text-base whitespace-nowrap">
+												{item.mainTitle
+													? new DOMParser().parseFromString(item.mainTitle, "text/html").body.textContent
+													: item.title}
+											</td>
+
+											<td className="px-3 sm:px-5 py-4 text-text dark:text-textDark text-xs sm:text-base whitespace-nowrap">{item.type}</td>
+											<td className="px-3 sm:px-5 py-4 text-text dark:text-textDark text-xs sm:text-base whitespace-nowrap">{item.scheduledFor}</td>
 											<td className="px-3 sm:px-5 py-4 text-text dark:text-textDark text-xs sm:text-base">
 												<div className="truncate whitespace-nowrap overflow-hidden max-w-[250px]">
-													{weather.dueTo}
+													{item.createdBy}
 												</div>
 											</td>
 
-											<td className="px-3 sm:px-5 py-4 text-text dark:text-textDark text-xs sm:text-base whitespace-nowrap">{weather.startDateTime}</td>
-											<td className="px-3 sm:px-5 py-4 text-text dark:text-textDark text-xs sm:text-base whitespace-nowrap">{weather.endDateTime}</td>
+											<td className="px-3 sm:px-5 py-4 text-text dark:text-textDark text-xs sm:text-base whitespace-nowrap">{item.createdOn}</td>
+
 											<td className="flex items-center justify-between px-3 sm:px-5 py-4 text-xs sm:text-base whitespace-nowrap">
-												<span className={`${weather.statusColor}`}>{weather.status}</span>
+												<span className={`${item.statusColor}`}>{item.status}</span>
 												{/* Switch */}
-												<div
+												{/* <div
 													className="w-[26px] h-[16px] rounded-full flex items-center px-0.5 transition-all duration-300 bg-[#808080]"
 												>
 													<div
-														className={`w-[14px] h-[14px] rounded-full transition-all duration-300 transform ${weather.status === "Active"
+														className={`w-[14px] h-[14px] rounded-full transition-all duration-300 transform ${item.status === "Active"
 															? "translate-x-[9px] bg-[#FFA500]"
 															: "translate-x-[-1px] bg-[#F8F8F8]"
 															}`}
 													/>
-												</div>
+												</div> */}
 											</td>
 											<td className="px-3 sm:px-5 py-4">
 												<Menu as="div" className="flex justify-center relative  text-left">
@@ -547,25 +562,50 @@ export default function WeatherAlertPage() {
 																	<div
 																		className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full"
 																		onClick={() => {
-																			const globalIndex = weatherAlert.findIndex((u) => u.id === weather.id);
+																			const globalIndex = PostArticle.findIndex((u) => u.id === item.id);
 																			setEditIndex(globalIndex);
-																			setIsAddEditWeatherAlertPopupOpen(true);
+																			setIsAddEditPostArticlePopupOpen(true);
 																		}}
 																	>
 																		Edit
 																	</div>
 																</Menu.Item>
+																{item.status !== "Archived" && item.status !== "Draft" && (
+																	<Menu.Item>
+																		<div
+																			className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full"
+																			onClick={() => {
+																				setSelectedArchiveItem(item);
+																				setIsArchivePopupOpen(true);
+																			}}
+																		>
+																			Archive
+																		</div>
+																	</Menu.Item>
+																)}
 																<Menu.Item>
 																	<div
 																		className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full"
 																		onClick={() => {
-																			setDeleteUserIndex(weatherAlert.findIndex((u) => u.id === weather.id));
+																			setDeleteUserIndex(PostArticle.findIndex((u) => u.id === item.id));
 																			setIsDeleteUserPopupOpen(true);
 																		}}
 																	>
 																		Delete
 																	</div>
 																</Menu.Item>
+																{item.status === "Draft" && (
+																	<Menu.Item>
+																		<div
+																			className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full"
+																			onClick={() => {
+																				handleDraft(item.id)
+																			}}
+																		>
+																			Publish
+																		</div>
+																	</Menu.Item>
+																)}
 															</div>
 														</Menu.Items>
 													</Transition>
@@ -583,15 +623,15 @@ export default function WeatherAlertPage() {
 				<div className="flex flex-col sm:flex-row items-center justify-between w-full gap-4 sm:py-2.5 relative flex-[0_0_auto]">
 					<div className="w-full flex items-center">
 						<span className="text-xs sm:text-sm text-textSecondary leading-[18px] sm:leading-[24px]">
-							{filteredWeatherAlert.length === 0
-								? "Showing 0 of 0 Weather Alert"
-								: `Showing ${startIdx + 1}–${Math.min(endIdx, filteredWeatherAlert.length)} of ${filteredWeatherAlert.length} Weather Alert`}
+							{filteredPostArticle.length === 0
+								? "Showing 0 of 0 Post / Article"
+								: `Showing ${startIdx + 1}–${Math.min(endIdx, filteredPostArticle.length)} of ${filteredPostArticle.length} Post / Article`}
 						</span>
 					</div>
-					{filteredWeatherAlert.length !== 0 && (
+					{filteredPostArticle.length !== 0 && (
 						<Pagination
-							totalRecords={filteredWeatherAlert.length}
-							recordsPerPage={weatherAlertPerPage}
+							totalRecords={filteredPostArticle.length}
+							recordsPerPage={PostArticlePerPage}
 							currentPage={currentPage}
 							handlePageChange={(page: number) => {
 								setCurrentPage(page);
@@ -600,28 +640,46 @@ export default function WeatherAlertPage() {
 					)}
 				</div>
 			</div>
-			<AddEditWeatherAlertPopup
-				isOpen={isAddEditWeatherAlertPopupOpen}
+
+			<AddEditPostArticlePopup
+				isOpen={isAddEditPostArticlePopupOpen}
 				setIsOpen={() => {
 					setEditIndex(null);
-					setIsAddEditWeatherAlertPopupOpen(false);
+					setIsAddEditPostArticlePopupOpen(false);
 				}}
-				list={weatherAlert}
-				setList={setWeatherAlert}
+				list={PostArticle}
+				setList={setPostArticle}
 				editIndex={editIndex}
 			/>
+
+			{selectedArchiveItem && (
+				<PostArticleArchivePopup
+					isOpen={isArchivePopupOpen}
+					setIsOpen={setIsArchivePopupOpen}
+					user={null}
+					onArchive={handleArchive}
+					itemType="Post / Article"
+				/>
+			)}
+
+
 			<DeleteUserPopup
 				isOpen={isDeleteUserPopupOpen}
 				setIsOpen={setIsDeleteUserPopupOpen}
 				user={
 					deleteUserIndex !== null
-						? { name: weatherAlert[deleteUserIndex].alert }
+						? { name: PostArticle[deleteUserIndex].title }
 						: null
 				}
-				itemType=" Weather Alert"
+				itemType={
+					deleteUserIndex !== null
+						? PostArticle[deleteUserIndex].status === "Draft"
+							? "Draft Post / Article" : "Post / Article"
+						: ""
+				}
 				onDelete={() => {
 					if (deleteUserIndex !== null) {
-						setWeatherAlert(prev => prev.filter((_, idx) => idx !== deleteUserIndex));
+						setPostArticle(prev => prev.filter((_, idx) => idx !== deleteUserIndex));
 						setDeleteUserIndex(null);
 						setIsDeleteUserPopupOpen(false);
 						toast.success("User deleted successfully");

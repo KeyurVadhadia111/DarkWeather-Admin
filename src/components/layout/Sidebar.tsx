@@ -48,11 +48,11 @@ export default function Sidebar() {
 		{ title: "API Integration", icon: "api-integration", href: "", roles: ["SuperAdmin"], active: [""] },
 		{ title: "Subscription", icon: "subscription", href: "subscription", roles: ["SuperAdmin"], active: ["/subscription"] },
 		{
-			title: "Alerts & Content Post",
+			title: "Posts and Articles",
 			icon: "alerts-content-post",
-			href: "",
+			href: "posts-articles",
 			roles: ["SuperAdmin", "Analytics", "Support"],
-			active: [""],
+			active: ["/posts-articles"],
 		},
 		{
 			title: "Social Media Configuration",

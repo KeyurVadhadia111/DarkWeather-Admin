@@ -12,6 +12,7 @@ import ActivityLogPage from "pages/ActivityLogPage";
 import WeatherAlertPage from "pages/WeatherAlertPage";
 import RoleManagement from "pages/RoleManagement";
 import Subscription from "pages/Subscription";
+import PostsArticlesPage from "pages/PostsArticlesPage";
 
 declare global {
 	interface Window {
@@ -26,34 +27,78 @@ const reducer = (state: any, action = {}) => {
 		...action,
 	};
 };
+// const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+// 	const location = useLocation();
+// 	let userDetails = useAppState(state => state.userDetails);
+// 	const setUserDetails = useAppState(state => state.setUserDetails);
+// 	if (!userDetails) {
+// 		userDetails = JSON.parse(localStorage.getItem('auth') || '{}');
+// 	}
+// 	const isAuthPage = location.pathname === "/login" || location.pathname === "/forgot-password";
+// 	console.log("userDetails", userDetails)
+// 	if (location.pathname === "/") {
+// 		return <>{children}</>;
+// 	}
+// 	if (userDetails.user_id) {
+// 		console.log("userid")
+// 		// User is logged in, block access to login
+// 		if (isAuthPage) {
+// 			console.log("userid & isAuthPage")
+// 			return <Navigate to="/" replace />;
+// 		}
+// 		// Allow access to other routes
+// 		return <>{children}</>;
+// 	} else {
+// 		console.log("else")
+// 		// Not logged in, allow access only to login
+// 		if (isAuthPage) {
+// 			console.log("else & isAuthPage")
+// 			return <>{children}</>;
+// 		}
+// 		setUserDetails({});
+// 		// Redirect to login for protected routes
+// 		return <Navigate to="/login" replace />;
+// 	}
+// };
+
+
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 	const location = useLocation();
-	const userDetails = useAppState(state => state.userDetails);
+	let userDetails = useAppState(state => state.userDetails);
 	const setUserDetails = useAppState(state => state.setUserDetails);
-	const user = JSON.parse(localStorage.getItem("auth") || "{}");
+
+	// If userDetails not in state, try to restore from localStorage
+	if (!userDetails || !userDetails.user_id) {
+		const localUserDetails = JSON.parse(localStorage.getItem('auth') || '{}');
+
+		if (localUserDetails.user_id) {
+			userDetails = localUserDetails;
+			setUserDetails(localUserDetails); // this line ensures it gets stored in global state
+		}
+	}
 
 	const isAuthPage = location.pathname === "/login" || location.pathname === "/forgot-password";
 
 	if (location.pathname === "/") {
 		return <>{children}</>;
 	}
-	if (user?._id) {
-		// User is logged in, block access to login
+
+	if (userDetails && userDetails.user_id) {
+		// Logged in user
 		if (isAuthPage) {
-			return <Navigate to="/" replace />;
+			return <Navigate to="/dashboard" replace />;
 		}
-		// Allow access to other routes
 		return <>{children}</>;
 	} else {
-		// Not logged in, allow access only to login
+		// Not logged in
 		if (isAuthPage) {
 			return <>{children}</>;
 		}
 		setUserDetails({});
-		// Redirect to login for protected routes
 		return <Navigate to="/login" replace />;
 	}
 };
+
 
 const createRoutes: React.FC = () => {
 	return (
@@ -124,6 +169,14 @@ const createRoutes: React.FC = () => {
 							element={
 								<ProtectedRoute>
 									<Subscription />
+								</ProtectedRoute>
+							}
+						/>
+						<Route
+							path="/posts-articles"
+							element={
+								<ProtectedRoute>
+									<PostsArticlesPage />
 								</ProtectedRoute>
 							}
 						/>

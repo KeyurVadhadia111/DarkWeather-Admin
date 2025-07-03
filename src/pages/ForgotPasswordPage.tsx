@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import OtpInput from "components/common/otpInput";
 import Icon from "components/utils/Icon";
 import useAppState from "components/utils/useAppState";
+import { apiClient } from "api/client";
 interface IForgotPasswordFormData {
 	email: string;
 	otp: string;
@@ -77,23 +78,63 @@ function ForgotPasswordPage() {
 		},
 	});
 
+	const sendOtpCode = async (data) => {
+		const response = await apiClient.post('api/admin/forget-password', {
+			json: {
+				email: data.email
+			}
+		});
+		if (response.ok) {
+			toast.success(response.message);
+			setStep(2);
+		}
+	};
+
+	const verifyOtp = async (data) => {
+		const response = await apiClient.post('api/admin/verify-forget-password', {
+			json: {
+				email: data.email,
+				pincode: data.otp
+			}
+		});
+		if (response.ok) {
+			toast.success(response.message);
+			setStep(3);
+		} else {
+			toast.error(response.message);
+		}
+	};
+
+	const updatePassword = async (data) => {
+		const response = await apiClient.post('api/admin/update-forget-password', {
+			json: {
+				email: data.email,
+				pincode: data.otp,
+				password: data.password,
+			}
+		});
+		if (response.ok) {
+			toast.success(response.message);
+			setStep(4);
+			reset();
+		} else {
+			toast.error(response.message);
+		}
+	};
+
 	const onSubmit = handleSubmit(data => {
 		if (step === 1) {
-			toast.success("OTP sent to your email!");
-			setStep(2);
+			sendOtpCode(data);
 			return;
 		}
 
 		if (step === 2) {
-			toast.success("OTP verified successfully!");
-			setStep(3);
+			verifyOtp(data);
 			return;
 		}
 
 		if (step === 3) {
-			toast.success("Password reset successfully!");
-			setStep(4);
-			reset();
+			updatePassword(data);
 			return;
 		}
 	});

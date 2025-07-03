@@ -11,6 +11,7 @@ import ResertPasswordPopup from "components/popup/ResertPasswordPopup";
 import { useNavigate } from "react-router-dom";
 import { toast } from "components/utils/toast";
 import AddEditRoleManagement from "components/popup/AddEditRoleManagement";
+import { apiClient } from "api/client";
 
 interface Role {
 	id: number;
@@ -29,48 +30,7 @@ interface SortConfig {
 export default function RoleManagement() {
 	// Example Weather Alert data array with duplicates removed
 
-	const [weatherAlert, setWeatherAlert] = useState<Role[]>([
-		{
-			id: 1,
-			role: "Super Admin",
-			desc: "Stakeholders & Internal Team Leads",
-			totalUsers: 3,
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 2,
-			role: "Analytics",
-			desc: "SEO and Marketing Analytics team",
-			totalUsers: 21,
-			status: "Inactive",
-			statusColor: "text-textRed",
-		},
-		{
-			id: 3,
-			role: "Support",
-			desc: "Customer Support & Back-office team",
-			totalUsers: 16,
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 4,
-			role: "Operations",
-			desc: "IT & Infrastructure technical team",
-			totalUsers: 32,
-			status: "Inactive",
-			statusColor: "text-textRed",
-		},
-		{
-			id: 5,
-			role: "Meteorologist",
-			desc: "Lorem Ipsum is simply dummy text ",
-			totalUsers: 12,
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-	]);
+	const [weatherAlert, setWeatherAlert] = useState<Role[]>([]);
 	const [selectedWeatherAlert, setSelectedWeatherAlert] = useState<number[]>([]);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [weatherAlertPerPage] = useState(12);
@@ -130,6 +90,66 @@ export default function RoleManagement() {
 		setCurrentPage(1);
 	}, [searchQuery]);
 
+	useEffect(() => {
+		fetchPaginatedRoles();
+	}, []);
+
+	useEffect(() => {
+		if (!isAddEditWeatherAlertPopupOpen) {
+			fetchPaginatedRoles();
+		}
+	}, [isAddEditWeatherAlertPopupOpen]);
+
+	const fetchPaginatedRoles = async () => {
+		try {
+			const authToken = JSON.parse(localStorage.getItem('auth') || "{}")?.access_token;
+			const response = apiClient.post('api/admin/role-permission/all', {
+				headers: {
+					Authorization: `Bearer ${authToken}`,
+					'Content-Type': 'application/json', // optional
+				},
+			});
+			const resJson = await response.json();
+
+			const mappedRoles = resJson.data?.roles?.map((x) => ({
+				id: x.uuid,
+				role: x.name.toLowerCase()
+					.split(' ')
+					.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+					.join(' '),
+				permissions: x.permissions,
+				desc: x.description,
+				status: x.active ? "Active" : "In Active",
+				statusColor: x.active ? "text-textGreen" : "text-textRed",
+			}));
+
+			setWeatherAlert(mappedRoles);
+		} catch (error) {
+			console.log("Failed to fetch all roles", error);
+		}
+	};
+
+	const toggleUserStatus = async () => {
+		console.log(weatherAlert[deleteUserIndex], deleteUserIndex)
+		const response = await apiClient.delete(`api/admin/inactive/role/${weatherAlert[deleteUserIndex].id}`);
+		if (response.ok) {
+			setDeleteUserIndex(null);
+			toast.success("Updated role status successfully");
+			fetchPaginatedRoles();
+		}
+	};
+
+
+	const deleteRole = async () => {
+		const response = await apiClient.delete(`api/admin/delete/role/${weatherAlert[deleteUserIndex].id}`);
+		if (response.ok) {
+			setDeleteUserIndex(null);
+			setIsDeleteUserPopupOpen(false);
+			toast.success("Role deleted successfully");
+			fetchPaginatedRoles();
+		}
+	};
+
 	return (
 		<div
 			className={`${isSideExpanded ? "w-full sm:w-[calc(100vw-385px)]" : "w-full sm:w-[calc(100vw-163px)]"} flex flex-col items-start gap-5 sm:gap-6 p-2.5 sm:p-6 bg-bgc dark:bg-fgcDark rounded-[10px] sm:rounded-[20px]`}>
@@ -187,7 +207,7 @@ export default function RoleManagement() {
 					</div> */}
 				</div>
 				<div className="w-full overflow-x-auto overflow-hidden">
-					<div className="flex flex-col items-start gap-[5.54px] sm:gap-[7.54px] relative self-stretch min-w-[650px] sm:min-w-[1450px] w-full flex-[0_0_auto] min-h-[500px] sm:min-h-[700px]">
+					<div className="flex flex-col items-start gap-[5.54px] sm:gap-[7.54px] relative self-stretch min-w-[650px] sm:min-w-[1010px] w-full flex-[0_0_auto] min-h-[500px] sm:min-h-[700px]">
 						<div className="flex h-[42px] sm:h-[52px] items-start sm:justify-between relative self-stretch w-full bg-fgc dark:bg-fgcDark rounded-xl">
 							<div
 								className="flex w-[152px] sm:w-[220px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
@@ -207,18 +227,18 @@ export default function RoleManagement() {
 								/>
 							</div>
 							<div
-								className="flex w-[227px] sm:w-[682px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer">
+								className="flex w-[227px] sm:w-[300px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer">
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Description
 								</div>
 							</div>
-							<div className="flex items-center w-[89px] sm:w-[250px] gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow">
+							<div className="flex items-center w-[89px] sm:w-[180px] gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow">
 								<div className="font-medium relative text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Total Users
 								</div>
 							</div>
 							<div
-								className="flex w-[96.5px] sm:w-[180px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
+								className="flex w-[120px] sm:w-[180px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
 								onClick={() => handleSort("status")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Status
@@ -267,14 +287,14 @@ export default function RoleManagement() {
 												</div>
 
 												{/* Description */}
-												<div className="flex flex-col w-[227px] sm:w-[682px] items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
-													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
+												<div className="flex flex-col w-[227px] sm:w-[300px] items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
+													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-start tracking-[0] leading-3 truncate whitespace-nowrap overflow-hidden w-full">
 														{weather.desc}
 													</div>
 												</div>
 
 												{/* totalUsers */}
-												<div className="flex flex-col w-[89px] sm:w-[250px] items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow">
+												<div className="flex flex-col w-[89px] sm:w-[180px] items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow">
 													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
 														{weather.totalUsers}
 													</div>
@@ -282,10 +302,32 @@ export default function RoleManagement() {
 
 
 												{/* Status */}
-												<div className="w-[96.5px] sm:w-[180px] flex flex-col items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
+												<div className="w-[120px] sm:w-[180px] flex  items-start justify-between gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
 													<div
 														className={`font-normal ${weather.statusColor} text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap`}>
 														{weather.status}
+													</div>
+													{/* Switch */}
+													<div
+														className="w-[26px] h-[16px] rounded-full flex items-center px-0.5 transition-all duration-300 bg-[#808080]"
+														onClick={() => {
+															setDeleteUserIndex(
+																weatherAlert.findIndex(
+																	u => u.id === weather.id,
+																),
+															);
+															if (deleteUserIndex !== null) {
+																toggleUserStatus();
+															}
+														}}
+
+													>
+														<div
+															className={`w-[14px] h-[14px] rounded-full transition-all duration-300 transform ${weather.status === "Active"
+																? "translate-x-[9px] bg-[#FFA500]"
+																: "translate-x-[-1px] bg-[#F8F8F8]"
+																}`}
+														/>
 													</div>
 												</div>
 
@@ -308,7 +350,7 @@ export default function RoleManagement() {
 																leaveFrom="transform scale-100 opacity-100"
 																leaveTo="transform scale-95 opacity-0">
 																<Menu.Items
-																	className={`absolute -right-5 w-[140px] sm:w-[163px] bg-fgc dark:bg-fgcDark rounded-xl focus:outline-none flex flex-col z-50 transition ${menuPositionClass}`}>
+																	className={`absolute -right-5 w-[180px] sm:w-[180px] bg-fgc dark:bg-fgcDark rounded-xl focus:outline-none flex flex-col z-50 transition ${menuPositionClass}`}>
 																	<div className="flex flex-col items-start px-3 py-2 sm:px-2.5 sm:py-2.5 gap-1">
 																		<Menu.Item>
 																			<div
@@ -323,6 +365,22 @@ export default function RoleManagement() {
 																				Edit
 																			</div>
 																		</Menu.Item>
+																		{/* <Menu.Item>
+																			<div
+																				className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full"
+																				onClick={() => {
+																					setDeleteUserIndex(
+																						weatherAlert.findIndex(
+																							u => u.id === weather.id,
+																						),
+																					);
+																					if (deleteUserIndex !== null) {
+																						toggleUserStatus();
+																					}
+																				}}>
+																				Activate/Deactivate
+																			</div>
+																		</Menu.Item> */}
 																		<Menu.Item>
 																			<div
 																				className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full"
@@ -398,10 +456,7 @@ export default function RoleManagement() {
 				itemType="Role"
 				onDelete={() => {
 					if (deleteUserIndex !== null) {
-						setWeatherAlert(prev => prev.filter((_, idx) => idx !== deleteUserIndex));
-						setDeleteUserIndex(null);
-						setIsDeleteUserPopupOpen(false);
-						toast.success("User deleted successfully");
+						deleteRole();
 					}
 				}}
 			/>

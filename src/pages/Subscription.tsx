@@ -346,10 +346,10 @@ export default function Subscription() {
 					</div> */}
 				</div>
 				<div className="w-full overflow-x-auto overflow-hidden">
-					<div className="flex flex-col items-start gap-[5.54px] sm:gap-[7.54px] relative self-stretch min-w-[562px] sm:min-w-[1450px] w-full flex-[0_0_auto] h-full">
+					<div className="flex flex-col items-start gap-[5.54px] sm:gap-[7.54px] relative self-stretch min-w-[562px] sm:min-w-[950px] w-full flex-[0_0_auto] h-full">
 						<div className="flex h-[42px] sm:h-[52px] items-start sm:justify-between relative self-stretch w-full bg-fgc dark:bg-fgcDark rounded-xl">
 							<div
-								className="flex w-[120px] sm:w-[270px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
+								className="flex w-[120px] sm:w-[200px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
 								onClick={() => handleSort("planName")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Plan Name
@@ -366,23 +366,23 @@ export default function Subscription() {
 								/>
 							</div>
 							<div
-								className="flex w-[112px] sm:w-[270px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer">
+								className="flex w-[112px] sm:w-[200px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer">
 								<div className="relative font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Price (Monthly)
 								</div>
 							</div>
-							<div className="flex items-center w-[68px] sm:w-[270px] gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow">
+							<div className="flex items-center w-[68px] sm:w-[180px] gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow">
 								<div className="font-medium relative text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Users
 								</div>
 							</div>
-							<div className="flex items-center w-[76px] sm:w-[270px] gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow">
+							<div className="flex items-center w-[76px] sm:w-[180px] gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow">
 								<div className="font-medium relative text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Discount
 								</div>
 							</div>
 							<div
-								className="flex w-[97px] sm:w-[148px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
+								className="flex w-[97px] sm:w-[132px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
 								onClick={() => handleSort("status")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Status
@@ -424,28 +424,28 @@ export default function Subscription() {
 										<React.Fragment key={weather.id}>
 											<div className="flex h-8 sm:h-11 items-start justify-start relative self-stretch w-full">
 												{/* Name */}
-												<div className="flex w-[120px] sm:w-[270px] items-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
+												<div className="flex w-[120px] sm:w-[200px] items-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
 													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
 														{weather.planName}
 													</div>
 												</div>
 
 												{/* Description */}
-												<div className="flex flex-col w-[112px] sm:w-[270px] items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
+												<div className="flex flex-col w-[112px] sm:w-[200px] items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
 													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
 														{weather.price}
 													</div>
 												</div>
 
 												{/* totalUsers */}
-												<div className="flex flex-col w-[68px] sm:w-[270px] items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow">
+												<div className="flex flex-col w-[68px] sm:w-[180px] items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow">
 													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
 														{weather.users}
 													</div>
 												</div>
 
 												{/* discount */}
-												<div className="flex flex-col w-[76px] sm:w-[270px] items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow">
+												<div className="flex flex-col w-[76px] sm:w-[180px] items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow">
 													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
 														{weather.discount}
 													</div>
@@ -453,7 +453,7 @@ export default function Subscription() {
 
 
 												{/* Status */}
-												<div className="w-[97px] sm:w-[148px] flex items-center justify-between px-2 sm:px-4 py-2 sm:py-3 gap-1 sm:gap-2">
+												<div className="w-[97px] sm:w-[130px] flex items-center justify-between px-2 sm:px-4 py-2 sm:py-3">
 													{/* Status text */}
 													<div
 														className={`font-normal ${weather.statusColor} text-[10px] sm:text-base text-center tracking-[0] leading-[1.2] whitespace-nowrap`}

@@ -10,6 +10,7 @@ import { Button } from "components/utils/Button";
 import { toast } from "components/utils/toast";
 import useAppState from "components/utils/useAppState";
 import { Path } from "react-hook-form";
+import { apiClient } from "api/client";
 
 type Props = {
 	isOpen: boolean;
@@ -44,6 +45,7 @@ const AddEditRoleManagement: React.FC<Props> = ({ isOpen, setIsOpen, list = [], 
 	const getDefaultProfilePicture = (isDark: boolean) =>
 		`/assets/images/image-skelaton${!isDark ? "-dark" : "-white"}.svg`;
 
+	const [accessModules, setAccessModules] = useState([]);
 	const [profilePicture, setProfilePicture] = useState<string>(getDefaultProfilePicture(isDark));
 
 	// Update profile picture if theme changes and current is default
@@ -79,33 +81,39 @@ const AddEditRoleManagement: React.FC<Props> = ({ isOpen, setIsOpen, list = [], 
 
 
 	useEffect(() => {
-		if (editIndex !== null && list[editIndex]) {
+		if (editIndex !== null && list[editIndex] && accessModules.length > 0) {
 			const userData = list[editIndex];
 
-			const accessData = userData.access || {};
+			const attachedPermissions = userData.permissions?.filter((p: any) => p.is_attached) || [];
+			const permissionNames = attachedPermissions.map((p: any) => p.name);
+
+			const accessFromPermissions = accessModules.reduce((acc, module) => {
+				const isEnabled = permissionNames.includes(module.key); // match key directly
+				return {
+					...acc,
+					[module.key]: isEnabled,
+				};
+			}, {} as Record<string, boolean>);
 
 			reset({
 				role: userData.role || '',
 				desc: userData.desc || '',
-				access: accessData,
+				access: accessFromPermissions,
+			});
+		} else {
+			reset({
+				role: '',
+				desc: '',
+				access: [],
 			});
 		}
-	}, [editIndex, list, reset]);
-
-
-
+	}, [editIndex, list, reset, accessModules]);
 
 	const onSubmit: SubmitHandler<FormData> = (data) => {
-		console.log("role data", data);
-
 		if (editIndex !== null) {
-			const updatedList = [...list];
-			updatedList[editIndex] = {
-				...updatedList[editIndex],
-				...data,
-			};
-			setList?.(updatedList);
+			updateRole(data);
 		} else {
+			addNewRole(data);
 			const newId = list.length > 0 ? Math.max(...list.map(u => u.id || 0)) + 1 : 1;
 			const newEntry = {
 				id: newId,
@@ -113,32 +121,79 @@ const AddEditRoleManagement: React.FC<Props> = ({ isOpen, setIsOpen, list = [], 
 			};
 			setList?.([...list, newEntry]);
 		}
+	};
 
-		toast.success(`Role ${editIndex !== null ? "updated" : "created"} successfully!`);
-		setIsOpen(false);
+	const addNewRole = async (data: FormData) => {
+		try {
+			const selectedPermissionNames = Object.entries(data.access)
+				.filter(([_, value]) => value === true)
+				.map(([key]) => key);
+
+			const selectedPermissions = accessModules
+				.filter(module => selectedPermissionNames.includes(module.key))
+				.map(mod => mod.uuid);
+
+			const payload = {
+				role_name: data.role,
+				role_description: data.desc,
+				permissions: selectedPermissions,
+			};
+
+			const response = await apiClient.post("api/admin/add/role-permission", { json: payload });
+			if (response.ok) {
+				toast.success(`Role ${editIndex !== null ? "updated" : "created"} successfully!`);
+				setIsOpen(false);
+			}
+		} catch (error) {
+			console.error("Update failed", error);
+		}
 	};
 
 
+	const updateRole = async (data: FormData) => {
+		try {
+			const selectedPermissionNames = Object.entries(data.access)
+				.filter(([_, value]) => value === true)
+				.map(([key]) => key);
 
-	const AccordionItem = ({ title, isOpen, onToggle, children }: any) => {
-		return (
-			<div className=" py-2.5">
-				<button
-					onClick={onToggle}
-					className="flex justify-between items-center w-full text-left"
-				>
-					<span className="text-xs sm:text-base font-medium text-text dark:text-textDark">
-						{title}
-					</span>
-					<img
-						src={`/assets/images/${isOpen ? "minus" : "plus"}.svg`}
-						alt={isOpen ? "Collapse" : "Expand"}
-						className="w-5 h-5 fill-black"
-					/>
-				</button>
-				{isOpen && <div className="mt-4">{children}</div>}
-			</div>
-		);
+			const selectedPermissions = accessModules
+				.filter(module => selectedPermissionNames.includes(module.key))
+				.map(mod => mod.uuid);
+
+			const payload = {
+				role_uuid: list[editIndex!].id,
+				role_name: data.role,
+				role_description: data.desc,
+				permissions: selectedPermissions,
+			};
+
+			const response = await apiClient.put("api/admin/update/role-permission", { json: payload });
+			if (response.ok) {
+				toast.success(`Role ${editIndex !== null ? "updated" : "created"} successfully!`);
+				setIsOpen(false);
+			}
+		} catch (error) {
+			console.error("Update failed", error);
+		}
+	};
+
+	const fetchAllPermissions = async () => {
+		try {
+			const response = apiClient.post('api/admin/permissions/all');
+			const resJson = await response.json();
+
+			const mappedPermissions = resJson.data?.map((x) => ({
+				uuid: x.uuid,
+				title: x.name.toLowerCase()
+					.split(' ')
+					.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+					.join(' '),
+				key: x.name,
+			}));
+			setAccessModules(mappedPermissions)
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	const [openSections, setOpenSections] = useState<string[]>([]);
@@ -152,74 +207,9 @@ const AddEditRoleManagement: React.FC<Props> = ({ isOpen, setIsOpen, list = [], 
 		);
 	};
 
-	const accessModules = [
-		{
-			title: "Dashboard",
-			key: "dashboard",
-			permissions: ["Create", "Edit", "Import & Export", "Track", "All"]
-		},
-		{
-			title: "User Management",
-			key: "userManagement",
-			permissions: ["Export", "Add", "Edit", "Reset Password", "All"]
-		},
-		{
-			title: "Override Weather Info",
-			key: "overrideWeatherInfo",
-			permissions: ["Add", "Edit", "View", "Delete", "All"]
-		},
-		{
-			title: "Weather Alert",
-			key: "weatherAlert",
-			permissions: ["Add", "Edit", "Delete", "All"]
-		},
-		{
-			title: "Subscription",
-			key: "subscription",
-			permissions: ["Create", "Edit", "Import & Export", "Track", "All"]
-		},
-		{
-			title: "Alerts & Content Post",
-			key: "alerts&ContentPost",
-			permissions: ["Export", "Add", "Edit", "Reset Password", "All"]
-		},
-		{
-			title: "Social Media Configuration",
-			key: "socialMediaConfiguration",
-			permissions: ["Add", "Edit", "View", "Delete", "All"]
-		},
-		{
-			title: "Analytics & Reports",
-			key: "analytics&Reports",
-			permissions: ["Add", "Edit", "Delete", "All"]
-		},
-		{
-			title: "Feedback Manager",
-			key: "feedbackManager",
-			permissions: ["Export", "Add", "Edit", "Reset Password", "All"]
-		},
-		{
-			title: "Notification System",
-			key: "notificationSystem",
-			permissions: ["Create", "Edit", "Import & Export", "Track", "All"]
-		},
-		{
-			title: "Audit Trail System",
-			key: "auditTrailSystem",
-			permissions: ["Add", "Edit", "View", "Delete", "All"]
-		},
-		{
-			title: "Data Export & Import",
-			key: "dataExport&Import",
-			permissions: ["Add", "Edit", "Delete", "All"]
-		},
-		{
-			title: "Scheduled Maintenance",
-			key: "scheduledMaintenance",
-			permissions: ["Export", "Add", "Edit", "Reset Password", "All"]
-		}
-	];
-
+	useEffect(() => {
+		fetchAllPermissions();
+	}, []);
 
 	return (
 		<Modal
@@ -236,7 +226,7 @@ const AddEditRoleManagement: React.FC<Props> = ({ isOpen, setIsOpen, list = [], 
 					{/* Role Name */}
 					<div className="flex flex-col gap-2">
 						<label className="text-xs sm:text-base font-medium text-text dark:text-textDark leading-[18px] sm:leading-[21px]">
-							Alert
+							Role
 						</label>
 						<Input
 							{...register("role")}
@@ -260,71 +250,49 @@ const AddEditRoleManagement: React.FC<Props> = ({ isOpen, setIsOpen, list = [], 
 					</div>
 					<div>
 						{/* Access Section */}
-						<h3 className="text-sm sm:text-xl font-semibold text-text dark:text-textDark">Access</h3>
+						<h3 className="text-sm sm:text-xl font-semibold text-text dark:text-textDark mb-4">Access</h3>
 
-						{accessModules.map(({ title, key, permissions }) => (
-							<AccordionItem
-								key={key}
-								title={title}
-								isOpen={openSections.includes(title)}
-								onToggle={() => toggleSection(title)}
-							>
-								<div className="flex flex-wrap p-4 gap-3 rounded-xl bg-[#F8F8F8] dark:bg-bgcDark">
-									{permissions.map((perm: any) => {
-										const permKey = perm.replace(/\s|&/g, '').toLowerCase();
+						<div className="flex flex-col gap-4 sm:gap-5 p-3 sm:p-4 border border-border dark:border-borderDark rounded-[20px]">
+							{accessModules.map(({ title, key }) => (
+								<label
+									key={key}
+									className="relative flex items-center justify-between gap-2 text-sm font-medium sm:text-base text-text dark:text-white cursor-pointer w-full"
+								>
+									{title}
+									<input
+										type="checkbox"
+										{...register(`access.${key}` as Path<FormData>)}
+										className="peer hidden"
+									/>
 
-										return (
-											// <label key={perm} className="w-[123px] sm:w-full sm:max-w-[150px] flex items-center gap-2 text-xs sm:text-sm text-textSecondary cursor-pointer">
-											// 	<input
-											// 		type="checkbox"
-											// 		{...register(`access.${key}.${permKey}` as Path<FormData>)}
-											// 		className="w-4 h-4 rounded-md border border-[#808080] text-[#1C282B] checked:bg-[#FFA500] checked:border-[#FFA500] accent-[#FFA500] cursor-pointer bg-transparent"
-											// 	/>
-											// 	{perm}
-											// </label>
-											<label
-												key={perm}
-												className="relative flex items-center gap-2 text-xs sm:text-sm text-textSecondary dark:text-white cursor-pointer w-[123px] sm:w-full sm:max-w-[150px]"
-											>
-												<input
-													type="checkbox"
-													{...register(`access.${key}.${permKey}` as Path<FormData>)}
-													className="peer hidden"
-												/>
-
-												<span
-													className="
-			w-4 h-4 rounded-md border border-[#808080] dark:border-white
-			flex items-center justify-center
-			bg-transparent
-			peer-checked:bg-[#FFA500] peer-checked:border-[#FFA500]
-			relative
-		"
-												>
-												</span>
-												<svg
-													className="
-				w-3 h-3 text-black
-				absolute left-0.5
-				opacity-0 peer-checked:opacity-100
-				transition-opacity duration-150 ease-in-out
-				pointer-events-none
-			"
-													fill="none"
-													stroke="currentColor"
-													strokeWidth="3"
-													viewBox="0 0 24 24"
-												>
-													<path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-												</svg>
-												{perm}
-											</label>
-										);
-									})}
-								</div>
-							</AccordionItem>
-						))}
-
+									<span
+										className="
+											w-4 h-4 rounded-md border border-[#808080] dark:border-white
+											flex items-center justify-center
+											bg-transparent
+											peer-checked:bg-[#FFA500] peer-checked:border-[#FFA500]
+											relative
+										"
+									>
+									</span>
+									<svg
+										className="
+												w-3 h-3 text-black
+												absolute right-0.5
+												opacity-0 peer-checked:opacity-100
+												transition-opacity duration-150 ease-in-out
+												pointer-events-none
+											"
+										fill="none"
+										stroke="currentColor"
+										strokeWidth="3"
+										viewBox="0 0 24 24"
+									>
+										<path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+									</svg>
+								</label>
+							))}
+						</div>
 					</div>
 					<div className="flex justify-end gap-4 mt-0 sm:mt-2">
 						<Button

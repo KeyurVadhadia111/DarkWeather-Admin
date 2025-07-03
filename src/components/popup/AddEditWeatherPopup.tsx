@@ -23,7 +23,8 @@ type Props = {
 	list?: any[];
 	setList?: (val: any[]) => void;
 	editIndex?: number | null;
-	mode?: "view";
+	mode?: any;
+	setMode?: any
 };
 
 const statusOptions = ["Active", "Suspend", "Inactive", "Pending"] as const;
@@ -45,13 +46,16 @@ interface FormData {
 
 	// Temperature
 	highTemperature: string;
+	highTemperatureUnit: string;
 	lowTemperature: string;
+	lowTemperatureUnit: string;
 	temperatureDescription: string;
 	skyCondition: string;
 	uvIndex: number;
 
 	// Wind & Atmosphere
 	windSpeed: string;
+	windSpeedUnit: string;
 	windDirection: string;
 	beaufortScale: number;
 	humidity: string;
@@ -80,7 +84,7 @@ const getSchema = (editIndex: number | null) =>
 		})
 		.required();
 
-const AddEditWeatherPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], setList, editIndex = null, mode = "view" }) => {
+const AddEditWeatherPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], setList, editIndex = null, mode, setMode }) => {
 	const isDark = useAppState(state => state.isDark);
 
 	const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
@@ -128,11 +132,14 @@ const AddEditWeatherPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], se
 				endTime: '',
 			},
 			highTemperature: '',
+			highTemperatureUnit: 'C',
 			lowTemperature: '',
+			lowTemperatureUnit: 'C',
 			temperatureDescription: '',
 			skyCondition: '',
 			uvIndex: 0,
 			windSpeed: '',
+			windSpeedUnit: 'km/h',
 			windDirection: '',
 			beaufortScale: 0,
 			humidity: '',
@@ -185,13 +192,16 @@ const AddEditWeatherPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], se
 
 				// Temperature
 				highTemperature: highTemperature || '',
+				highTemperatureUnit: userData.highTemperatureUnit || 'C',
 				lowTemperature: lowTemperature || '',
+				lowTemperatureUnit: userData.lowTemperatureUnit || 'C',
 				temperatureDescription: '',
 				skyCondition: userData.sky || '',
 				uvIndex: 0,
 
 				// Wind & Atmosphere
 				windSpeed: userData.wind?.split(' ')[0] || '',
+				windSpeedUnit: userData.wind?.split(' ')[1] || 'km/h',
 				windDirection: userData.wind?.split(' ')[2] || '',
 				beaufortScale: 0,
 				humidity: '',
@@ -219,11 +229,25 @@ const AddEditWeatherPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], se
 
 	const onSubmit: SubmitHandler<FormData> = (data: FormData) => {
 		console.log("data", data)
+		const highTempFormatted = `${data.highTemperature} ${data.highTemperatureUnit}`;
+		const lowTempFormatted = `${data.lowTemperature} ${data.lowTemperatureUnit}`;
+		const windFormatted = `${data.windSpeed} ${data.windSpeedUnit} ${data.windDirection}`.trim();
+
+		const tempCombined = `${highTempFormatted} / ${lowTempFormatted}`;
+
+		const newData = {
+			...data,
+			temp: tempCombined,
+			wind: windFormatted,
+			statusColor: data.status === "Active" ? "text-textGreen" : "text-textRed",
+		};
+		console.log("newData", newData)
+
 		if (editIndex !== null) {
 			const updatedList = [...list];
 			updatedList[editIndex] = {
 				...updatedList[editIndex],
-				...data,
+				...newData,
 				statusColor: data.status === "Active" ? "text-textGreen" : "text-textRed",
 			};
 			setList?.(updatedList);
@@ -231,7 +255,7 @@ const AddEditWeatherPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], se
 			const newId = list.length > 0 ? Math.max(...list.map(u => u.id || 0)) + 1 : 1;
 			const newEntry = {
 				id: newId,
-				...data,
+				...newData,
 				statusColor: data.status === "Active" ? "text-textGreen" : "text-textRed",
 			};
 			setList?.([...list, newEntry]);
@@ -335,18 +359,53 @@ const AddEditWeatherPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], se
 			<div className="flex flex-col w-full gap-6">
 				<div className="flex gap-6">
 					<div className="relative w-full">
-						<Select
+						<label htmlFor="" className="text-xs sm:text-base font-medium text-text dark:text-textDark leading-[18px] sm:leading-[21px] mb-2 sm:mb-3 block">High Temperature</label>
+						<input
+							type="number"
+							step="0.1"
+							placeholder="Enter temperature"
 							{...register("highTemperature")}
 							name="highTemperature"
-							label="High Temperature"
-							items={highTemperatureOptions}
-							className="!bg-transparent !border-textSecondary/20 !text-textSecondary !w-full pr-10"
+							className="w-full border border-textSecondary/20 text-textSecondary bg-transparent px-3 py-2 pr-20 rounded"
 						/>
-						<span className="absolute right-10 top-[72%] -translate-y-1/2 text-textSecondary text-sm pointer-events-none">
-							°C
-						</span>
+
+						<div className="absolute -bottom-0.5 right-2 -translate-y-1/2 w-10">
+							<select
+								{...register("highTemperatureUnit")}
+								name="temperatureUnit"
+								className="bg-transparent text-textSecondary text-sm border-none outline-none w-full"
+							>
+								<option value="C">°C</option>
+								<option value="F">°F</option>
+							</select>
+						</div>
 					</div>
+
 					<div className="relative w-full">
+						<label htmlFor="" className="text-xs sm:text-base font-medium text-text dark:text-textDark leading-[18px] sm:leading-[21px] mb-2 sm:mb-3 block">Low Temperature</label>
+						<input
+							type="number"
+							step="0.1"
+							placeholder="Enter temperature"
+							{...register("lowTemperature")}
+							name="lowTemperature"
+							className="w-full border border-textSecondary/20 text-textSecondary bg-transparent px-3 py-2 pr-20 rounded"
+						/>
+
+						<div className="absolute -bottom-0.5 right-2 -translate-y-1/2 w-10">
+							<select
+								{...register("lowTemperatureUnit")}
+								name="temperatureUnit"
+								className="bg-transparent text-textSecondary text-sm border-none outline-none w-full"
+							>
+								<option value="C">°C</option>
+								<option value="F">°F</option>
+							</select>
+						</div>
+					</div>
+
+
+					{/* <div className="relative w-full">
 						<Select
 							{...register("lowTemperature")}
 							name="lowTemperature"
@@ -357,7 +416,7 @@ const AddEditWeatherPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], se
 						<span className="absolute right-10 top-[72%] -translate-y-1/2 text-textSecondary text-sm pointer-events-none">
 							°C
 						</span>
-					</div>
+					</div> */}
 				</div>
 				<div className="relative flex flex-col gap-3 w-full">
 					<label className="text-xs sm:text-base font-medium text-text dark:text-textDark">
@@ -396,7 +455,7 @@ const AddEditWeatherPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], se
 		"Wind & Atmosphere": (
 			<div className="flex flex-col w-full gap-6">
 				<div className="flex gap-6">
-					<div className="relative w-full">
+					{/* <div className="relative w-full">
 						<Select
 							{...register("windSpeed")}
 							name="windSpeed"
@@ -407,7 +466,34 @@ const AddEditWeatherPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], se
 						<span className="absolute right-10 top-[72%] -translate-y-1/2 text-textSecondary text-sm pointer-events-none">
 							km/h
 						</span>
+					</div> */}
+
+					<div className="relative w-full">
+						<label htmlFor="" className="text-xs sm:text-base font-medium text-text dark:text-textDark leading-[18px] sm:leading-[21px] mb-2 sm:mb-3 block">Wind Speed</label>
+						<input
+							type="number"
+							step="0.1"
+							placeholder="Enter windSpeed"
+							{...register("windSpeed")}
+							name="windSpeed"
+							className="w-full border border-textSecondary/20 text-textSecondary bg-transparent px-3 py-2 pr-20 rounded"
+						/>
+
+						<div className="absolute bottom-0.5 right-2 -translate-y-1/2 w-14">
+							<select
+								{...register("windSpeedUnit")}
+								name="windSpeedUnit"
+								className="bg-transparent text-textSecondary text-sm border-none outline-none w-full"
+							>
+								<option value="m/s">m/s</option>
+								<option value="km/h">km/h</option>
+								<option value="mph">mph</option>
+								<option value="knots">knots</option>
+							</select>
+						</div>
 					</div>
+
+
 					<div className="relative w-full">
 						<Select
 							{...register("windDirection")}

@@ -1,4 +1,6 @@
 import ky from "ky";
+import { toast } from "components/utils/toast";
+import { setIsLoading } from "components/utils/StoreActions";
 
 const authClient = ky.extend({
 	prefixUrl: import.meta.env.VITE_API_URL,
@@ -10,7 +12,8 @@ const authClient = ky.extend({
 					request.url.split("/").pop() !== "login" &&
 					(response.status === 401 || (response.status === 403 && JSON.parse(error1).force_relogin))
 				) {
-					// window.location.href = '/login';
+					setIsLoading(false);
+					window.location.href = '/login';
 				}
 			},
 		],
@@ -21,38 +24,47 @@ const authClient = ky.extend({
 
 const apiClient = ky.create({
 	prefixUrl: import.meta.env.VITE_API_URL,
-	// credentials: "same-origin",
+	credentials: "include", // ✅ crucial for cookies or sessions
 	hooks: {
 		beforeRequest: [
-			async (request, options) => {
-				const url = new URL(request.url);
-				// const { authToken } = getState();
-				const accessToken = localStorage.getItem("auth") || "";
-				const enc = accessToken || '';
-				const headers = {
-					// "Content-Type": "text/plain",
-					"Content-Type": "application/json",
-					// "auth-key": "123",
-					"authorization": accessToken ? `tma ${enc}` : "",
-					"bypass-tunnel-reminder": "some_value",
-				};
+			(request, options) => {
+				const accessToken = JSON.parse(localStorage.getItem("auth") || "{}")?.access_token;
 
-				options.headers = new Headers(headers);
-				// options.headers.set("Content-Type", "text/plain");
-				return new Request(url, options);
-			},
+				if (accessToken) {
+					options.headers.set("Authorization", `Bearer ${accessToken}`);
+				}
+
+				options.headers.set("Content-Type", "application/json");
+
+				return request;
+			}
 		],
 		afterResponse: [
 			async (request, options, response) => {
-				if (response.status === 401) {
-					// logout();
-					// window.location.href = "/access_disabled"; // Redirect to login
+				if (response.status == 599) {
+					const res = await response.json();
+					toast.error(res.error);
+					setIsLoading(false);
+				} else {
+					if (response.status === 401) {
+						setIsLoading(false);
+						// Optional: redirect to login or show a toast
+					} else if (response.status === 500) {
+						setIsLoading(false);
+					}
 				}
 			},
 		],
 	},
-	timeout: 180000,
-	credentials: "include",
 });
 
-export { authClient, apiClient };
+const publicClient = ky.create({
+	prefixUrl: import.meta.env.VITE_API_URL,
+	timeout: 60000,
+	// Do not include credentials
+	credentials: "include",
+	// Allow external public APIs, hence no prefixUrl
+	hooks: {},
+});
+
+export { authClient, apiClient, publicClient };

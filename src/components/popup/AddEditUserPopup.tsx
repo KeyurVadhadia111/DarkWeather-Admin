@@ -11,6 +11,7 @@ import { toast } from "components/utils/toast";
 import Select from "components/utils/Select";
 import useAppState from "components/utils/useAppState";
 import MultiSelect from "components/utils/MultiSelect";
+import { apiClient } from "api/client";
 
 type Props = {
 	isOpen: boolean;
@@ -18,39 +19,35 @@ type Props = {
 	list?: any[];
 	setList?: (val: any[]) => void;
 	editIndex?: number | null;
+	roles: any[];
 };
 
-const roles = [
-	{ value: "User", text: "User" },
-	{ value: "Super Admin", text: "Super Admin" },
-	{ value: "Analytics", text: "Analytics" },
-	{ value: "Support", text: "Support" },
-	{ value: "Operations", text: "Operations" },
-	{ value: "Meteorologist", text: "Meteorologist" },
-] as const;
-
-const statusOptions = ["Active", "Suspend", "Inactive", "Pending"] as const;
+const statusOptions = ["Active", "Suspend"] as const;
 
 type Status = (typeof statusOptions)[number];
+
+interface PresignedUrlResponse {
+	data: any;
+	url: string;
+	imageUrl: string;
+}
 
 interface FormData {
 	fullName: string;
 	email: string;
-	countryCode: string;
 	mobile: string | null;
 	password: string;
 	role: string[];
 	status: Status;
-	subscriptionPlan: "Free Tier" | "Premium Tier" | "Consultation Tier";
+	subscriptionPlan: "Free Tier" | "Premium Tier";
 	profilePicture: string;
 }
 
-const getSchema = (editIndex: number | null) =>
+const getSchema = (editIndex: number | null, roles: any[]) =>
 	yup
 		.object({
 			fullName: yup.string().required("Full Name is required"),
 			email: yup.string().email("Invalid email").required("Email is required"),
-			countryCode: yup.string().required("Country code is required"),
 			mobile: yup
 				.string()
 				.nullable()
@@ -60,13 +57,13 @@ const getSchema = (editIndex: number | null) =>
 			password:
 				editIndex === null
 					? yup
-							.string()
-							.min(8, "*Password must be at least 8 characters.")
-							.matches(/[A-Z]/, "*Password must contain at least one uppercase letter.")
-							.matches(/[a-z]/, "*Password must contain at least one lowercase letter.")
-							.matches(/[0-9]/, "*Password must contain at least one number.")
-							.matches(/[@$!%*?&#]/, "*Password must contain at least one special character.")
-							.required("*Password is required.")
+						.string()
+						.min(8, "*Password must be at least 8 characters.")
+						.matches(/[A-Z]/, "*Password must contain at least one uppercase letter.")
+						.matches(/[a-z]/, "*Password must contain at least one lowercase letter.")
+						.matches(/[0-9]/, "*Password must contain at least one number.")
+						.matches(/[@$!%*?&#]/, "*Password must contain at least one special character.")
+						.required("*Password is required.")
 					: yup.string().default("").notRequired(),
 			role: yup
 				.array()
@@ -76,21 +73,16 @@ const getSchema = (editIndex: number | null) =>
 			status: yup.mixed<Status>().oneOf(statusOptions).required("Status is required"),
 			subscriptionPlan: yup
 				.string()
-				.oneOf(["Free Tier", "Premium Tier", "Consultation Tier"])
-				.required("Subscription Plan is required"),
+				.oneOf(["Free Tier", "Premium Tier"]),
 			profilePicture: yup.string().default("").notRequired(), // always string
 		})
 		.required();
 
-const AddEditUserPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], setList, editIndex = null }) => {
+const AddEditUserPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], setList, editIndex = null, roles = [] }) => {
 	const isDark = useAppState(state => state.isDark);
 
 	const countries = [
 		{ code: "+1", country: "us", label: "USA" },
-		{ code: "+44", country: "uk", label: "UK" },
-		{ code: "+91", country: "india", label: "India" },
-		{ code: "+86", country: "china", label: "China" },
-		{ code: "+81", country: "japan", label: "Japan" },
 	];
 	const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
 	const [selectedCountry, setSelectedCountry] = useState(countries[0]);
@@ -112,7 +104,7 @@ const AddEditUserPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], setLi
 		// eslint-disable-next-line
 	}, [isDark]);
 
-	const schema = getSchema(editIndex);
+	const schema = getSchema(editIndex, roles);
 	const resolver: Resolver<FormData> = yupResolver(schema) as unknown as Resolver<FormData>;
 
 	const {
@@ -127,7 +119,6 @@ const AddEditUserPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], setLi
 		resolver,
 		defaultValues: {
 			subscriptionPlan: "Free Tier",
-			countryCode: "+1",
 			profilePicture: getDefaultProfilePicture(isDark),
 		},
 	});
@@ -135,49 +126,35 @@ const AddEditUserPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], setLi
 	useEffect(() => {
 		if (editIndex !== null && list[editIndex]) {
 			const userData = list[editIndex];
-			setSelectedRoles(
-				Array.isArray(list[editIndex].role)
-					? list[editIndex].role
-					: list[editIndex].role
-						? [list[editIndex].role]
-						: [],
-			);
+			const rolesFromUser = userData.role.map((r: { uuid: string; name: string }) => r.uuid);
+
+			setSelectedRoles(rolesFromUser);
 			reset({
+				id: userData.id || null,
 				fullName: userData.name || "",
 				email: userData.email || "",
-				countryCode: userData.phone?.startsWith("+") ? userData.phone.split(" ")[0] : "+1",
-				mobile: userData.phone?.startsWith("+") ? userData.phone.split(" ")[1] : userData.phone || "",
-				password: userData.password || "",
-				role: userData.role || "Support",
-				status: userData.status || "Active",
-				subscriptionPlan: userData.plan || "Free Tier",
+				status: userData.status == 'Suspended' ? 'Suspend' : userData.status,
+				role: rolesFromUser,
+				subscriptionPlan: userData.plan?.toLowerCase()
+					?.split(' ')
+					?.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+					?.join(' '),
 				profilePicture: userData.avatar
-					? `/assets/images/${userData.avatar}.svg`
+					? userData.avatar
 					: getDefaultProfilePicture(isDark),
 			});
 			if (userData.avatar) {
-				setProfilePicture(`/assets/images/${userData.avatar}.svg`);
+				setProfilePicture(userData.avatar);
 			}
 		} else {
 			reset({
 				subscriptionPlan: "Free Tier",
-				countryCode: "+1",
 				profilePicture: getDefaultProfilePicture(isDark),
 			});
 			setProfilePicture(getDefaultProfilePicture(isDark));
 			setSelectedRoles([]);
 		}
 	}, [isOpen, editIndex, list, reset, isDark]);
-	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0];
-		if (file) {
-			const reader = new FileReader();
-			reader.onloadend = () => {
-				setProfilePicture(reader.result as string);
-			};
-			reader.readAsDataURL(file);
-		}
-	};
 
 	const handleDeletePicture = () => {
 		setProfilePicture(getDefaultProfilePicture(isDark));
@@ -209,55 +186,133 @@ const AddEditUserPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], setLi
 
 	const onSubmit: SubmitHandler<FormData> = (data: FormData) => {
 		if (editIndex !== null) {
-			const updatedList = [...list];
-			updatedList[editIndex] = {
-				...updatedList[editIndex],
-				...data,
-				name: data.fullName,
-				phone: `${data.countryCode} ${data.mobile || ""}`,
-				plan: data.subscriptionPlan,
-				avatar: updatedList[editIndex].avatar || "avatar-1",
-				planBg: updatedList[editIndex].planBg || "bg-primary/10",
-				planText: updatedList[editIndex].planText || "text-primary",
-				lastLogin: updatedList[editIndex].lastLogin || "Today, 12:00 PM",
-				statusColor: data.status === "Active" ? "text-textGreen" : "text-textRed",
-			};
-			setList?.(updatedList);
+			updateExistingUser(data);
 		} else {
-			// Generate a new id and avatar
-			const newId = list.length > 0 ? Math.max(...list.map(u => u.id || 0)) + 1 : 1;
-			const avatar = `avatar-${newId % 12 || 12}`;
-			const planBg =
-				data.subscriptionPlan === "Premium Tier"
-					? "bg-primary/10"
-					: data.subscriptionPlan === "Consultation Tier"
-						? "bg-bgGreen dark:bg-textGreen/10"
-						: "bg-fgc dark:bg-fgcDark";
-			const planText =
-				data.subscriptionPlan === "Premium Tier"
-					? "text-primary"
-					: data.subscriptionPlan === "Consultation Tier"
-						? "text-textGreen"
-						: "text-text dark:text-textDark";
-			const statusColor = data.status === "Active" ? "text-textGreen" : "text-textRed";
-			const newUser = {
-				id: newId,
-				avatar,
-				name: data.fullName,
-				email: data.email,
-				phone: `${data.countryCode} ${data.mobile || ""}`,
-				role: data.role,
-				plan: data.subscriptionPlan,
-				planBg,
-				planText,
-				lastLogin: "Today, 12:00 PM",
-				status: data.status,
-				statusColor,
-			};
-			setList?.([...list, newUser]);
+			addNewUser(data);
 		}
-		toast.success(`User ${editIndex !== null ? "updated" : "added"} successfully!`);
-		setIsOpen(false);
+	};
+
+	const updateExistingUser = async (data: FormData) => {
+		try {
+			const userData = list[editIndex];
+			const uniqueRoles = Array.from(
+				new Map(data.role.map(role => [role.value, role])).values()
+			);
+			const authToken = JSON.parse(localStorage.getItem('auth') || "{}")?.access_token;
+			const response = await apiClient.post(`api/admin/user/update`, {
+				json: {
+					uuid: userData.id,
+					username: data.fullName,
+					email: data.email,
+					profile_picture: profilePicture.includes('/assets/images/image-skelaton') ? '/assets/images/user.png' : profilePicture,
+					roles: uniqueRoles,
+					is_suspended: data.status === 'Active' ? false : true,
+					plan: data.subscriptionPlan?.toUpperCase(),
+				},
+				headers: {
+					Authorization: `Bearer ${authToken}`,
+					"Content-Type": "application/json",
+				}
+			})
+
+			if (response.ok) {
+				toast.success(`User ${editIndex !== null ? "updated" : "added"} successfully!`);
+				setIsOpen(false);
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	const addNewUser = async (data: FormData) => {
+		try {
+			const authToken = JSON.parse(localStorage.getItem('auth') || "{}")?.access_token;
+			const response = await apiClient.post('api/admin/user/create', {
+				json: {
+					username: data.fullName,
+					email: data.email,
+					profile_picture: profilePicture.includes('/assets/images/image-skelaton') ? '/assets/images/user.png' : profilePicture,
+					roles: data.role,
+					is_suspended: data.status === 'Active' ? false : true,
+					password: data.password,
+					plan: data.subscriptionPlan?.toUpperCase(),
+				},
+				headers: {
+					Authorization: `Bearer ${authToken}`,
+					"Content-Type": "application/json",
+				}
+			})
+
+			if (response.ok) {
+				toast.success(`User ${editIndex !== null ? "updated" : "added"} successfully!`);
+				setIsOpen(false);
+			}
+		} catch (error) {
+
+		}
+	};
+
+	const getPresignedUrl = async (fileName: string, fileType: string): Promise<PresignedUrlResponse> => {
+		const authToken = JSON.parse(localStorage.getItem('auth') || "{}")?.access_token;
+		const response = await apiClient.post("api/user/p-u", {
+			body: JSON.stringify({
+				file_name: fileName,
+				file_type: fileType,
+			}),
+			headers: {
+				Authorization: `Bearer ${authToken}`,
+				"Content-Type": "application/json",
+			},
+		});
+
+		if (!response.ok) {
+			throw new Error("Failed to get presigned URL");
+		}
+
+		const data: PresignedUrlResponse = await response.json();
+		return data;
+	};
+
+	const uploadImageToS3 = async (presignedUrl: string, fileUrl: string, file: File): Promise<void> => {
+		const response = await fetch(presignedUrl, {
+			method: "PUT",
+			body: file,
+			headers: {
+				"Content-Type": file.type,
+			},
+		});
+
+		if (!response.ok) {
+			throw new Error("Failed to upload image to S3");
+		}
+
+		setProfilePicture(fileUrl);
+	};
+
+	const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
+		if (!file) return;
+
+		try {
+			const reader = new FileReader();
+			reader.onloadend = () => {
+				setProfilePicture(reader.result as string);
+			};
+			reader.readAsDataURL(file);
+
+			// Extract file name and type
+			const fileName = file.name.split(".")[0];
+			const fileType = file.type.split("/")[1];
+
+			const urlData = await getPresignedUrl(fileName, fileType);
+
+			const imageData = urlData.data;
+
+			await uploadImageToS3(imageData.presigned_url, imageData.file_url, file);
+		} catch (error) {
+			console.error("Error uploading profile picture:", error);
+			toast.error("Failed to upload profile picture. Please try again.");
+		}
 	};
 
 	return (
@@ -322,11 +377,31 @@ const AddEditUserPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], setLi
 							name="Roles"
 							label="Roles"
 							required
-							items={[...roles]}
+							items={[...roles].map(role => ({
+								...role,
+								disabled: selectedRoles.includes("User") && role.value !== "User"
+							}))}
 							value={selectedRoles}
 							onChange={vals => {
-								setSelectedRoles(vals);
-								setValue("role", vals, { shouldValidate: true });
+								const selectedTexts = roles.filter(r => vals.includes(r.value)).map(r => r.text);
+
+								const isUserSelected = selectedTexts.includes("User");
+
+								let newVals = vals;
+								if (isUserSelected) {
+									const userRole = roles.find(r => r.text === "User");
+									if (userRole) {
+										newVals = [userRole.value];
+									}
+								} else {
+									const userRole = roles.find(r => r.text === "User");
+									if (userRole && newVals.includes(userRole.value)) {
+										newVals = newVals.filter(v => v !== userRole.value);
+									}
+								}
+
+								setSelectedRoles(newVals);
+								setValue("role", newVals, { shouldValidate: true });
 								trigger("role");
 							}}
 							error={errors?.role?.message}
@@ -345,6 +420,7 @@ const AddEditUserPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], setLi
 								placeholder="Enter Email Address"
 								className="!bg-transparent !border-textSecondary/20 !w-full"
 								error={errors?.email?.message}
+								disabled={editIndex != null}
 							/>
 						</div>
 
@@ -364,11 +440,10 @@ const AddEditUserPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], setLi
 									/>
 									<Icon
 										icon="auto-password"
-										className={`absolute ${
-											errors.password?.message === "*Password is required."
-												? "top-[34%] sm:top-[38%]"
-												: `${errors.password?.message ? "top-[25%] sm:top-[28%]" : "top-1/2"}`
-										} right-3 z-10 w-4 h-4 sm:h-6 sm:w-6 -translate-y-1/2 cursor-pointer text-textTurnery`}
+										className={`absolute ${errors.password?.message === "*Password is required."
+											? "top-[34%] sm:top-[38%]"
+											: `${errors.password?.message ? "top-[25%] sm:top-[28%]" : "top-1/2"}`
+											} right-3 z-10 w-4 h-4 sm:h-6 sm:w-6 -translate-y-1/2 cursor-pointer text-textTurnery`}
 										onClick={() => {
 											generatePassword();
 											trigger("password");
@@ -379,7 +454,7 @@ const AddEditUserPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], setLi
 						)}
 
 						{/* Mobile Number */}
-						<div className="w-full flex flex-col gap-3 relative">
+						{/* <div className="w-full flex flex-col gap-3 relative">
 							<label className="text-sm font-medium text-text dark:text-textDark">Mobile Number</label>
 							<div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 w-full relative">
 								<div className="flex items-center gap-2 sm:gap-3 w-full">
@@ -440,7 +515,7 @@ const AddEditUserPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], setLi
 								</div>
 							</div>
 							{errors.mobile && <p className="text-xs text-red-400">{errors.mobile.message}</p>}
-						</div>
+						</div> */}
 
 						{/* Status */}
 						<div className={`w-full ${editIndex !== null ? "sm:col-span-2" : ""}	`}>
@@ -463,7 +538,7 @@ const AddEditUserPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], setLi
 							Subscription Plan
 						</label>
 						<div className="flex flex-col sm:flex-row gap-3">
-							{["Free Tier", "Premium Tier", "Consultation Tier"].map(plan => (
+							{["Free Tier", "Premium Tier"].map(plan => (
 								<label
 									key={plan}
 									tabIndex={0}
@@ -471,15 +546,14 @@ const AddEditUserPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], setLi
 									onClick={() =>
 										setValue(
 											"subscriptionPlan",
-											plan as "Free Tier" | "Premium Tier" | "Consultation Tier",
+											plan as "Free Tier" | "Premium Tier",
 											{ shouldValidate: true },
 										)
 									}
-									className={`relative flex items-center gap-3 px-2 py-[12.3px] sm:px-4 sm:py-[15.1px] rounded-xl border cursor-pointer select-none w-full ${
-										getValues("subscriptionPlan") === plan
-											? "border-primary"
-											: "border-textSecondary/20"
-									}`}>
+									className={`relative flex items-center gap-3 px-2 py-[12.3px] sm:px-4 sm:py-[15.1px] rounded-xl border cursor-pointer select-none w-full ${getValues("subscriptionPlan") === plan
+										? "border-primary"
+										: "border-textSecondary/20"
+										}`}>
 									<input
 										type="radio"
 										{...register("subscriptionPlan")}
@@ -488,22 +562,20 @@ const AddEditUserPopup: React.FC<Props> = ({ isOpen, setIsOpen, list = [], setLi
 										onChange={() =>
 											setValue(
 												"subscriptionPlan",
-												plan as "Free Tier" | "Premium Tier" | "Consultation Tier",
+												plan as "Free Tier" | "Premium Tier",
 												{ shouldValidate: true },
 											)
 										}
 										className="hidden"
 									/>
 									<div
-										className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 flex items-center justify-center ${
-											getValues("subscriptionPlan") === plan
-												? "border-primary"
-												: "border-textSecondary/20"
-										}`}>
+										className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 flex items-center justify-center ${getValues("subscriptionPlan") === plan
+											? "border-primary"
+											: "border-textSecondary/20"
+											}`}>
 										<div
-											className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-primary transition-opacity ${
-												getValues("subscriptionPlan") === plan ? "opacity-100" : "opacity-0"
-											}`}
+											className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-primary transition-opacity ${getValues("subscriptionPlan") === plan ? "opacity-100" : "opacity-0"
+												}`}
 										/>
 									</div>
 									<span className="text-xs sm:text-base text-text dark:text-textDark">{plan}</span>

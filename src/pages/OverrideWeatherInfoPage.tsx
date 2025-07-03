@@ -31,7 +31,7 @@ interface SortConfig {
 
 export default function OverrideWeatherInfoPage() {
 	// Example user data array with duplicates removed
-	const [popupMode, setPopupMode] = useState<"view">("view");
+	const [popupMode, setPopupMode] = useState("");
 	const [weatherCondition, setWeatherCondition] = useState<WeatherCondition[]>([
 		{
 			id: 1,
@@ -345,6 +345,7 @@ export default function OverrideWeatherInfoPage() {
 								onClick={() => {
 									setEditIndex(null);
 									setIsAddEditUserPopupOpen(true);
+									setPopupMode("")
 								}}>
 								<Icon icon="plus" className="w-5 h-5 sm:w-7 sm:h-7" />
 								<div className="relative  font-semibold text-text text-xs sm:text-base tracking-[0] leading-6 whitespace-nowrap">
@@ -369,7 +370,7 @@ export default function OverrideWeatherInfoPage() {
 					</div>
 				</div>
 				<div className="w-full overflow-x-auto overflow-hidden">
-					<div className="flex flex-col items-start gap-[5.54px] sm:gap-[7.54px] relative self-stretch min-w-[1027px] sm:min-w-[1450px] w-full flex-[0_0_auto] min-h-[500px] sm:min-h-[700px]">
+					<div className="flex flex-col items-start gap-[5.54px] sm:gap-[7.54px] relative self-stretch min-w-[980px] sm:min-w-[1450px] w-full flex-[0_0_auto] min-h-[500px] sm:min-h-[700px]">
 						<div className="flex h-[42px] sm:h-[52px] items-start sm:justify-between relative self-stretch w-full bg-fgc dark:bg-fgcDark rounded-xl">
 							{/* Column headers */}
 							<div className="inline-flex flex-col items-start justify-center gap-2.5 px-[11px] sm:px-4 py-3.5 relative self-stretch flex-[0_0_auto]">
@@ -398,7 +399,7 @@ export default function OverrideWeatherInfoPage() {
 								</label>
 							</div>
 							<div
-								className="flex w-[159px] sm:w-[200px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
+								className="flex w-[125px] sm:w-[200px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
 							// onClick={() => handleSort("location")}
 							>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
@@ -416,7 +417,7 @@ export default function OverrideWeatherInfoPage() {
 								/> */}
 							</div>
 							<div
-								className="flex w-[168px] sm:w-[232px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
+								className="flex w-[171px] sm:w-[232px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
 								onClick={() => handleSort("effectiveFrom")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Effective From
@@ -432,7 +433,7 @@ export default function OverrideWeatherInfoPage() {
 									className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"}`}
 								/>
 							</div>
-							<div className="flex items-center w-[112px] sm:w-auto gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow"
+							<div className="flex items-center w-[135px] sm:w-auto gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow"
 								onClick={() => handleSort("temp")}
 							>
 								<div className="font-medium relative text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
@@ -450,7 +451,7 @@ export default function OverrideWeatherInfoPage() {
 								/>
 							</div>
 							<div
-								className="flex w-[101px] sm:w-[152px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
+								className="flex w-[121px] sm:w-[152px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
 								onClick={() => handleSort("sky")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Sky
@@ -467,13 +468,13 @@ export default function OverrideWeatherInfoPage() {
 								/>
 							</div>
 							<div
-								className="flex items-center w-[149px] sm:w-auto gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow cursor-pointer">
+								className="flex items-center w-[88px] sm:w-auto gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow cursor-pointer">
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Wind
 								</div>
 							</div>
 							<div
-								className="flex items-center gap-1 sm:gap-2 w-[136px] sm:w-auto px-3 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow cursor-pointer"
+								className="flex items-center gap-1 sm:gap-2 w-[122px] sm:w-auto px-3 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow cursor-pointer"
 								onClick={() => handleSort("precipitation")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Precipitation
@@ -490,7 +491,7 @@ export default function OverrideWeatherInfoPage() {
 								/>
 							</div>
 							<div
-								className="flex w-[85px] sm:w-[124px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
+								className="flex w-[96.5px] sm:w-[124px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
 								onClick={() => handleSort("status")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Status
@@ -531,7 +532,7 @@ export default function OverrideWeatherInfoPage() {
 										: "origin-top-right top-full mt-2.5 sm:mt-[17px]";
 									return (
 										<React.Fragment key={item.id}>
-											<div className="flex h-8 sm:h-11 items-start justify-between relative self-stretch w-full">
+											<div className="flex h-8 sm:h-11 items-start  relative self-stretch w-full">
 												{/* Checkbox */}
 												<div className="inline-flex flex-col items-start justify-center gap-2.5 px-[9px] sm:px-4 py-3.5 relative self-stretch flex-[0_0_auto]">
 													<label className="relative w-6 h-6 flex items-center justify-center cursor-pointer">
@@ -557,14 +558,14 @@ export default function OverrideWeatherInfoPage() {
 												</div>
 
 												{/* Location */}
-												<div className="flex w-[159px] sm:w-[200px] items-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
+												<div className="flex w-[125px] sm:w-[200px] items-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
 													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
 														{item.location}
 													</div>
 												</div>
 
 												{/* EffectiveFrom */}
-												<div className="flex flex-col w-[168px] sm:w-[232px] items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
+												<div className="flex flex-col w-[171px] sm:w-[232px] items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
 													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
 														{typeof item.effectiveFrom === 'string'
 															? item.effectiveFrom
@@ -573,14 +574,14 @@ export default function OverrideWeatherInfoPage() {
 												</div>
 
 												{/* temp */}
-												<div className="flex flex-col w-[112px] sm:w-auto items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow">
+												<div className="flex flex-col w-[135px] sm:w-auto items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow">
 													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
 														{item.temp}
 													</div>
 												</div>
 
 												{/* Sky */}
-												<div className="flex w-[159px] sm:w-[180px] items-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
+												<div className="flex w-[121px] sm:w-[152px] items-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
 													<div className="relative w-[18px] h-[18px] rounded-2xl">
 														<img
 															src={`/assets/images/${item.skyIcon}.svg`}
@@ -594,21 +595,21 @@ export default function OverrideWeatherInfoPage() {
 												</div>
 
 												{/* Wind */}
-												<div className="flex flex-col items-start justify-center w-[136px] sm:w-auto gap-2.5 px-3 sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow">
+												<div className="flex flex-col items-start justify-center w-[88px] sm:w-auto gap-2.5 px-3 sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow">
 													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
 														{item.wind}
 													</div>
 												</div>
 
 												{/* Precipitation */}
-												<div className="flex flex-col items-start justify-center w-[136px] sm:w-auto gap-2.5 px-3 sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow">
+												<div className="flex flex-col items-start justify-center w-[122px] sm:w-auto gap-2.5 px-3 sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow">
 													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
 														{item.precipitation}%
 													</div>
 												</div>
 
 												{/* Status */}
-												<div className="w-[85px] sm:w-[148px] flex items-center justify-between px-2 sm:px-4 py-2 sm:py-3 gap-1 sm:gap-2">
+												<div className="w-[96.5px] sm:w-[124px] flex items-center justify-between px-2 sm:px-4 py-2 sm:py-3 gap-1 sm:gap-2">
 													{/* Status text */}
 													<div
 														className={`font-normal ${item.statusColor} text-[10px] sm:text-base text-center tracking-[0] leading-[1.2] whitespace-nowrap`}
@@ -743,6 +744,7 @@ export default function OverrideWeatherInfoPage() {
 				setList={setWeatherCondition}
 				editIndex={editIndex}
 				mode={popupMode}
+				setMode={setPopupMode}
 			/>
 			<DeleteUserPopup
 				isOpen={isDeleteUserPopupOpen}

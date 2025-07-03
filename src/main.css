@@ -7,6 +7,7 @@
 /* @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *)); */
 
 @layer base {
+
 	/* Set Rubik as default font */
 	body {
 		font-family: "Rubik", sans-serif;
@@ -62,8 +63,10 @@
 
 		/* Apply custom breakpoints */
 		width: 100%;
-		max-width: 1170px; /* Apply 1170px max-width on large screens */
+		max-width: 1170px;
+		/* Apply 1170px max-width on large screens */
 	}
+
 	/* Custom breakpoints */
 	@media (min-width: 600px) {
 		.container {
@@ -72,6 +75,7 @@
 			padding-right: 24px;
 		}
 	}
+
 	@media (min-width: 1170px) {
 		.container {
 			max-width: 1170px;
@@ -79,11 +83,13 @@
 			padding-right: 0px;
 		}
 	}
+
 	@media (min-width: 1240px) {
 		.container {
 			max-width: 1170px;
 		}
 	}
+
 	@media (min-width: 1496px) {
 		.container {
 			max-width: 1170px;
@@ -92,7 +98,8 @@
 }
 
 svg {
-    display: inline-block !important; /* This would break your hidden class */
+	display: inline-block !important;
+	/* This would break your hidden class */
 }
 
 @theme {
@@ -137,21 +144,27 @@ button {
 	min-height: 56px;
 	overflow: hidden;
 }
+
 .Toastify__toast--success {
 	color: var(--toastify-color-progress-success);
 }
+
 .Toastify__toast--success:not(.Toastify__toast-theme--dark) {
 	background: #f5fffa;
 }
+
 .Toastify__toast--success.Toastify__toast-theme--dark {
 	background: #0c270d;
 }
+
 .Toastify__toast--error {
 	color: var(--toastify-color-progress-error);
 }
+
 .Toastify__toast--error:not(.Toastify__toast-theme--dark) {
 	background: #f2e4e2;
 }
+
 .Toastify__toast--error.Toastify__toast-theme--dark {
 	background: #24110f;
 }
@@ -164,12 +177,14 @@ button {
 	border-radius: 100%;
 	box-shadow: 0 6px 32px rgba(0, 0, 0, 0.1);
 }
+
 .dark .swiper-button-prev,
 .dark .swiper-button-next {
 	background-color: var(--color-bgcDark);
 	color: var(--color-text);
 	box-shadow: 0 6px 32px rgba(255, 255, 255, 0.1);
 }
+
 .swiper-button-prev.swiper-button-disabled,
 .swiper-button-next.swiper-button-disabled {
 	opacity: 0.4;
@@ -180,6 +195,7 @@ button {
 	font-size: 16px;
 	color: var(--color-text);
 }
+
 .dark .swiper-button-prev::after,
 .dark .swiper-button-next::after {
 	font-size: 16px;
@@ -196,6 +212,7 @@ button {
 	border-radius: 8px;
 	right: 2px;
 }
+
 .simplebar-track.simplebar-horizontal {
 	height: 9px !important;
 	border-radius: 8px;
@@ -222,6 +239,100 @@ button {
 }
 
 
-.MuiStack-root{
+.MuiStack-root {
 	width: 100%;
+}
+
+/* .jodit-toolbar__box {
+	position: absolute;
+	top: 21%;
+	right: 31px;
+	background: transparent !important;
+	border: none !important;
+}
+
+.jodit-workplace {
+	height: 56px !important;
+	min-height: 0px !important;
+}
+
+.jodit-container:not(.jodit_inline) {
+	min-height: 0px;
+	border: 1px solid #eeeeee !important;
+	border-radius: 12px !important;
+	overflow: hidden;
+}
+
+.jodit_theme_default {
+	min-height: 0px !important;
+}
+
+.jodit-wysiwyg {
+	min-height: 0px !important;
+
+}
+
+.jodit-add-new-line {
+	display: none !important;
+} */
+
+
+.jodit-instance .jodit-toolbar__box {
+	position: absolute;
+	top: 0%;
+	right: 2px;
+	background: transparent !important;
+	border: none !important;
+}
+
+[class^="jodit-instance-"] .jodit-toolbar__box {
+	position: absolute;
+	top: var(--toolbar-top, -6%);
+	right: var(--toolbar-right);
+	background: transparent !important;
+	border: none !important;
+}
+
+[class^="jodit-instance-"] .jodit-workplace {
+	height: var(--workplace-height) !important;
+	min-height: 0 !important;
+}
+
+/* You can keep these global */
+.jodit-container:not(.jodit_inline) {
+	min-height: 0px;
+	border-radius: 12px !important;
+	overflow: hidden;
+}
+
+.jodit-workplace {
+	height: 56px !important;
+	min-height: 0px !important;
+}
+
+.jodit-instance-3 .jodit-workplace {
+	height: 100px !important;
+	min-height: 0 !important;
+}
+
+.jodit_theme_default {
+	min-height: 0px !important;
+}
+
+.jodit-wysiwyg {
+	min-height: 0px !important;
+}
+
+.jodit-add-new-line {
+	display: none !important;
+}
+
+
+.dark .jodit-container:not(.jodit_inline) .jodit-workplace {
+	background: var(--color-fgcDark) !important;
+	color: var(--color-textDark) !important;
+}
+
+.dark .jodit-container:not(.jodit_inline) {
+	border: 1px solid var(--color-borderDark) !important;
 }

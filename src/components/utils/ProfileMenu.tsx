@@ -1,14 +1,17 @@
 import React from "react";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import useAppState from "./useAppState";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
-interface Props {}
+interface Props { }
 
 const ProfileMenu: React.FC<Props> = () => {
 	const isDark = useAppState(state => state.isDark);
 	const userDetails = useAppState(state => state.userDetails);
 	const setUserDetails = useAppState(state => state.setUserDetails);
+
+	const navigate = useNavigate();
 
 	return (
 		<Menu as="div" className="relative">
@@ -29,6 +32,7 @@ const ProfileMenu: React.FC<Props> = () => {
 						onClick={() => {
 							localStorage.removeItem("auth");
 							setUserDetails({});
+							navigate("/login");
 						}}>
 						Logout
 					</a>

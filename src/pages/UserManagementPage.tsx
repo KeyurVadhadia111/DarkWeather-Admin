@@ -10,6 +10,7 @@ import DeleteUserPopup from "components/popup/DeleteUserPopup";
 import ResertPasswordPopup from "components/popup/ResertPasswordPopup";
 import { useNavigate } from "react-router-dom";
 import { toast } from "components/utils/toast";
+import { apiClient } from "api/client";
 
 interface User {
 	id: number;
@@ -34,309 +35,33 @@ interface SortConfig {
 export default function UserManagementPage() {
 	// Example user data array with duplicates removed
 	const [users, setUsers] = useState<User[]>([
-		{
-			id: 1,
-			avatar: "avatar-1",
-			name: "Jane Doe",
-			email: "jane.doe@gmail.com",
-			phone: "+1 78568 45621",
-			role: "Support",
-			plan: "Premium Tier",
-			planBg: "bg-primary/10",
-			planText: "text-primary",
-			lastLogin: "Today, 11:42 AM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 2,
-			avatar: "avatar-2",
-			name: "Alex Johnson",
-			email: "alex.j@email.com",
-			phone: "+1 4845850121",
-			role: "Analytics",
-			plan: "Free Tier",
-			planBg: "bg-fgc dark:bg-fgcDark",
-			planText: "text-text dark:text-textDark",
-			lastLogin: "May 18, 9:15 AM",
-			status: "Suspend",
-			statusColor: "text-textRed",
-		},
-		{
-			id: 3,
-			avatar: "avatar-3",
-			name: "Maya Patel",
-			email: "maya.patel@wx.com",
-			phone: "-",
-			role: "User",
-			plan: "Premium Tier",
-			planBg: "bg-primary/10",
-			planText: "text-primary",
-			lastLogin: "May 15, 2:31 PM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 4,
-			avatar: "avatar-4",
-			name: "Admin Team",
-			email: "admin@darkweather.com",
-			phone: "+1 8143511542",
-			role: "User",
-			plan: "Consultation Tier",
-			planBg: "bg-bgGreen dark:bg-textGreen/10",
-			planText: "text-textGreen",
-			lastLogin: "Today, 8:06 AM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 5,
-			avatar: "avatar-5",
-			name: "John Smith",
-			email: "john.smith@wx.com",
-			phone: "+1 2017083834",
-			role: "Support",
-			plan: "Premium Tier",
-			planBg: "bg-primary/10",
-			planText: "text-primary",
-			lastLogin: "Yesterday, 3:22 PM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 6,
-			avatar: "avatar-6",
-			name: "Sarah Wilson",
-			email: "sarah.w@gmail.com",
-			phone: "+1 4844670913",
-			role: "Operations",
-			plan: "Consultation Tier",
-			planBg: "bg-bgGreen dark:bg-textGreen/10",
-			planText: "text-textGreen",
-			lastLogin: "May 20, 10:15 AM",
-			status: "Suspend",
-			statusColor: "text-textRed",
-		},
-		{
-			id: 7,
-			avatar: "avatar-7",
-			name: "Mike Chen",
-			email: "mike.chen@wx.com",
-			phone: "-",
-			role: "Analytics",
-			plan: "Free Tier",
-			planBg: "bg-fgc dark:bg-fgcDark",
-			planText: "text-text dark:text-textDark",
-			lastLogin: "May 19, 4:45 PM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 8,
-			avatar: "avatar-8",
-			name: "Emily Brown",
-			email: "emily.brown@gmail.com",
-			phone: "+1 6102458945",
-			role: "User",
-			plan: "Free Tier",
-			planBg: "bg-fgc dark:bg-fgcDark",
-			planText: "text-text dark:text-textDark",
-			lastLogin: "Today, 7:30 AM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 9,
-			avatar: "avatar-9",
-			name: "Rachel Simmons",
-			email: "rachel.s@wx.com",
-			phone: "-",
-			role: "Analytics",
-			plan: "Premium Tier",
-			planBg: "bg-primary/10",
-			planText: "text-primary",
-			lastLogin: "May 30, 10:02 AM",
-			status: "Suspend",
-			statusColor: "text-textRed",
-		},
-		{
-			id: 10,
-			avatar: "avatar-10",
-			name: "Tom Jenkins",
-			email: "tom.jenkins@wx.com",
-			phone: "+1 8147131792",
-			role: "User",
-			plan: "Free Tier",
-			planBg: "bg-fgc dark:bg-fgcDark",
-			planText: "text-text dark:text-textDark",
-			lastLogin: "Today, 12:14 PM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 11,
-			avatar: "avatar-11",
-			name: "Linda Brooks",
-			email: "linda.brooks@gmail.com",
-			phone: "+1 4844670913",
-			role: "Meteorologist",
-			plan: "Consultation Tier",
-			planBg: "bg-bgGreen dark:bg-textGreen/10",
-			planText: "text-textGreen",
-			lastLogin: "May 28, 6:18 PM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 12,
-			avatar: "avatar-12",
-			name: "David Kim",
-			email: "dkim@darkweather.com",
-			phone: "-",
-			role: "Support",
-			plan: "Free Tier",
-			planBg: "bg-fgc dark:bg-fgcDark",
-			planText: "text-text dark:text-textDark",
-			lastLogin: "Yesterday, 4:56 PM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 13,
-			avatar: "avatar-1",
-			name: "Jane Doe",
-			email: "jane.doe@gmail.com",
-			phone: "+1 78568 45621",
-			role: "Support",
-			plan: "Premium Tier",
-			planBg: "bg-primary/10",
-			planText: "text-primary",
-			lastLogin: "Today, 11:42 AM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 14,
-			avatar: "avatar-2",
-			name: "Alex Johnson",
-			email: "alex.j@email.com",
-			phone: "+1 4845850121",
-			role: "Analytics",
-			plan: "Free Tier",
-			planBg: "bg-fgc dark:bg-fgcDark",
-			planText: "text-text dark:text-textDark",
-			lastLogin: "May 18, 9:15 AM",
-			status: "Suspend",
-			statusColor: "text-textRed",
-		},
-		{
-			id: 15,
-			avatar: "avatar-3",
-			name: "Maya Patel",
-			email: "maya.patel@wx.com",
-			phone: "-",
-			role: "User",
-			plan: "Premium Tier",
-			planBg: "bg-primary/10",
-			planText: "text-primary",
-			lastLogin: "May 15, 2:31 PM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 16,
-			avatar: "avatar-4",
-			name: "Admin Team",
-			email: "admin@darkweather.com",
-			phone: "+1 8143511542",
-			role: "User",
-			plan: "Consultation Tier",
-			planBg: "bg-bgGreen dark:bg-textGreen/10",
-			planText: "text-textGreen",
-			lastLogin: "Today, 8:06 AM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 17,
-			avatar: "avatar-5",
-			name: "John Smith",
-			email: "john.smith@wx.com",
-			phone: "+1 2017083834",
-			role: "Support",
-			plan: "Premium Tier",
-			planBg: "bg-primary/10",
-			planText: "text-primary",
-			lastLogin: "Yesterday, 3:22 PM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 18,
-			avatar: "avatar-6",
-			name: "Sarah Wilson",
-			email: "sarah.w@gmail.com",
-			phone: "+1 4844670913",
-			role: "Operations",
-			plan: "Consultation Tier",
-			planBg: "bg-bgGreen dark:bg-textGreen/10",
-			planText: "text-textGreen",
-			lastLogin: "May 20, 10:15 AM",
-			status: "Suspend",
-			statusColor: "text-textRed",
-		},
-		{
-			id: 19,
-			avatar: "avatar-7",
-			name: "Mike Chen",
-			email: "mike.chen@wx.com",
-			phone: "-",
-			role: "Analytics",
-			plan: "Free Tier",
-			planBg: "bg-fgc dark:bg-fgcDark",
-			planText: "text-text dark:text-textDark",
-			lastLogin: "May 19, 4:45 PM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 20,
-			avatar: "avatar-8",
-			name: "Emily Brown",
-			email: "emily.brown@gmail.com",
-			phone: "+1 6102458945",
-			role: "User",
-			plan: "Free Tier",
-			planBg: "bg-fgc dark:bg-fgcDark",
-			planText: "text-text dark:text-textDark",
-			lastLogin: "Today, 7:30 AM",
-			status: "Active",
-			statusColor: "text-textGreen",
-		},
 	]);
 	const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
 	const [currentPage, setCurrentPage] = useState(1);
-	const [usersPerPage] = useState(12);
+	const [usersPerPage] = useState(10);
 	const [sortConfig, setSortConfig] = useState<SortConfig>({
-		key: "name",
+		key: "username",
 		direction: "asc",
 	});
 	const [editIndex, setEditIndex] = useState<number | null>(null);
 	const [isAddEditUserPopupOpen, setIsAddEditUserPopupOpen] = useState(false);
 	const isSideExpanded = useAppState(state => state.isSideExpanded);
 
-	const startIdx = (currentPage - 1) * usersPerPage;
-	const endIdx = Math.min(startIdx + usersPerPage, users.length);
+	const [startIdx, setStartIdx] = useState(0);
+	const [endIdx, setEndIdx] = useState(0);
 
 	const [isDeleteUserPopupOpen, setIsDeleteUserPopupOpen] = useState(false);
 	const [deleteUserIndex, setDeleteUserIndex] = useState<number | null>(null);
+
+	const userDetails = useAppState(state => state.userDetails);
+	const [totalUsersCount, setTotalUsersCount] = useState(0);
 
 	const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
 	const [resetUserEmail, setResetUserEmail] = useState<string>("");
 	const navigate = useNavigate();
 
 	const [searchQuery, setSearchQuery] = useState("");
+	const [roles, setRoles] = useState([]);
 
 	// Filter users by search query (name or email)
 	const filteredUsers = useMemo(() => {
@@ -347,47 +72,15 @@ export default function UserManagementPage() {
 		);
 	}, [users, searchQuery]);
 
-	const sortedUsers = useMemo(() => {
-		const sorted = [...filteredUsers].sort((a: User, b: User) => {
-			const key = sortConfig.key;
-			let valA = a[key];
-			let valB = b[key];
-
-			if (typeof valA === "string" && typeof valB === "string") {
-				if (key === "lastLogin") {
-					const convertToDate = (str: string): number => {
-						if (str.toLowerCase().includes("today")) return new Date().getTime();
-						if (str.toLowerCase().includes("yesterday")) {
-							const date = new Date();
-							date.setDate(date.getDate() - 1);
-							return date.getTime();
-						}
-						return new Date(str).getTime();
-					};
-					return sortConfig.direction === "asc"
-						? convertToDate(valA) - convertToDate(valB)
-						: convertToDate(valB) - convertToDate(valA);
-				}
-				valA = valA.toLowerCase();
-				valB = valB.toLowerCase();
-			}
-
-			if (valA < valB) return sortConfig.direction === "asc" ? -1 : 1;
-			if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
-			return 0;
-		});
-		return sorted;
-	}, [filteredUsers, sortConfig]);
-
-	const displayedUsers = useMemo(() => {
-		return sortedUsers.slice(startIdx, endIdx);
-	}, [sortedUsers, startIdx, endIdx]);
+	const displayedUsers = filteredUsers;
 
 	const handleSort = (key: keyof User) => {
 		setSortConfig(prevConfig => ({
 			key,
 			direction: prevConfig.key === key && prevConfig.direction === "asc" ? "desc" : "asc",
 		}));
+		setCurrentPage(1);
+		fetchPaginatedUsers();
 	};
 
 	/* Start for checkbox */
@@ -418,6 +111,83 @@ export default function UserManagementPage() {
 	useEffect(() => {
 		setCurrentPage(1);
 	}, [searchQuery]);
+
+	const fetchPaginatedUsers = async () => {
+		try {
+			const response = await apiClient.post(`api/admin/users/all?page=${currentPage}&limit=10&sort_by=${sortConfig.key}&order=${sortConfig.direction}`, {
+				headers: {
+					Authorization: `Bearer ${userDetails.access_token}`,
+					'Content-Type': 'application/json', // optional
+				},
+			});
+
+			const resJson = await response.json();
+			const usersData = resJson.data.data;
+
+
+			const mappedUsers = usersData.map((user) => ({
+				id: user.uuid,
+				avatar: user.profile_picture || "/assets/images/user.png",
+				name: user.username,
+				email: user.email,
+				phone: user.mobile_number,
+				role: user.role,
+				plan: user.plan_name,
+				planBg: "bg-primary/10",
+				planText: "text-primary",
+				lastLogin: user.last_login ? (new Date(user.last_login).toLocaleString("en-US", {
+					dateStyle: "long",
+					timeStyle: "short",
+				})) : "",
+				status: user.is_suspended ? "Suspended" : "Active",
+				statusColor: user.is_suspended ? "text-textRed" : "text-textGreen",
+			}));
+
+			setUsers(mappedUsers);
+			setTotalUsersCount(resJson.data.total_count);
+			setStartIdx((currentPage - 1) * 10);
+			setEndIdx(Math.min(startIdx + 10, totalUsersCount));
+		} catch (error) {
+			toast.error(error);
+		}
+	};
+
+	const fetchPaginatedRoles = async () => {
+		try {
+			const authToken = JSON.parse(localStorage.getItem('auth') || "{}")?.access_token;
+			const response = apiClient.post('api/admin/role-permission/all', {
+				headers: {
+					Authorization: `Bearer ${authToken}`,
+					'Content-Type': 'application/json', // optional
+				},
+			});
+			const resJson = await response.json();
+
+			const mappedRoles = resJson.data?.roles?.map((x) => ({
+				value: x.uuid,
+				text: x.name.toLowerCase()
+					.split(' ')
+					.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+					.join(' '),
+			}));
+
+			setRoles(mappedRoles);
+		} catch (error) {
+			console.log("Failed to fetch all roles", error);
+		}
+	};
+
+	useEffect(() => {
+		fetchPaginatedUsers();
+		fetchPaginatedRoles();
+	}, []);
+
+	useEffect(() => {
+		if (!isAddEditUserPopupOpen) {
+			fetchPaginatedUsers();
+			fetchPaginatedRoles();
+		}
+	}, [isAddEditUserPopupOpen]);
 
 	return (
 		<div
@@ -487,7 +257,7 @@ export default function UserManagementPage() {
 					</div>
 				</div>
 				<div className="w-full overflow-x-auto overflow-hidden">
-					<div className="flex flex-col items-start gap-[5.54px] sm:gap-[7.54px] relative self-stretch min-w-[1027px] sm:min-w-[1450px] w-full flex-[0_0_auto] min-h-[500px] sm:min-h-[700px]">
+					<div className="flex flex-col items-start gap-[5.54px] sm:gap-[7.54px] relative self-stretch min-w-[1027px] sm:min-w-[1526px] w-full flex-[0_0_auto] min-h-[500px] sm:min-h-[700px]">
 						<div className="flex h-[42px] sm:h-[52px] items-start sm:justify-between relative self-stretch w-full bg-fgc dark:bg-fgcDark rounded-xl">
 							{/* Column headers */}
 							<div className="inline-flex flex-col items-start justify-center gap-2.5 px-[11px] sm:px-4 py-3.5 relative self-stretch flex-[0_0_auto]">
@@ -516,14 +286,14 @@ export default function UserManagementPage() {
 								</label>
 							</div>
 							<div
-								className="flex w-[159px] sm:w-[200px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
-								onClick={() => handleSort("name")}>
+								className="flex w-[180px] sm:w-[220px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
+								onClick={() => handleSort("username")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Name
 								</div>
 								<Icon
 									icon={
-										sortConfig?.key === "name"
+										sortConfig?.key === "username"
 											? sortConfig.direction === "asc"
 												? "up-sort"
 												: "up-sort"
@@ -555,7 +325,7 @@ export default function UserManagementPage() {
 								</div>
 							</div>
 							<div
-								className="flex w-[101px] sm:w-[152px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
+								className="flex w-[120px] sm:w-[152px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
 								onClick={() => handleSort("role")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Role
@@ -572,14 +342,14 @@ export default function UserManagementPage() {
 								/>
 							</div>
 							<div
-								className="flex items-center w-[149px] sm:w-auto gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow cursor-pointer"
-								onClick={() => handleSort("plan")}>
+								className="flex items-center w-[129px] sm:w-auto gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow cursor-pointer"
+								onClick={() => handleSort("plan_name")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Plan
 								</div>
 								<Icon
 									icon={
-										sortConfig?.key === "plan"
+										sortConfig?.key === "plan_name"
 											? sortConfig.direction === "asc"
 												? "up-sort"
 												: "up-sort"
@@ -590,13 +360,13 @@ export default function UserManagementPage() {
 							</div>
 							<div
 								className="flex items-center gap-1 sm:gap-2 w-[136px] sm:w-auto px-3 sm:px-5 py-3.5 relative sm:flex-1 self-stretch sm:grow cursor-pointer"
-								onClick={() => handleSort("lastLogin")}>
+								onClick={() => handleSort("last_login")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Last Login
 								</div>
 								<Icon
 									icon={
-										sortConfig?.key === "lastLogin"
+										sortConfig?.key === "last_login"
 											? sortConfig.direction === "asc"
 												? "up-sort"
 												: "up-sort"
@@ -607,13 +377,13 @@ export default function UserManagementPage() {
 							</div>
 							<div
 								className="flex w-[85px] sm:w-[124px] items-center gap-1 sm:gap-2 px-3 sm:px-5 py-3.5 relative self-stretch cursor-pointer"
-								onClick={() => handleSort("status")}>
+								onClick={() => handleSort("is_suspended")}>
 								<div className="relative  font-medium text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] sm:leading-6 whitespace-nowrap">
 									Status
 								</div>
 								<Icon
 									icon={
-										sortConfig?.key === "status"
+										sortConfig?.key === "is_suspended"
 											? sortConfig.direction === "asc"
 												? "up-sort"
 												: "up-sort"
@@ -672,10 +442,10 @@ export default function UserManagementPage() {
 												</div>
 
 												{/* Name */}
-												<div className="flex w-[159px] sm:w-[200px] items-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
+												<div className="flex w-[180px] sm:w-[220px] items-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
 													<div className="relative w-8 h-8 rounded-2xl">
 														<img
-															src={`/assets/images/${user.avatar}.svg`}
+															src={user.avatar}
 															alt="User Avatar"
 															className="w-full h-full rounded-2xl object-cover"
 														/>
@@ -687,29 +457,31 @@ export default function UserManagementPage() {
 
 												{/* Email */}
 												<div className="flex flex-col w-[168px] sm:w-[232px] items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative self-stretch">
-													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
+													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-3 truncate whitespace-nowrap overflow-hidden w-full">
 														{user.email}
 													</div>
 												</div>
 
 												{/* Phone */}
-												<div className="flex flex-col w-[112px] sm:w-auto items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow">
+												<div className={`flex flex-col w-[112px] sm:w-auto ${user.phone ? "items-start" : 'items-center'} justify-center gap-2.5 px-3 sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow`}>
 													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base text-center tracking-[0] leading-6 whitespace-nowrap">
-														{user.phone}
+														{user.phone ? user.phone : '-'}
 													</div>
 												</div>
 
 												{/* Role */}
-												<div className="w-[101px] sm:w-[152px] flex flex-col items-start justify-center gap-2.5 px-3 sm:px-5 sm:py-2 relative self-stretch">
-													<div className="font-normal text-text dark:text-textDark text-xs sm:text-base tracking-[0] leading-6 w-[101px] sm:w-[152px] overflow-auto">
-														{Array.isArray(user.role) ? user.role.join(", ") : user.role}
-													</div>
+												<div className="font-normal text-text dark:text-textDark text-xs sm:text-base tracking-[0] leading-6 w-[101px] sm:w-[152px] break-words whitespace-pre-wrap">
+													{Array.isArray(user.role) ? user.role.map((x) => x.name.toLowerCase()
+														.split(' ')
+														.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+														.join(' ')
+													).join(', ') : user.role}
 												</div>
 
 												{/* Plan */}
-												<div className="flex flex-col w-[149px] sm:w-auto items-start justify-center gap-2.5  sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow">
+												<div className="flex flex-col w-[129px] sm:w-auto items-start justify-center gap-2.5  sm:px-5 sm:py-4 relative sm:flex-1 self-stretch sm:grow">
 													<div
-														className={`flex w-auto sm:w-[136px] h-8 sm:h-[34px] items-center gap-8 px-3 py-1	sm:px-4 sm:py-2  ${user.planBg} rounded-lg`}>
+														className={`flex w-auto sm:w-[136px] h-8 sm:h-[34px] items-center gap-8 px-3 py-1	sm:px-4 sm:py-2`}>
 														<div
 															className={`relative mt-[-2.50px] mb-[-0.50px] font-normal text-xs sm:text-sm ${user.planText} text-sm tracking-[0] sm:leading-[21px] whitespace-nowrap`}>
 															{user.plan}
@@ -833,18 +605,19 @@ export default function UserManagementPage() {
 				<div className="flex flex-col sm:flex-row items-center justify-between w-full gap-4 sm:py-2.5 relative flex-[0_0_auto]">
 					<div className="w-full flex items-center">
 						<span className="text-xs sm:text-sm text-textSecondary leading-[18px] sm:leading-[24px]">
-							{filteredUsers.length === 0
+							{totalUsersCount === 0
 								? "Showing 0 of 0 users"
-								: `Showing ${startIdx + 1}–${Math.min(endIdx, filteredUsers.length)} of ${filteredUsers.length} users`}
+								: `Showing ${startIdx + 1} of ${endIdx} users`}
 						</span>
 					</div>
-					{filteredUsers.length !== 0 && (
+					{totalUsersCount !== 0 && (
 						<Pagination
 							totalRecords={filteredUsers.length}
 							recordsPerPage={usersPerPage}
 							currentPage={currentPage}
 							handlePageChange={(page: number) => {
 								setCurrentPage(page);
+								fetchPaginatedUsers();
 							}}
 						/>
 					)}
@@ -858,6 +631,7 @@ export default function UserManagementPage() {
 				}}
 				list={users}
 				setList={setUsers}
+				roles={roles}
 				editIndex={editIndex}
 			/>
 			<DeleteUserPopup
