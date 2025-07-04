@@ -13,6 +13,7 @@ import Editor from "../JoditEditor";
 import Select from "components/utils/Select";
 import TimePicker from "components/common/TimePicker";
 import ScheduleConfirmation from "./ScheduleConfirmation";
+import { apiClient } from "api/client";
 
 type Props = {
 	isOpen: boolean;
@@ -24,6 +25,11 @@ type Props = {
 
 const typeOptions = ["News", "Article", "Update", "Announcement"] as const;
 
+interface PresignedUrlResponse {
+	data: any;
+	url: string;
+	imageUrl: string;
+}
 
 interface FormData {
 	type: string;
@@ -48,11 +54,10 @@ const getSchema = (status: "Draft" | "Published") => {
 		return yup.object({
 			...base,
 			publishDate: yup.string().required("Publish date is required"),
-			publishTime: yup.string().required("Publish time is required")
-				.notOneOf(["00:00 AM"], "Please select a valid time"),
+			publishTime: yup.string(),
 			mainTitle: yup.string().required("Main title is required"),
-			imageHeader: yup.string().required("Header image is required"),
-			imageThumbnail: yup.string().required("Thumbnail image is required"),
+			imageHeader: yup.string(),
+			imageThumbnail: yup.string(),
 			titles: yup.array().of(
 				yup.object({
 					title: yup.string().required("Title is required"),
@@ -127,26 +132,77 @@ const AddEditPostArticlePopup: React.FC<Props> = ({ isOpen, setIsOpen, list = []
 	}, [editIndex, isOpen, list, reset]);
 
 	const onSubmit: SubmitHandler<FormData> = (data) => {
-		const finalData = {
-			...data,
-			imageHeader: headerImageData ?? "",
-			imageThumbnail: thumbnailImageData ?? "",
-			status: statusRef.current,
-		};
-
 		if (editIndex !== null) {
-			const updatedList = [...list];
-			updatedList[editIndex] = finalData;
-			setList?.(updatedList);
+			updateArticle(data);
 		} else {
-			setList?.([...list, finalData]);
+			createNewArticle(data);
 		}
-
-		toast.success(`Post ${editIndex !== null ? "updated" : "added"} successfully!`);
-		setIsOpen(false);
-		reset();
 	};
 
+	const createNewArticle = async (data: FormData) => {
+		try {
+			const date = data.publishDate;
+			const time24h = to24HourFormat(data.publishTime);
+			const dateTimeStr = `${date}T${time24h}:00`;
+			const publishAt = new Date(dateTimeStr).toISOString();
+			const authToken = JSON.parse(localStorage.getItem('auth') || "{}")?.access_token;
+			const response = await apiClient.post('api/article/create', {
+				json: {
+					main_title: data.mainTitle,
+					header_image: headerImagePreview,
+					thumbnail_image: thumbnailImagePreview,
+					type: data.type.toUpperCase(),
+					publish_at: publishAt,
+					titles_descriptions: data?.titles?.map((x, index) => ({
+						title: x.title,
+						description: x.description,
+						sequence: index
+					})) || [],
+				},
+				headers: {
+					Authorization: `Bearer ${authToken}`,
+					"Content-Type": "application/json",
+				}
+			});
+
+			if (response.status == 201) {
+				toast.success(`Post ${editIndex !== null ? "updated" : "added"} successfully!`);
+				setIsOpen(false);
+				reset();
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	const updateArticle = async (data: FormData) => {
+		try {
+			const authToken = JSON.parse(localStorage.getItem('auth') || "{}")?.access_token;
+			const response = apiClient.post('api/admin/articles/create', {
+				json: {
+					header_image_url: headerImagePreview,
+					thumbnail_image_url: thumbnailImagePreview,
+					type: data.type,
+					publish_date: data.publishDate,
+					publish_time: data.publishTime,
+					main_title: data.mainTitle,
+					titles: data.titles,
+				},
+				headers: {
+					Authorization: `Bearer ${authToken}`,
+					"Content-Type": "application/json",
+				}
+			});
+
+			if (response.ok) {
+				toast.success(`Post ${editIndex !== null ? "updated" : "added"} successfully!`);
+				setIsOpen(false);
+				reset();
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	};
 
 
 	const handleHeaderDivClick = () => {
@@ -157,31 +213,54 @@ const AddEditPostArticlePopup: React.FC<Props> = ({ isOpen, setIsOpen, list = []
 		thumbnailFileInputRef.current?.click();
 	};
 
-	const handleHeaderFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const to24HourFormat = (time12h: string) => {
+		const [time, modifier] = time12h.split(" ");
+		let [hours, minutes] = time.split(":");
+
+		if (hours === "12") {
+			hours = "00";
+		}
+		if (modifier.toUpperCase() === "PM") {
+			hours = (parseInt(hours, 10) + 12).toString();
+		}
+		return `${hours.padStart(2, "0")}:${minutes}`;
+	}
+
+	const handleHeaderFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
-		if (file && file.type.startsWith("image/")) {
-			const reader = new FileReader();
-			reader.onloadend = () => {
-				const base64 = reader.result as string;
-				setHeaderImagePreview(base64);
-				setHeaderImageData(base64);
-				setValue("imageHeader", base64, { shouldValidate: true });
-			};
-			reader.readAsDataURL(file);
+		if (!file) return;
+
+		try {
+			const fileName = file.name.split(".")[0];
+			const fileType = file.type.split("/")[1];
+
+			const urlData = await getPresignedUrl(fileName, fileType, 'header');
+
+			const imageData = urlData.data;
+
+			await uploadImageToS3(imageData.presigned_url, imageData.file_url, file, 'header');
+		} catch (error) {
+			console.error("Error uploading profile picture:", error);
+			toast.error("Failed to upload profile picture. Please try again.");
 		}
 	};
 
-	const handleThumbnailFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleThumbnailFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
-		if (file && file.type.startsWith("image/")) {
-			const reader = new FileReader();
-			reader.onloadend = () => {
-				const base64 = reader.result as string;
-				setThumbnailImagePreview(base64);
-				setThumbnailImageData(base64);
-				setValue("imageThumbnail", base64, { shouldValidate: true });
-			};
-			reader.readAsDataURL(file);
+		if (!file) return;
+
+		try {
+			const fileName = file.name.split(".")[0];
+			const fileType = file.type.split("/")[1];
+
+			const urlData = await getPresignedUrl(fileName, fileType, 'thumbnail');
+
+			const imageData = urlData.data;
+
+			await uploadImageToS3(imageData.presigned_url, imageData.file_url, file, 'thumbnail');
+		} catch (error) {
+			console.error("Error uploading profile picture:", error);
+			toast.error("Failed to upload profile picture. Please try again.");
 		}
 	};
 
@@ -191,6 +270,48 @@ const AddEditPostArticlePopup: React.FC<Props> = ({ isOpen, setIsOpen, list = []
 		const isValid = await trigger();
 		if (isValid) {
 			handleSubmit(onSubmit)();
+		}
+	};
+
+	const getPresignedUrl = async (fileName: string, fileType: string, contentType: string): Promise<PresignedUrlResponse> => {
+		const authToken = JSON.parse(localStorage.getItem('auth') || "{}")?.access_token;
+		const response = await apiClient.post("api/article/p-u", {
+			body: JSON.stringify({
+				file_name: fileName,
+				file_type: fileType,
+				content_type: contentType,
+			}),
+			headers: {
+				Authorization: `Bearer ${authToken}`,
+				"Content-Type": "application/json",
+			},
+		});
+
+		if (!response.ok) {
+			throw new Error("Failed to get presigned URL");
+		}
+
+		const data: PresignedUrlResponse = await response.json();
+		return data;
+	};
+
+	const uploadImageToS3 = async (presignedUrl: string, fileUrl: string, file: File, imageType: string): Promise<void> => {
+		const response = await fetch(presignedUrl, {
+			method: "PUT",
+			body: file,
+			headers: {
+				"Content-Type": file.type,
+			},
+		});
+
+		if (!response.ok) {
+			throw new Error("Failed to upload image to S3");
+		} else {
+			if (imageType === 'thumbnail') {
+				setThumbnailImagePreview(fileUrl);
+			} else {
+				setHeaderImagePreview(fileUrl);
+			}
 		}
 	};
 
@@ -420,7 +541,7 @@ const AddEditPostArticlePopup: React.FC<Props> = ({ isOpen, setIsOpen, list = []
 							Cancel
 						</Button>
 						<Button
-							type="submit"
+							type="button"
 							variant="outline"
 							className="text-sm sm:text-base w-full sm:w-auto px-6 !py-[10.3px] sm:!py-[15.1px] rounded-xl font-semibold text-text"
 							onClick={() => handleSave("Draft")}

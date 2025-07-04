@@ -13,6 +13,7 @@ import WeatherAlertPage from "pages/WeatherAlertPage";
 import RoleManagement from "pages/RoleManagement";
 import Subscription from "pages/Subscription";
 import PostsArticlesPage from "pages/PostsArticlesPage";
+import NotificationSystemPage from "pages/NotificationSystemPage";
 
 declare global {
 	interface Window {
@@ -186,6 +187,14 @@ const createRoutes: React.FC = () => {
 								//<ProtectedRoute>
 								<ActivityLogPage />
 								//</ProtectedRoute>
+							}
+						/>
+						<Route
+							path="/notification"
+							element={
+								// <ProtectedRoute>
+								<NotificationSystemPage />
+								// </ProtectedRoute>
 							}
 						/>
 						<Route path="access_disabled" element={<AccessDisabled />} />

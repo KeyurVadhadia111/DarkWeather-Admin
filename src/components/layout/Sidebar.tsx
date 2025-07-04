@@ -85,9 +85,9 @@ export default function Sidebar() {
 		{
 			title: "Notification System",
 			icon: "notification-system",
-			href: "",
+			href: "notification",
 			roles: ["SuperAdmin", "Support"],
-			active: [""],
+			active: ["/notification"],
 		},
 		{ title: "Audit Trail System", icon: "audit-trail-system", href: "", roles: ["SuperAdmin"], active: [""] },
 		{ title: "Data Export & Import", icon: "data-export-import", href: "", roles: ["SuperAdmin"], active: [""] },
