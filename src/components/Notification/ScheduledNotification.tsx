@@ -128,7 +128,7 @@ const ScheduledNotification: React.FC<Props> = ({ item = [], handleSort, sortCon
 												</td>
 
 												<td className="px-3 sm:px-5 py-4 text-text dark:text-textDark text-xs sm:text-base whitespace-nowrap">{item.messageTitle}</td>
-												<td className="px-3 sm:px-5 py-4 text-text dark:text-textDark text-xs sm:text-base whitespace-nowrap">{item.channel}</td>
+												<td className="px-3 sm:px-5 py-4 text-text dark:text-textDark text-xs sm:text-base whitespace-nowrap"> {Array.isArray(item.channel) ? item.channel.join(" + ") : item.channel}</td>
 												<td className="px-3 sm:px-5 py-4 text-text dark:text-textDark text-xs sm:text-base">
 													<div className="truncate whitespace-nowrap overflow-hidden max-w-[250px]">
 														{item.scheduledTime}

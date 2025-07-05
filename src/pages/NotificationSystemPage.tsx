@@ -388,8 +388,8 @@ export default function NotificationSystemPage() {
 								key={item.id}
 								onClick={() => setActiveTab(item.name)}
 								className={`py-2.5 px-5 rounded-lg cursor-pointer transition-all duration-200 ${activeTab === item.name
-										? "bg-primary font-semibold text-text"
-										: "text-gray-700 dark:text-white"
+									? "bg-primary font-semibold text-text"
+									: "text-gray-700 dark:text-white"
 									}`}
 							>
 								<span className="sm:text-base">{item.title}</span>

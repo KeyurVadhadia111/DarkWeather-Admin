@@ -5,14 +5,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Dialog } from "@headlessui/react";
 import { Input } from "components/utils/Input";
 import Modal from "components/layout/modal";
-import Icon from "components/utils/Icon";
 import { Button } from "components/utils/Button";
 import { toast } from "components/utils/toast";
 import Select from "components/utils/Select";
 import useAppState from "components/utils/useAppState";
-import { apiClient } from "api/client";
 import TimePicker from "components/common/TimePicker";
-
+import { format } from 'date-fns';
 type Props = {
 	isOpen: boolean;
 	setIsOpen: (val: boolean) => void;
@@ -22,13 +20,72 @@ type Props = {
 };
 
 const statusOptions = ["Active", "Inactive"] as const;
-const channelOptions = ["Push", "SMS", "Email"] as const;
+const notificationTypeOptions = [
+	{ id: 1, title: "Announcement" },
+	{ id: 2, title: "Reminder" },
+	{ id: 3, title: "Alert" },
+	{ id: 4, title: "Promotion" },
+	{ id: 5, title: "Update" },
+	{ id: 7, title: "Event" },
+] as const;
+
+
+const timezoneOptions = [
+	{ id: 1, title: "UTC" },
+	{ id: 2, title: "America/New_York (EST)" },
+	{ id: 3, title: "Europe/London (GMT)" },
+	{ id: 4, title: "Asia/Kolkata (IST)" },
+] as const;
+
+const recurringNotificationOptions = [
+	{ id: 1, title: "None" },
+	{ id: 2, title: "Daily" },
+	{ id: 3, title: "Weekly" },
+	{ id: 4, title: "Biweekly" },
+	{ id: 5, title: "Monthly" },
+	{ id: 6, title: "Quarterly" },
+	{ id: 7, title: "Yearly" }
+] as const;
+
+const pushNotificationTemplateOptions = [
+	{ id: 1, title: "Welcome Push" },
+	{ id: 2, title: "Daily Reminder Push" },
+	{ id: 3, title: "Event Alert Push" },
+	{ id: 4, title: "Promotion Push" },
+	{ id: 5, title: "Custom Push Template" }
+] as const;
+
+const emailTemplateOptions = [
+	{ id: 1, title: "Welcome Email" },
+	{ id: 2, title: "Verification Email" },
+	{ id: 3, title: "Newsletter Email" },
+	{ id: 4, title: "Promotion Email" },
+	{ id: 5, title: "Password Reset Email" }
+] as const;
+
+const smsTemplateOptions = [
+	{ id: 1, title: "OTP SMS" },
+	{ id: 2, title: "Event Reminder SMS" },
+	{ id: 3, title: "Promotional SMS" },
+	{ id: 4, title: "Support Follow-up SMS" },
+	{ id: 5, title: "Feedback Request SMS" }
+] as const;
+
+const targetAudienceOptions = [
+	{ id: 1, title: "All Users" },
+	{ id: 2, title: "United States User" },
+	{ id: 3, title: "Texas Users" },
+	{ id: 4, title: "New York Users" },
+] as const;
+
+
 
 type Status = (typeof statusOptions)[number];
 
 interface FormData {
 	messageTitle: string;
 	notificationType: string;
+	channel: string[];
 	pushNotification: string;
 	email: string;
 	sms: string;
@@ -39,7 +96,7 @@ interface FormData {
 	};
 	timezone: string;
 	recurringNotification: string;
-	status: Status;
+	status?: Status;
 }
 
 const getSchema = (editIndex: number | null) =>
@@ -57,7 +114,6 @@ const getSchema = (editIndex: number | null) =>
 			}),
 			timezone: yup.string().required("Timezone is required"),
 			recurringNotification: yup.string().required("Recurring Notification is required"),
-			status: yup.mixed<Status>().oneOf(statusOptions).required("Status is required"),
 		})
 		.required();
 
@@ -79,18 +135,23 @@ const AddEditScheduledNotificationPopup: React.FC<Props> = ({ isOpen, setIsOpen,
 		trigger,
 		formState: { errors },
 	} = useForm<FormData>({
+		defaultValues: { channel: [] },
 		resolver
 	});
 
 	useEffect(() => {
 		if (editIndex !== null && list[editIndex]) {
 			const userData = list[editIndex];
+			console.log("Editing item:", userData);
+			const selectedChannels = Array.isArray(userData.channel) ? userData.channel : [];
+
 			reset({
 				messageTitle: userData.messageTitle || "",
 				notificationType: userData.notificationType || "",
-				pushNotification: userData.pushNotification || "",
-				email: userData.email || "",
-				sms: userData.sms || "",
+				channel: selectedChannels,
+				pushNotification: selectedChannels.includes("Push") ? userData.pushNotification || "" : "",
+				email: selectedChannels.includes("Email") ? userData.email || "" : "",
+				sms: selectedChannels.includes("SMS") ? userData.sms || "" : "",
 				targetAudience: userData.targetAudience || "",
 				scheduledDateTime: {
 					date: userData.scheduledDateTime?.date || "",
@@ -105,18 +166,47 @@ const AddEditScheduledNotificationPopup: React.FC<Props> = ({ isOpen, setIsOpen,
 
 
 	const onSubmit: SubmitHandler<FormData> = (data: FormData) => {
-		console.log("data", data)
+		const channelStr = data.channel.join(" + ");
+
+		const scheduledDateTime = new Date(`${data.scheduledDateTime.date} ${data.scheduledDateTime.time}`);
+		const now = new Date();
+		const isPast = scheduledDateTime <= now;
+		const status = isPast ? "Active" : "Scheduled";
+		const statusColor = isPast ? "text-textGreen" : "text-warning";
+		const scheduledDateTimeStr = `${format(scheduledDateTime, 'MMM dd, yyyy')}, ${format(scheduledDateTime, 'hh:mm a')}`;
+
+		const newItem = {
+			id: editIndex !== null ? list[editIndex].id : list.length + 1,
+			scheduleID: editIndex !== null ? list[editIndex].scheduleID : `#SCHD-${123 + list.length + 1}`,
+			messageTitle: data.messageTitle,
+			notificationType: data.notificationType,
+			channel: data.channel,
+			pushNotification: data.channel.includes("Push") ? data.pushNotification : "",
+			email: data.channel.includes("Email") ? data.email : "",
+			sms: data.channel.includes("SMS") ? data.sms : "",
+
+			targetAudience: data.targetAudience,
+			scheduledDateTime: data.scheduledDateTime,
+			timezone: data.timezone,
+			recurringNotification: data.recurringNotification,
+			status,
+			statusColor,
+			scheduledTime: scheduledDateTimeStr,
+		};
+
 		const updatedList = [...list];
 		if (editIndex !== null) {
-			updatedList[editIndex] = data;
+			updatedList[editIndex] = newItem;
 		} else {
-			updatedList.push(data);
+			updatedList.push(newItem);
 		}
+
 		setList?.(updatedList);
-		toast.success(`Weather alert ${editIndex !== null ? "updated" : "added"} successfully!`);
+		toast.success(`Notification ${editIndex !== null ? "updated" : "added"} successfully!`);
 		setIsOpen(false);
 		reset();
 	};
+
 
 
 	return (
@@ -155,7 +245,7 @@ const AddEditScheduledNotificationPopup: React.FC<Props> = ({ isOpen, setIsOpen,
 								register={register}
 								trigger={trigger}
 								error={errors?.notificationType?.message}
-								items={channelOptions.map(severity => ({ value: severity, text: severity }))}
+								items={notificationTypeOptions.map((item: any) => ({ value: item.id, text: item.title }))}
 								className="!bg-bgc dark:!bg-fgcDark !border-textSecondary/20 !h-[42px] sm:!h-14 !rounded-xl !text-sm sm:!text-base"
 							/>
 						</div>
@@ -170,8 +260,9 @@ const AddEditScheduledNotificationPopup: React.FC<Props> = ({ isOpen, setIsOpen,
 								>
 									<input
 										type="checkbox"
-										// {...register(`access.${key}` as Path<FormData>)}
+										{...register("channel")}
 										className="peer hidden"
+										value="Push"
 									/>
 
 									<span
@@ -209,7 +300,7 @@ const AddEditScheduledNotificationPopup: React.FC<Props> = ({ isOpen, setIsOpen,
 										register={register}
 										trigger={trigger}
 										error={errors?.pushNotification?.message}
-										items={statusOptions.map(status => ({ value: status, text: status }))}
+										items={pushNotificationTemplateOptions.map(item => ({ value: item.id, text: item.title }))}
 										className="!bg-bgc dark:!bg-fgcDark !border-textSecondary/20 !h-[42px] sm:!h-14 !rounded-xl !text-sm sm:!text-base"
 									/>
 								</div>
@@ -220,8 +311,9 @@ const AddEditScheduledNotificationPopup: React.FC<Props> = ({ isOpen, setIsOpen,
 								>
 									<input
 										type="checkbox"
-										// {...register(`access.${key}` as Path<FormData>)}
+										{...register("channel")}
 										className="peer hidden"
+										value="Email"
 									/>
 
 									<span
@@ -259,7 +351,7 @@ const AddEditScheduledNotificationPopup: React.FC<Props> = ({ isOpen, setIsOpen,
 										register={register}
 										trigger={trigger}
 										error={errors?.email?.message}
-										items={statusOptions.map(status => ({ value: status, text: status }))}
+										items={emailTemplateOptions.map(item => ({ value: item.id, text: item.title }))}
 										className="!bg-bgc dark:!bg-fgcDark !border-textSecondary/20 !h-[42px] sm:!h-14 !rounded-xl !text-sm sm:!text-base"
 									/>
 								</div>
@@ -270,8 +362,9 @@ const AddEditScheduledNotificationPopup: React.FC<Props> = ({ isOpen, setIsOpen,
 								>
 									<input
 										type="checkbox"
-										// {...register(`access.${key}` as Path<FormData>)}
+										{...register("channel")}
 										className="peer hidden"
+										value="SMS"
 									/>
 
 									<span
@@ -309,7 +402,7 @@ const AddEditScheduledNotificationPopup: React.FC<Props> = ({ isOpen, setIsOpen,
 										register={register}
 										trigger={trigger}
 										error={errors?.sms?.message}
-										items={statusOptions.map(status => ({ value: status, text: status }))}
+										items={smsTemplateOptions.map(item => ({ value: item.id, text: item.title }))}
 										className="!bg-bgc dark:!bg-fgcDark !border-textSecondary/20 !h-[42px] sm:!h-14 !rounded-xl !text-sm sm:!text-base"
 									/>
 								</div>
@@ -325,7 +418,7 @@ const AddEditScheduledNotificationPopup: React.FC<Props> = ({ isOpen, setIsOpen,
 								register={register}
 								trigger={trigger}
 								error={errors?.targetAudience?.message}
-								items={statusOptions.map(status => ({ value: status, text: status }))}
+								items={targetAudienceOptions.map(item => ({ value: item.id, text: item.title }))}
 								className="!bg-bgc dark:!bg-fgcDark !border-textSecondary/20 !h-[42px] sm:!h-14 !rounded-xl !text-sm sm:!text-base"
 							/>
 						</div>
@@ -354,7 +447,7 @@ const AddEditScheduledNotificationPopup: React.FC<Props> = ({ isOpen, setIsOpen,
 								register={register}
 								trigger={trigger}
 								error={errors?.timezone?.message}
-								items={statusOptions.map(status => ({ value: status, text: status }))}
+								items={timezoneOptions.map(zone => ({ value: zone.id, text: zone.title }))}
 								className="!bg-bgc dark:!bg-fgcDark !border-textSecondary/20 !h-[42px] sm:!h-14 !rounded-xl !text-sm sm:!text-base"
 							/>
 						</div>
@@ -368,7 +461,7 @@ const AddEditScheduledNotificationPopup: React.FC<Props> = ({ isOpen, setIsOpen,
 								register={register}
 								trigger={trigger}
 								error={errors?.recurringNotification?.message}
-								items={statusOptions.map(status => ({ value: status, text: status }))}
+								items={recurringNotificationOptions.map(item => ({ value: item.id, text: item.title }))}
 								className="!bg-bgc dark:!bg-fgcDark !border-textSecondary/20 !h-[42px] sm:!h-14 !rounded-xl !text-sm sm:!text-base"
 							/>
 						</div>
@@ -380,7 +473,10 @@ const AddEditScheduledNotificationPopup: React.FC<Props> = ({ isOpen, setIsOpen,
 						<Button
 							type="button"
 							className="text-sm sm:text-base w-full sm:w-[127px] px-6 !py-[10.3px] sm:!py-[15.1px] border border-text dark:border-bgc rounded-xl font-semibold text-text dark:text-textDark bg-transparent hover:!bg-transparent"
-							onClick={() => setIsOpen(false)}>
+							onClick={() => {
+								setIsOpen(false)
+								reset();
+							}}>
 							Cancel
 						</Button>
 						<Button

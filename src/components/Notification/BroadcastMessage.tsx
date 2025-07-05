@@ -13,11 +13,10 @@ interface BroadcastFormValues {
 }
 
 const targetAudience = [
-	{ id: 1, title: "Farmers" },
-	{ id: 2, title: "Travelers" },
-	{ id: 3, title: "Event Planners" },
-	{ id: 4, title: "Fishermen" },
-	{ id: 5, title: "Construction Workers" },
+	{ id: 1, title: "All Users" },
+	{ id: 2, title: "United States User" },
+	{ id: 3, title: "Texas Users" },
+	{ id: 4, title: "New York Users" },
 ]
 
 const schema = yup.object({
@@ -46,7 +45,7 @@ const BroadcastMessage = () => {
 			title: "",
 			body: "",
 			deliveryChannels: [],
-			targetAudience: 1,
+			targetAudience: 0,
 		},
 		resolver: yupResolver(schema),
 	});
