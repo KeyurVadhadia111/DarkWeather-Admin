@@ -1,24 +1,13 @@
 import useAppState from "components/utils/useAppState";
 import React, { useEffect, useMemo, useState } from "react";
 import DeleteUserPopup from "components/popup/DeleteUserPopup";
-import PostArticleArchivePopup from "components/popup/PostArticleArchivePopup";
-import ResertPasswordPopup from "components/popup/ResertPasswordPopup";
-import { useNavigate } from "react-router-dom";
 import { toast } from "components/utils/toast";
-import AdminAlerts from "components/Notification/AdminAlerts";
 import BroadcastMessage from "components/Notification/BroadcastMessage";
 import ManageTemplates from "components/Notification/ManageTemplates";
 import AddEditManageTemplatePopup from "components/popup/AddEditManageTemplatePopup";
 import ScheduledNotification from "components/Notification/ScheduledNotification";
 import AddEditScheduledNotificationPopup from "components/popup/AddEditScheduledNotificationPopup";
 
-interface AdminAlertsType {
-	id: number;
-	alertType: string;
-	description: string;
-	triggeredOn: string;
-	severity: string;
-}
 interface ManageTemplateType {
 
 	id: number;
@@ -26,6 +15,7 @@ interface ManageTemplateType {
 	channel: string;
 	triggerEvent: string;
 	fileName: string;
+	recipients: string[];
 	status: string;
 	statusColor: string;
 }
@@ -38,11 +28,6 @@ interface scheduledNotificationType {
 	scheduledTime: string;
 	status: string;
 	statusColor: string;
-}
-
-interface SortConfig {
-	key: keyof AdminAlertsType;
-	direction: "asc" | "desc";
 }
 
 interface SortConfigManageTemplate {
@@ -60,21 +45,16 @@ export default function NotificationSystemPage() {
 	const notificationBar = [
 		{
 			id: 1,
-			title: "Admin Alerts",
-			name: "adminAlerts"
-		},
-		{
-			id: 2,
 			title: "Broadcast Message",
 			name: "broadcastMessage"
 		},
 		{
-			id: 3,
+			id: 2,
 			title: "Manage Push/Email/SMS Templates",
 			name: "manageTemplates"
 		},
 		{
-			id: 4,
+			id: 3,
 			title: "Scheduled Notification",
 			name: "scheduledNotification"
 		}
@@ -136,6 +116,7 @@ export default function NotificationSystemPage() {
 			channel: "SMS",
 			triggerEvent: "Login attempt",
 			fileName: "otp-login-code.txt",
+			recipients: ["Admins"],
 			status: "Active",
 			statusColor: "text-textGreen",
 		},
@@ -145,6 +126,7 @@ export default function NotificationSystemPage() {
 			channel: "Email",
 			triggerEvent: "Payment success",
 			fileName: "subscription.txt",
+			recipients: ["Users"],
 			status: "Active",
 			statusColor: "text-textGreen",
 		},
@@ -154,6 +136,7 @@ export default function NotificationSystemPage() {
 			channel: "Push",
 			triggerEvent: "New weather alert",
 			fileName: "alert-notification.txt",
+			recipients: ["Users"],
 			status: "Active",
 			statusColor: "text-textGreen",
 		},
@@ -163,6 +146,7 @@ export default function NotificationSystemPage() {
 			channel: "Email",
 			triggerEvent: "Forgot password flow",
 			fileName: "password-reset.txt",
+			recipients: ["Admins"],
 			status: "Active",
 			statusColor: "text-textGreen",
 		},
@@ -172,42 +156,16 @@ export default function NotificationSystemPage() {
 			channel: "Push",
 			triggerEvent: "Scheduled downtime",
 			fileName: "system-maintenance.txt",
+			recipients: ["Users"],
 			status: "Active",
 			statusColor: "text-textGreen",
 		},
 	]);
 
-	const [adminAlerts, setAdminAlerts] = useState<AdminAlertsType[]>([
-		{
-			id: 1,
-			alertType: "New User Signup",
-			description: "A user from Delhi signed up",
-			triggeredOn: "Jun 17, 2025, 10:45 AM",
-			severity: "Info",
-		},
-		{
-			id: 2,
-			alertType: "Payment Failure",
-			description: "Payment failed for User #3024",
-			triggeredOn: "Jun 17, 2025, 9:50 AM",
-			severity: "High",
-		},
-		{
-			id: 3,
-			alertType: "API Outage",
-			description: "Weather API failed: 503 Error",
-			triggeredOn: "Jun 17, 2025, 9:40 AM",
-			severity: "Critical",
-		}
-	]);
-
 	const [activeTab, setActiveTab] = useState(notificationBar[0].name);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [PostArticlePerPage] = useState(12);
-	const [sortConfig, setSortConfig] = useState<SortConfig>({
-		key: "alertType",
-		direction: "asc",
-	});
+
 	const [sortConfigManageTemplate, setSortConfigManageTemplate] = useState<SortConfigManageTemplate>({
 		key: "templateName",
 		direction: "asc",
@@ -224,11 +182,9 @@ export default function NotificationSystemPage() {
 	const startIdx = (currentPage - 1) * PostArticlePerPage;
 	const endIdx = Math.min(
 		startIdx + PostArticlePerPage,
-		activeTab === "adminAlerts"
-			? adminAlerts.length
-			: activeTab === "manageTemplates"
-				? manageTemplates.length
-				: scheduledNotification.length
+		activeTab === "manageTemplates"
+			? manageTemplates.length
+			: scheduledNotification.length
 	);
 
 	const [isDeleteUserPopupOpen, setIsDeleteUserPopupOpen] = useState(false);
@@ -236,21 +192,19 @@ export default function NotificationSystemPage() {
 
 	const [searchQuery, setSearchQuery] = useState("");
 
-	// Filter adminAlerts by search query (name or email)
-	const filteredAdminAlerts = useMemo(() => {
-		if (!searchQuery.trim()) return adminAlerts;
-		const query = searchQuery.toLowerCase();
-		return adminAlerts.filter(
-			item => item.alertType.toLowerCase().includes(query) || item.alertType.toLowerCase().includes(query),
-		);
-	}, [adminAlerts, searchQuery]);
 
 	// Filter Manage Temaplate by search query (name or email)
 	const filteredManageTemaplate = useMemo(() => {
 		if (!searchQuery.trim()) return manageTemplates;
 		const query = searchQuery.toLowerCase();
 		return manageTemplates.filter(
-			item => item.templateName.toLowerCase().includes(query) || item.templateName.toLowerCase().includes(query),
+			item => item.templateName.toLowerCase().includes(query) || item.templateName.toLowerCase().includes(query) ||
+				item.channel.toLowerCase().includes(query) || item.channel.toLowerCase().includes(query) ||
+				item.triggerEvent.toLowerCase().includes(query) || item.triggerEvent.toLowerCase().includes(query) ||
+				item.fileName.toLowerCase().includes(query) || item.fileName.toLowerCase().includes(query) ||
+				item.recipients.join(", ").toLowerCase().includes(query) || item.recipients.join(", ").toLowerCase().includes(query)
+				||
+				item.status.toLowerCase().includes(query) || item.status.toLowerCase().includes(query)
 		);
 	}, [manageTemplates, searchQuery]);
 
@@ -258,41 +212,13 @@ export default function NotificationSystemPage() {
 		if (!searchQuery.trim()) return scheduledNotification;
 		const query = searchQuery.toLowerCase();
 		return scheduledNotification.filter(
-			item => item.messageTitle.toLowerCase().includes(query) || item.messageTitle.toLowerCase().includes(query),
+			item => item.messageTitle.toLowerCase().includes(query) || item.messageTitle.toLowerCase().includes(query) ||
+				item.channel.toLowerCase().includes(query) || item.channel.toLowerCase().includes(query) ||
+				item.scheduledTime.toLowerCase().includes(query) || item.scheduledTime.toLowerCase().includes(query) ||
+				item.scheduleID.toLowerCase().includes(query) || item.scheduleID.toLowerCase().includes(query) ||
+				item.status.toLowerCase().includes(query) || item.status.toLowerCase().includes(query)
 		);
 	}, [scheduledNotification, searchQuery]);
-
-	const sortedPostArticle = useMemo(() => {
-		const sorted = [...filteredAdminAlerts].sort((a: AdminAlertsType, b: AdminAlertsType) => {
-			const key = sortConfig.key;
-			let valA = a[key];
-			let valB = b[key];
-
-			if (typeof valA === "string" && typeof valB === "string") {
-				if (key === "triggeredOn") {
-					const convertToDate = (str: string): number => {
-						if (str.toLowerCase().includes("today")) return new Date().getTime();
-						if (str.toLowerCase().includes("yesterday")) {
-							const date = new Date();
-							date.setDate(date.getDate() - 1);
-							return date.getTime();
-						}
-						return new Date(str).getTime();
-					};
-					return sortConfig.direction === "asc"
-						? convertToDate(valA) - convertToDate(valB)
-						: convertToDate(valB) - convertToDate(valA);
-				}
-				valA = valA.toLowerCase();
-				valB = valB.toLowerCase();
-			}
-
-			if (valA < valB) return sortConfig.direction === "asc" ? -1 : 1;
-			if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
-			return 0;
-		});
-		return sorted;
-	}, [filteredAdminAlerts, sortConfig]);
 
 	const sortedManageTemplate = useMemo(() => {
 		const sorted = [...filteredManageTemaplate].sort((a: ManageTemplateType, b: ManageTemplateType) => {
@@ -305,12 +231,12 @@ export default function NotificationSystemPage() {
 				valB = valB.toLowerCase();
 			}
 
-			if (valA < valB) return sortConfig.direction === "asc" ? -1 : 1;
-			if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
+			if (valA < valB) return sortConfigManageTemplate.direction === "asc" ? -1 : 1;
+			if (valA > valB) return sortConfigManageTemplate.direction === "asc" ? 1 : -1;
 			return 0;
 		});
 		return sorted;
-	}, [filteredManageTemaplate, sortConfig]);
+	}, [filteredManageTemaplate, sortConfigManageTemplate]);
 
 	const sortedScheduled = useMemo(() => {
 		const sorted = [...filteredScheduled].sort((a: scheduledNotificationType, b: scheduledNotificationType) => {
@@ -323,16 +249,12 @@ export default function NotificationSystemPage() {
 				valB = valB.toLowerCase();
 			}
 
-			if (valA < valB) return sortConfig.direction === "asc" ? -1 : 1;
-			if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
+			if (valA < valB) return SortConfigScheduled.direction === "asc" ? -1 : 1;
+			if (valA > valB) return SortConfigScheduled.direction === "asc" ? 1 : -1;
 			return 0;
 		});
 		return sorted;
 	}, [filteredScheduled, SortConfigScheduled]);
-
-	const displayedAdminAlerts = useMemo(() => {
-		return sortedPostArticle.slice(startIdx, endIdx);
-	}, [sortedPostArticle, startIdx, endIdx]);
 
 	const displayedManageTemplate = useMemo(() => {
 		return sortedManageTemplate.slice(startIdx, endIdx);
@@ -342,13 +264,6 @@ export default function NotificationSystemPage() {
 		return sortedScheduled.slice(startIdx, endIdx);
 	}, [sortedScheduled, startIdx, endIdx]);
 
-
-	const handleSort = (key: keyof AdminAlertsType) => {
-		setSortConfig(prevConfig => ({
-			key,
-			direction: prevConfig.key === key && prevConfig.direction === "asc" ? "desc" : "asc",
-		}));
-	};
 
 	const handleSortManageTemplate = (key: keyof ManageTemplateType) => {
 		setSortConfigManageTemplate(prevConfig => ({
@@ -363,7 +278,6 @@ export default function NotificationSystemPage() {
 			direction: prevConfig.key === key && prevConfig.direction === "asc" ? "desc" : "asc",
 		}));
 	};
-
 
 
 	// Reset to page 1 when searchQuery changes
@@ -401,22 +315,6 @@ export default function NotificationSystemPage() {
 			</div>
 
 			<div className="mt-6 w-full">
-				{activeTab === "adminAlerts" &&
-					<AdminAlerts
-						item={displayedAdminAlerts}
-						adminAlerts={adminAlerts}
-						handleSort={handleSort}
-						sortConfig={sortConfig}
-						filteredAdminAlerts={filteredAdminAlerts}
-						startIdx={startIdx}
-						endIdx={endIdx}
-						PostArticlePerPage={PostArticlePerPage}
-						currentPage={currentPage}
-						setCurrentPage={setCurrentPage}
-						setDeleteUserIndex={setDeleteUserIndex}
-						setIsDeleteUserPopupOpen={setIsDeleteUserPopupOpen}
-					/>
-				}
 				{activeTab === "broadcastMessage" && <BroadcastMessage />}
 				{activeTab === "manageTemplates" && <ManageTemplates
 					item={displayedManageTemplate}
@@ -434,6 +332,8 @@ export default function NotificationSystemPage() {
 					setEditIndex={setEditIndex}
 					setIsAddEditManageTemplatePopup={setIsAddEditManageTemplatePopup}
 					setIsAddEditManageTemplatePopupOpen={setIsAddEditManageTemplatePopup}
+					searchText={searchQuery}
+					setSearchText={setSearchQuery}
 				/>}
 				{activeTab === "scheduledNotification" &&
 					<ScheduledNotification
@@ -452,6 +352,8 @@ export default function NotificationSystemPage() {
 						setEditIndex={setEditIndex}
 						setIsAddEditScheduledPopup={setIsAddEditScheduledPopup}
 						setIsAddEditScheduledPopupOpen={setIsAddEditScheduledPopup}
+						searchText={searchQuery}
+						setSearchText={setSearchQuery}
 					/>
 				}
 			</div>
@@ -486,25 +388,19 @@ export default function NotificationSystemPage() {
 				setIsOpen={setIsDeleteUserPopupOpen}
 				user={
 					deleteUserIndex !== null
-						? activeTab === "adminAlerts"
-							? { name: adminAlerts[deleteUserIndex]?.alertType }
-							: activeTab === "manageTemplates"
-								? { name: manageTemplates[deleteUserIndex]?.templateName }
-								: { name: scheduledNotification[deleteUserIndex]?.messageTitle }
+						? activeTab === "manageTemplates"
+							? { name: manageTemplates[deleteUserIndex]?.templateName }
+							: { name: scheduledNotification[deleteUserIndex]?.messageTitle }
 						: null
 				}
 				itemType={
-					activeTab === "adminAlerts"
-						? "admin alert"
-						: activeTab === "manageTemplates"
-							? "template"
-							: "Scheduled Notification"
+					activeTab === "manageTemplates"
+						? "template"
+						: "Scheduled Notification"
 				}
 				onDelete={() => {
 					if (deleteUserIndex !== null) {
-						if (activeTab === "adminAlerts") {
-							setAdminAlerts(prev => prev.filter((_, idx) => idx !== deleteUserIndex));
-						} else if (activeTab === "manageTemplates") {
+						if (activeTab === "manageTemplates") {
 							setManageTemplateType(prev => prev.filter((_, idx) => idx !== deleteUserIndex));
 						} else {
 							setScheduledNotification(prev => prev.filter((_, idx) => idx !== deleteUserIndex));

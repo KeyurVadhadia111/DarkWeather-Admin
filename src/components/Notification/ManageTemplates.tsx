@@ -2,6 +2,7 @@ import Icon from "components/utils/Icon";
 import { Menu, Transition } from "@headlessui/react";
 import Pagination from "components/utils/Pagination";
 import { Button } from "components/utils/Button";
+import { Input } from "components/utils/Input";
 
 interface ManageTemplatesType {
 	id: number;
@@ -9,6 +10,7 @@ interface ManageTemplatesType {
 	channel: string;
 	triggerEvent: string;
 	fileName: string;
+	recipients: string[];
 	status: string;
 	statusColor: string;
 }
@@ -34,9 +36,12 @@ type Props = {
 	setEditIndex: any;
 	setIsAddEditManageTemplatePopup: any;
 	setIsAddEditManageTemplatePopupOpen: any;
+	searchText: string;
+	setSearchText: (val: string) => void;
 };
 
-const ManageTemplates: React.FC<Props> = ({ item = [], handleSort, sortConfig, filteredManageTemaplate, startIdx, endIdx, PostArticlePerPage, currentPage, setCurrentPage, setDeleteUserIndex, setIsDeleteUserPopupOpen, manageTemplates, setEditIndex, setIsAddEditManageTemplatePopup, setIsAddEditManageTemplatePopupOpen }) => {
+const ManageTemplates: React.FC<Props> = ({ item = [], handleSort, sortConfig, filteredManageTemaplate, startIdx, endIdx, PostArticlePerPage, currentPage, setCurrentPage, setDeleteUserIndex, setIsDeleteUserPopupOpen, manageTemplates, setEditIndex, setIsAddEditManageTemplatePopup, setIsAddEditManageTemplatePopupOpen, searchText, setSearchText }) => {
+
 	return (
 		<div className="flex flex-col gap-4">
 			<div className="flex flex-col gap-5 border border-border dark:border-borderDark p-4 rounded-2xl">
@@ -44,18 +49,30 @@ const ManageTemplates: React.FC<Props> = ({ item = [], handleSort, sortConfig, f
 					<div className="relative font-medium text-text dark:text-textDark text-xl sm:text-2xl tracking-[0] leading-5 sm:leading-6">
 						Manage Push/Email/SMS Templates
 					</div>
-					<Button
-						className="flex h-[42px] sm:h-14 items-center justify-center gap-3 sm:px-6 py-3 sm:py-4 relative flex-[0_0_auto] bg-primary rounded-lg sm:rounded-xl"
-						onClick={() => {
-							setEditIndex(null);
-							setIsAddEditManageTemplatePopup(true);
-						}}
-					>
-						<Icon icon="plus" className="w-5 h-5 sm:w-7 sm:h-7" />
-						<div className="relative  font-semibold text-text text-xs sm:text-base tracking-[0] leading-6 whitespace-nowrap">
-							Add New Template
+					<div className="w-full flex justify-end md:flex-row flex-col gap-5 sm:gap-6 items-start md:items-center">
+						<div className="relative flex items-center rounded-xl md:w-auto w-full">
+							<Icon icon="search" className="absolute left-4 z-10 w-5 h-5 text-text dark:text-textDark" />
+							<Input
+								className=" font-normal !w-full md:!w-[360px] md:max-w-full md:!h-[56px] !h-[42px] text-bgcSecondary dark:text-textDark text-sm whitespace-nowrap [background:transparent] border-[none] p-0 !pl-12 !bg-[#F8F8F8] dark:!bg-bgcDark !rounded-xl"
+								placeholder="Search here"
+								type="text"
+								value={searchText}
+								onChange={(e) => setSearchText(e.target.value)}
+							/>
 						</div>
-					</Button>
+						<Button
+							className="flex h-[42px] sm:h-14 items-center justify-center gap-3 sm:px-6 py-3 sm:py-4 relative flex-[0_0_auto] bg-primary rounded-lg sm:rounded-xl"
+							onClick={() => {
+								setEditIndex(null);
+								setIsAddEditManageTemplatePopup(true);
+							}}
+						>
+							<Icon icon="plus" className="w-5 h-5 sm:w-7 sm:h-7" />
+							<div className="relative  font-semibold text-text text-xs sm:text-base tracking-[0] leading-6 whitespace-nowrap">
+								Add New Template
+							</div>
+						</Button>
+					</div>
 				</div>
 				<div className="flex flex-col w-full items-start gap-4 p-4 relative bg-bgc dark:bg-bgcDark rounded-2xl shadow-[0px_10px_65px_#0000000d]">
 					<div className="w-full overflow-x-auto overflow-hidden">
@@ -96,6 +113,9 @@ const ManageTemplates: React.FC<Props> = ({ item = [], handleSort, sortConfig, f
 													}`}
 											/>
 										</div>
+									</th>
+									<th className="w-[100px] sm:w-[220px] px-3 sm:px-5 py-3.5">
+										<span className="text-text dark:text-textDark text-xs sm:text-base font-medium whitespace-nowrap">Recipients</span>
 									</th>
 									<th className="w-[96.5px] sm:w-[130px] px-3 sm:px-5 py-3.5 cursor-pointer" onClick={() => handleSort("status")}>
 										<div className="flex items-center gap-2">
@@ -139,6 +159,7 @@ const ManageTemplates: React.FC<Props> = ({ item = [], handleSort, sortConfig, f
 														{item.fileName}
 													</div>
 												</td>
+												<td className="px-3 sm:px-5 py-4 text-text dark:text-textDark text-xs sm:text-base whitespace-nowrap">{item.recipients}</td>
 												<td className="flex items-center justify-between px-3 sm:px-5 py-4 text-xs sm:text-base whitespace-nowrap">
 													<span className={`${item.statusColor}`}>{item.status}</span>
 												</td>

@@ -31,6 +31,7 @@ interface FormData {
 	triggerEvent: string;
 	variablesUsed: string;
 	fileName: string;
+	recipients: string[];
 	status: Status;
 }
 
@@ -42,6 +43,7 @@ const getSchema = (editIndex: number | null) =>
 			triggerEvent: yup.string().required("Trigger Event To is required"),
 			variablesUsed: yup.string().required("Variables Used is required"),
 			fileName: yup.string().required("File Used is required"),
+			recipients: yup.array().of(yup.string()).min(1, "Select at least one Recipients"),
 			status: yup.mixed<Status>().oneOf(statusOptions).required("Status is required"),
 		})
 		.required();
@@ -76,6 +78,7 @@ const AddEditManageTemplatePopup: React.FC<Props> = ({ isOpen, setIsOpen, list =
 				triggerEvent: userData.triggerEvent || "",
 				variablesUsed: userData.variablesUsed || "",
 				fileName: userData.fileName || "",
+				recipients: userData.recipients || "",
 				status: userData.status || "Active",
 			});
 		}
@@ -133,7 +136,7 @@ const AddEditManageTemplatePopup: React.FC<Props> = ({ isOpen, setIsOpen, list =
 				<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 sm:gap-6">
 					<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
 						{/* Alert */}
-						<div className="col-span-1 flex flex-col gap-2 sm:gap-3">
+						<div className="col-span-2 sm:col-span-1 flex flex-col gap-2 sm:gap-3">
 							<label className="text-xs sm:text-base font-medium text-text dark:text-textDark leading-[18px] sm:leading-[21px]">
 								Template Name
 							</label>
@@ -144,7 +147,7 @@ const AddEditManageTemplatePopup: React.FC<Props> = ({ isOpen, setIsOpen, list =
 								error={errors?.templateName?.message}
 							/>
 						</div>
-						<div className="col-span-1 sm:col-span-1 flex flex-col gap-2 sm:gap-3">
+						<div className="col-span-2 sm:col-span-1 flex flex-col gap-2 sm:gap-3">
 							<Select
 								name="channel"
 								label="Channel"
@@ -157,7 +160,7 @@ const AddEditManageTemplatePopup: React.FC<Props> = ({ isOpen, setIsOpen, list =
 								className="!bg-bgc dark:!bg-fgcDark !border-textSecondary/20 !h-[42px] sm:!h-14 !rounded-xl !text-sm sm:!text-base"
 							/>
 						</div>
-						<div className="col-span-1 flex flex-col gap-2 sm:gap-3">
+						<div className="col-span-2 sm:col-span-1 flex flex-col gap-2 sm:gap-3">
 							<label className="text-xs sm:text-base font-medium text-text dark:text-textDark leading-[18px] sm:leading-[21px]">
 								Trigger Event
 							</label>
@@ -168,7 +171,7 @@ const AddEditManageTemplatePopup: React.FC<Props> = ({ isOpen, setIsOpen, list =
 								error={errors?.triggerEvent?.message}
 							/>
 						</div>
-						<div className="col-span-1 sm:col-span-1 flex flex-col gap-2 sm:gap-3">
+						<div className="col-span-2 sm:col-span-1 flex flex-col gap-2 sm:gap-3">
 							<Select
 								name="status"
 								label="Status"
@@ -182,12 +185,12 @@ const AddEditManageTemplatePopup: React.FC<Props> = ({ isOpen, setIsOpen, list =
 							/>
 						</div>
 
-						<div className="relative col-span-2 flex flex-col gap-2 sm:gap-3">
+						<div className={`relative ${editIndex ? "col-span-1 sm:col-span-1" : "col-span-2"} flex flex-col gap-2 sm:gap-3`}>
 							<h2 className="text-lg font-medium text-text dark:text-textDark">File Attach</h2>
 
 							{/* Clickable Upload Box */}
 							<div
-								className={`${editIndex ? "flex justify-between items-center w-[336px] h-14 p-4 rounded-xl border border-border dark:border-borderDark" : "h-[200px] border-2 border-dotted border-gray-400 rounded-md flex flex-col items-center justify-center cursor-pointer transition"}`}
+								className={`${editIndex ? "flex justify-between items-center h-14 p-4 rounded-xl border border-border dark:border-borderDark" : "h-[200px] border-2 border-dotted border-gray-400 rounded-md flex flex-col items-center justify-center cursor-pointer transition"}`}
 								onClick={handleFileDivClick}
 							>
 								{headerImagePreview ? (
@@ -225,8 +228,51 @@ const AddEditManageTemplatePopup: React.FC<Props> = ({ isOpen, setIsOpen, list =
 							/>
 						</div>
 
+						{/* Recipients */}
+
+						<div className="col-span-2 sm:col-span-1 flex flex-col gap-2 sm:gap-3">
+							<span className="text-base text-text dark:text-white font-medium">Recipients</span>
+
+							{/* Notifications */}
+							<div className="flex flex-col md:flex-row justify-between gap-4 w-full">
+								<div className="flex flex-col items-start gap-4 w-full">
+									<div className="flex gap-2.5 sm:gap-8 w-1/2">
+										{["Admins", "Users", "Both"].map((channel: any) => (
+											<label
+												key={channel}
+												className="relative flex items-center gap-3 text-sm sm:text-base text-textSecondary dark:text-white cursor-pointer"
+											>
+												<input
+													type="checkbox"
+													value={channel}
+													{...register("recipients")}
+													className="peer hidden"
+													name="recipients"
+												/>
+												<span className="w-4 h-4 rounded-md border border-[#808080] dark:border-white flex items-center justify-center bg-transparent peer-checked:bg-[#FFA500] peer-checked:border-[#FFA500] relative" />
+												<svg
+													className="w-3 h-3 text-black absolute left-0.5 opacity-0 peer-checked:opacity-100 transition-opacity duration-150 ease-in-out pointer-events-none"
+													fill="none"
+													stroke="currentColor"
+													strokeWidth="3"
+													viewBox="0 0 24 24"
+												>
+													<path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+												</svg>
+												{channel}
+											</label>
+										))}
+									</div>
+									{errors.recipients && (
+										<p className="text-sm text-red-500">{errors.recipients.message}</p>
+									)}
+								</div>
+							</div>
+						</div>
+
+
 						{/* Due To */}
-						<div className="col-span-2 flex flex-col gap-2 sm:gap-3">
+						<div className={` ${editIndex ? "col-span-2" : "col-span-2 sm:col-span-1"} flex flex-col gap-2 sm:gap-3`}>
 							<label className="text-xs sm:text-base font-medium text-text dark:text-textDark leading-[18px] sm:leading-[21px]">
 								Variables Used
 							</label>

@@ -2,6 +2,7 @@ import Icon from "components/utils/Icon";
 import { Menu, Transition } from "@headlessui/react";
 import Pagination from "components/utils/Pagination";
 import { Button } from "components/utils/Button";
+import { Input } from "components/utils/Input";
 
 interface scheduledNotificationType {
 	id: number;
@@ -34,28 +35,42 @@ type Props = {
 	setEditIndex: any;
 	setIsAddEditScheduledPopup: any;
 	setIsAddEditScheduledPopupOpen: any;
+	searchText: string;
+	setSearchText: (val: string) => void;
 };
 
-const ScheduledNotification: React.FC<Props> = ({ item = [], handleSort, sortConfig, filteredScheduled, startIdx, endIdx, PostArticlePerPage, currentPage, setCurrentPage, setDeleteUserIndex, setIsDeleteUserPopupOpen, scheduledNotification, setEditIndex, setIsAddEditScheduledPopup, setIsAddEditScheduledPopupOpen }) => {
+const ScheduledNotification: React.FC<Props> = ({ item = [], handleSort, sortConfig, filteredScheduled, startIdx, endIdx, PostArticlePerPage, currentPage, setCurrentPage, setDeleteUserIndex, setIsDeleteUserPopupOpen, scheduledNotification, setEditIndex, setIsAddEditScheduledPopup, setIsAddEditScheduledPopupOpen, searchText, setSearchText }) => {
 	return (
 		<div className="flex flex-col gap-4">
 			<div className="flex flex-col gap-5 border border-border dark:border-borderDark p-4 rounded-2xl">
-				<div className="flex flex-col md:flex-row md:gap-0 gap-5 md:h-14 justify-between items-start md:items-center w-full">
+				<div className="flex flex-col md:flex-row md:gap-0 gap-5 md:h-14 md:justify-between items-start md:items-center w-full">
 					<div className="relative font-medium text-text dark:text-textDark text-xl sm:text-2xl tracking-[0] leading-5 sm:leading-6">
 						Scheduled Notification
 					</div>
-					<Button
-						className="flex h-[42px] sm:h-14 items-center justify-center gap-3 sm:px-6 py-3 sm:py-4 relative flex-[0_0_auto] bg-primary rounded-lg sm:rounded-xl"
-						onClick={() => {
-							setEditIndex(null);
-							setIsAddEditScheduledPopup(true);
-						}}
-					>
-						<Icon icon="plus" className="w-5 h-5 sm:w-7 sm:h-7" />
-						<div className="relative  font-semibold text-text text-xs sm:text-base tracking-[0] leading-6 whitespace-nowrap">
-							Add New
+					<div className="w-full flex justify-end md:flex-row flex-col gap-5 sm:gap-6 items-start md:items-center">
+						<div className="relative flex items-center rounded-xl md:w-auto w-full">
+							<Icon icon="search" className="absolute left-4 z-10 w-5 h-5 text-text dark:text-textDark" />
+							<Input
+								className=" font-normal w-full md:!w-[360px] !md:max-w-[360px] md:!h-[56px] !h-[42px] text-bgcSecondary dark:text-textDark text-sm whitespace-nowrap [background:transparent] border-[none] p-0 !pl-12 !bg-[#F8F8F8] dark:!bg-bgcDark !rounded-xl"
+								placeholder="Search here"
+								type="text"
+								value={searchText}
+								onChange={(e) => setSearchText(e.target.value)}
+							/>
 						</div>
-					</Button>
+						<Button
+							className="flex h-[42px] sm:h-14 items-center justify-center gap-3 sm:px-6 py-3 sm:py-4 relative flex-[0_0_auto] bg-primary rounded-lg sm:rounded-xl"
+							onClick={() => {
+								setEditIndex(null);
+								setIsAddEditScheduledPopup(true);
+							}}
+						>
+							<Icon icon="plus" className="w-5 h-5 sm:w-7 sm:h-7" />
+							<div className="relative  font-semibold text-text text-xs sm:text-base tracking-[0] leading-6 whitespace-nowrap">
+								Add New
+							</div>
+						</Button>
+					</div>
 				</div>
 				<div className="flex flex-col w-full items-start gap-4 p-4 relative bg-bgc dark:bg-bgcDark rounded-2xl shadow-[0px_10px_65px_#0000000d]">
 					<div className="w-full overflow-x-auto overflow-hidden">

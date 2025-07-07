@@ -64,9 +64,9 @@ export default function Sidebar() {
 		{
 			title: "Settings & Configurations",
 			icon: "settings-configurations",
-			href: "",
+			href: "settings-configurations",
 			roles: ["SuperAdmin"],
-			active: [""],
+			active: ["/settings-configurations"],
 		},
 		{
 			title: "Analytics & Reports",

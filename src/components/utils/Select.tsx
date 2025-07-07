@@ -6,7 +6,7 @@ interface SelectProps {
 	required?: boolean;
 	error?: string;
 	className?: string;
-	items: { value: any; text: string, disabled?: boolean }[];
+	items: { value: any; text: React.ReactNode, disabled?: boolean, icon?: any }[];
 	register?: any;
 	trigger?: (name: any) => void;
 	placeholder?: string;
