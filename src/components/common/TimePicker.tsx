@@ -9,6 +9,7 @@ interface TimePickerProps {
 	setValue: UseFormSetValue<any>;
 	getValues: UseFormGetValues<any>;
 	error?: string;
+	disabled?: boolean;
 }
 
 const TimePicker: React.FC<TimePickerProps> = ({
@@ -16,7 +17,8 @@ const TimePicker: React.FC<TimePickerProps> = ({
 	label,
 	register,
 	setValue,
-	error
+	error,
+	disabled,
 }) => {
 	const [hour, setHour] = useState("00");
 	const [minute, setMinute] = useState("00");
@@ -94,9 +96,10 @@ const TimePicker: React.FC<TimePickerProps> = ({
 	return (
 		<div className="relative inline-block w-full" ref={popoverRef}>
 			{label && <label className="block mb-1 text-sm font-medium">{label}</label>}
-			<input type="hidden" {...register(name)} name={name} defaultValue={selectedTime} />
+			<input type="hidden" {...register(name)} name={name} defaultValue={selectedTime} disabled={disabled} />
 			<button
 				type="button"
+				disabled={disabled}
 				onClick={() => {
 					setIsOpen(!isOpen);
 					resetFlags();
@@ -104,7 +107,7 @@ const TimePicker: React.FC<TimePickerProps> = ({
 				className="flex justify-between items-center w-full sm:h-14 px-4 py-2 border rounded-xl bg-white dark:bg-fgcDark text-text dark:text-textSecondary text-left border-border dark:border-borderDark"
 			>
 				{selectedTime}
-				<Icon icon="clock" className="w-4 h-4 sm:w-5 sm:h-5" />
+				{!disabled && <Icon icon="clock" className="w-4 h-4 sm:w-5 sm:h-5" />}
 			</button>
 
 			{isOpen && (

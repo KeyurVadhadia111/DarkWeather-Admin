@@ -15,6 +15,7 @@ import * as yup from "yup";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import ScheduleConfirmation from "components/popup/ScheduleConfirmation";
+import { apiClient } from "api/client";
 
 interface PostArticle {
 	id: number;
@@ -28,61 +29,18 @@ interface PostArticle {
 }
 
 interface SortConfig {
-	key: keyof PostArticle;
+	key: string;
 	direction: "asc" | "desc";
 }
 
-const articleOptions1 = [
-	{
-		id: 1,
-		title: "Climate Change Updates"
-	},
-	{
-		id: 2,
-		title: "June Weather Summary"
-	},
-	{
-		id: 3,
-		title: "Tips for Rainy Season"
-	},
-	{
-		id: 4,
-		title: "Storm Preparedness Guide"
-	},
-	{
-		id: 5,
-		title: "Summer Heat Alert Blog"
-	},
-	{
-		id: 6,
-		title: "Coastal Flooding Explained"
-	},
-	{
-		id: 7,
-		title: "Heatwave Advisory for Summer"
-	},
-	{
-		id: 8,
-		title: "Real-time Weather Insights"
-	},
-	{
-		id: 9,
-		title: "How to Stay Cool This July"
-	},
-	{
-		id: 10,
-		title: "Weekend Storm Tracker"
-	}
-];
-
 const articleSchema = yup.object({
-	article1: yup.number().required("Article 1 is required"),
-	article2: yup.number().required("Article 2 is required"),
-	article3: yup.number().required("Article 3 is required"),
-	article4: yup.number().required("Article 4 is required"),
-	article5: yup.number().required("Article 5 is required"),
-	article6: yup.number().required("Article 6 is required"),
-	article7: yup.number().required("Article 7 is required"),
+	article1: yup.string(),
+	article2: yup.string(),
+	article3: yup.string(),
+	article4: yup.string(),
+	article5: yup.string(),
+	article6: yup.string(),
+	article7: yup.string(),
 });
 type ArticleFormData = {
 	article1: any
@@ -97,159 +55,12 @@ type ArticleFormData = {
 
 export default function PostsArticlesPage() {
 
-	const [PostArticle, setPostArticle] = useState<PostArticle[]>([
-		{
-			id: 1,
-			title: "Climate Change Updates",
-			type: "Top Stories",
-			scheduledFor: "Jun 28, 2025, 10:00 AM",
-			createdBy: "John Smith",
-			createdOn: "Jun 26, 2025",
-			status: "Published",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 2,
-			title: "June Weather Summary",
-			type: "Severe Weather",
-			scheduledFor: "Jun 28, 2025, 3:00 PM",
-			createdBy: "Admin Team",
-			createdOn: "Jun 25, 2025",
-			status: "Scheduled",
-			statusColor: "text-warning",
-		},
-		{
-			id: 3,
-			title: "Tips for Rainy Season",
-			type: "Severe Weather",
-			scheduledFor: "-",
-			createdBy: "Emily Brown",
-			createdOn: "Jun 24, 2025",
-			status: "Cancelled",
-			statusColor: "text-textRed",
-		},
-		{
-			id: 4,
-			title: "Storm Preparedness Guide",
-			type: "Top Stories",
-			scheduledFor: "Jun 30, 2025, 9:00 AM",
-			createdBy: "Alex Johnson",
-			createdOn: "Jun 20, 2025",
-			status: "Draft",
-			statusColor: "text-textSecondary",
-		},
-		{
-			id: 5,
-			title: "Summer Heat Alert Blog",
-			type: "Severe Weather",
-			scheduledFor: "-",
-			createdBy: "Sarah Wilson",
-			createdOn: "Jun 18, 2025",
-			status: "Scheduled",
-			statusColor: "text-warning",
-		},
-		{
-			id: 6,
-			title: "Coastal Flooding Explained",
-			type: "Top Stories",
-			scheduledFor: "-",
-			createdBy: "Mike Chen",
-			createdOn: "Jun 22, 2025",
-			status: "Draft",
-			statusColor: "text-textSecondary",
-		},
-		{
-			id: 7,
-			title: "Heatwave Advisory for Summer",
-			type: "Top Stories",
-			scheduledFor: "-",
-			createdBy: "Maya Patel",
-			createdOn: "Jun 20, 2025",
-			status: "Published",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 8,
-			title: "Real-time Weather Insights",
-			type: "Severe Weather",
-			scheduledFor: "Today, 2:00 PM",
-			createdBy: "Emily Brown",
-			createdOn: "Jun 18, 2025",
-			status: "Archived",
-			statusColor: "text-textSecondary",
-		},
-		{
-			id: 9,
-			title: "How to Stay Cool This July",
-			type: "Top Stories",
-			scheduledFor: "Jun 20, 2025, 7:00 AM",
-			createdBy: "Ton Jenkins",
-			createdOn: "Jun 12, 2025",
-			status: "Cancelled",
-			statusColor: "text-textRed",
-		},
-		{
-			id: 10,
-			title: "Weekend Storm Tracker",
-			type: "Top Stories",
-			scheduledFor: "-",
-			createdBy: "Rachel Simmons",
-			createdOn: "Jun 8, 2025",
-			status: "Published",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 11,
-			title: "Drought Watch Announcement |",
-			type: "Severe Weather",
-			scheduledFor: "-",
-			createdBy: "Sarah Wilson",
-			createdOn: "Jun 4, 2025",
-			status: "Archived",
-			statusColor: "text-textSecondary",
-		},
-		{
-			id: 12,
-			title: "Behind the Forecast",
-			type: "Severe Weather",
-			scheduledFor: "-",
-			createdBy: "Linda Brooks",
-			createdOn: "May 26, 2025",
-			status: "Published",
-			statusColor: "text-textGreen",
-		},
-		{
-			id: 13,
-			title: "Storm Preparedness Guide",
-			type: "Top Stories",
-			scheduledFor: "Jun 30, 2025, 9:00 AM",
-			createdBy: "Alex Johnson",
-			createdOn: "Jun 20, 2025",
-			status: "Draft",
-			statusColor: "text-textSecondary",
-		},
-		{
-			id: 14,
-			title: "Summer Heat Alert Blog",
-			type: "Severe Weather",
-			scheduledFor: "-",
-			createdBy: "Sarah Wilson",
-			createdOn: "Jun 18, 2025",
-			status: "Scheduled",
-			statusColor: "text-warning",
-		},
-		{
-			id: 15,
-			title: "Coastal Flooding Explained",
-			type: "Top Stories",
-			scheduledFor: "-",
-			createdBy: "Mike Chen",
-			createdOn: "Jun 22, 2025",
-			status: "Draft",
-			statusColor: "text-textSecondary",
-		},
-	]);
-
+	const [postArticle, setPostArticle] = useState<PostArticle[]>([]);
+	const [articleOptions1, setArticleOptions1] = useState([]);
+	const [articleOptions2, setArticleOptions2] = useState([]);
+	const [totalArticlesCount, setTotalArticlesCount] = useState(0);
+	const [startIdx, setStartIdx] = useState(0);
+	const [endIdx, setEndIdx] = useState(0);
 
 	const {
 		handleSubmit: handleSubmitTop,
@@ -306,7 +117,7 @@ export default function PostsArticlesPage() {
 
 	const [selectedPostArticle, setSelectedPostArticle] = useState<number[]>([]);
 	const [currentPage, setCurrentPage] = useState(1);
-	const [PostArticlePerPage] = useState(12);
+	const [PostArticlePerPage] = useState(10);
 	const [sortConfig, setSortConfig] = useState<SortConfig>({
 		key: "title",
 		direction: "asc",
@@ -314,9 +125,6 @@ export default function PostsArticlesPage() {
 	const [editIndex, setEditIndex] = useState<number | null>(null);
 	const [isAddEditPostArticlePopupOpen, setIsAddEditPostArticlePopupOpen] = useState(false);
 	const isSideExpanded = useAppState(state => state.isSideExpanded);
-
-	const startIdx = (currentPage - 1) * PostArticlePerPage;
-	const endIdx = Math.min(startIdx + PostArticlePerPage, PostArticle.length);
 
 	const [isDeleteUserPopupOpen, setIsDeleteUserPopupOpen] = useState(false);
 	const [deleteUserIndex, setDeleteUserIndex] = useState<number | null>(null);
@@ -354,27 +162,39 @@ export default function PostsArticlesPage() {
 		}));
 	};
 
-	const handleSelectChange = (name: string, value: number, group: "top" | "severe") => {
-		if (group === "top") {
-			setTopStoriesSelections(prev => ({ ...prev, [name]: value }));
-			setValueTop(name as keyof ArticleFormData, value);
-			triggerTop(name as keyof ArticleFormData);
+	const getFilteredOptions2 = (currentName: string, group: "top" | "severe") => {
+		const currentSelections = group === "top" ? topStoriesSelections : severeWeatherSelections;
+
+		const selectedIds = Object.entries(currentSelections)
+			.filter(([key, value]) => key !== currentName && value !== null)
+			.map(([_, value]) => value as number);
+
+		const currentValue = currentSelections[currentName];
+
+		return articleOptions2.map(option => ({
+			value: option.id,
+			text: option.title,
+			disabled: option.id !== currentValue && selectedIds.includes(option.id),
+		}));
+	};
+
+	const handleSelectChange = (articleKey: string, selectedId, sectionKey: string) => {
+		if (sectionKey === "top") {
+			setTopStoriesSelections(prev => ({ ...prev, [articleKey]: selectedId }));
 		} else {
-			setSevereWeatherSelections(prev => ({ ...prev, [name]: value }));
-			setValueSevere(name as keyof ArticleFormData, value);
-			triggerSevere(name as keyof ArticleFormData);
+			setSevereWeatherSelections(prev => ({ ...prev, [articleKey]: selectedId }));
 		}
 	};
 
 
 	// Filter PostArticle by search query (name or email)
 	const filteredPostArticle = useMemo(() => {
-		if (!searchQuery.trim()) return PostArticle;
+		if (!searchQuery.trim()) return postArticle;
 		const query = searchQuery.toLowerCase();
-		return PostArticle.filter(
+		return postArticle.filter(
 			item => item.title.toLowerCase().includes(query) || item.type.toLowerCase().includes(query),
 		);
-	}, [PostArticle, searchQuery]);
+	}, [postArticle, searchQuery]);
 
 	const sortedPostArticle = useMemo(() => {
 		const sorted = [...filteredPostArticle].sort((a: PostArticle, b: PostArticle) => {
@@ -408,15 +228,15 @@ export default function PostsArticlesPage() {
 		return sorted;
 	}, [filteredPostArticle, sortConfig]);
 
-	const displayedPostArticle = useMemo(() => {
-		return sortedPostArticle.slice(startIdx, endIdx);
-	}, [sortedPostArticle, startIdx, endIdx]);
+	const displayedPostArticle = postArticle;
 
-	const handleSort = (key: keyof PostArticle) => {
+	const handleSort = (key) => {
 		setSortConfig(prevConfig => ({
 			key,
 			direction: prevConfig.key === key && prevConfig.direction === "asc" ? "desc" : "asc",
 		}));
+		setCurrentPage(1);
+		fetchPaginatedArticles(1, key, sortConfig.direction);
 	};
 
 	/* Start for checkbox */
@@ -443,16 +263,7 @@ export default function PostsArticlesPage() {
 	};
 
 	const handleArchive = () => {
-		if (!selectedArchiveItem) return;
-
-		setPostArticle((prev) =>
-			prev.map((article) =>
-				article.id === selectedArchiveItem.id
-					? { ...article, status: "Archived", statusColor: "text-gray-400" }
-					: article
-			)
-		);
-
+		archiveArticle();
 		setSelectedArchiveItem(null);
 	};
 
@@ -471,30 +282,236 @@ export default function PostsArticlesPage() {
 
 	const onSubmitTop: SubmitHandler<ArticleFormData> = async () => {
 		Object.entries(topStoriesSelections).forEach(([key, val]) => {
-			setValueTop(key as keyof ArticleFormData, val ?? undefined);
+			setValueSevere(key as keyof ArticleFormData, val ?? undefined);
 		});
-		const isValid = await triggerTop();
-		if (isValid) {
-			console.log("Top Stories:", topStoriesSelections);
-		}
+		saveTopStoriesOptions();
 	};
 
 	const onSubmitSevere: SubmitHandler<ArticleFormData> = async () => {
 		Object.entries(severeWeatherSelections).forEach(([key, val]) => {
 			setValueSevere(key as keyof ArticleFormData, val ?? undefined);
 		});
-		const isValid = await triggerSevere();
-		if (isValid) {
-			console.log("Severe Weather:", severeWeatherSelections);
+		saveSevereWeatherOptions();
+	};
+
+	const saveSevereWeatherOptions = async () => {
+		try {
+			const authToken = JSON.parse(localStorage.getItem('auth') || "{}")?.access_token;
+			const selectedIds = Object.values(severeWeatherSelections);
+
+			const selectedArticles = articleOptions2.filter(option =>
+				selectedIds.includes(option.id)
+			);
+			const response = await apiClient.post('api/article/reorder', {
+				json: {
+					articles: selectedArticles.map((x, idx) => ({
+						uuid: x.id,
+						sequence: idx,
+					})),
+				},
+				headers: {
+					Authorization: `Bearer ${authToken}`,
+					'Content-Type': 'application/json',
+				},
+			});
+
+			if (response.ok) {
+				toast.success(`Severe Weather articles updated successfully!`);
+			}
+
+		} catch (error) {
+
 		}
 	};
 
+	const saveTopStoriesOptions = async () => {
+		try {
+			const authToken = JSON.parse(localStorage.getItem('auth') || "{}")?.access_token;
+			const selectedIds = Object.values(topStoriesSelections);
+
+			const selectedArticles = articleOptions1.filter(option =>
+				selectedIds.includes(option.id)
+			);
+			const response = await apiClient.post('api/article/reorder', {
+				json: {
+					articles: selectedArticles.map((x, idx) => ({
+						uuid: x.id,
+						sequence: idx,
+					})),
+				},
+				headers: {
+					Authorization: `Bearer ${authToken}`,
+					'Content-Type': 'application/json',
+				},
+			});
+
+			if (response.ok) {
+				toast.success(`Top stories updated successfully!`);
+			}
+
+		} catch (error) {
+
+		}
+	};
+
+	const stripHTMLandDecodeEntities = (html: string) => {
+		const parser = new DOMParser();
+		const doc = parser.parseFromString(html, "text/html");
+		return doc.body.textContent || "";
+	}
+
+	const fetchPaginatedArticles = async (page: number, key: string, order: string) => {
+		try {
+			const authToken = JSON.parse(localStorage.getItem('auth') || "{}")?.access_token;
+			const response = await apiClient.post(`api/article/all?page=${page}&limit=10&sort_by=${key}&order=${order}`, {
+				headers: {
+					Authorization: `Bearer ${authToken}`,
+					'Content-Type': 'application/json', // optional
+				},
+			});
+
+			const resJson = await response.json();
+			const articlesData = resJson.data.articles;
 
 
+			const mappedArticles = articlesData.map((article) => ({
+				id: article.uuid,
+				title: article.main_title,
+				type: article.type.toLowerCase()
+					.replace('_', ' ')
+					.split(' ')
+					.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+					.join(' '),
+				scheduledFor: article.publish_at ? (new Date(article.publish_at).toLocaleString("en-US", {
+					dateStyle: "long",
+					timeStyle: "short",
+				})) : "",
+				createdBy: "John Smith",
+				createdOn: "Jun 26, 2025",
+				headerImage: article.header_image,
+				thumbnailImage: article.thumbnail_image,
+				status: article.status.toLowerCase()
+					.split(' ')
+					.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+					.join(' '),
+				statusColor: article.status == 'PUBLISHED' ? "text-textGreen" : "text-textRed",
+				titles: article.titles_descriptions,
+			}));
+
+			setPostArticle(mappedArticles);
+			setTotalArticlesCount(resJson.data.total);
+			setStartIdx((currentPage - 1) * 10);
+			setEndIdx(Math.min(startIdx + 10, totalArticlesCount));
+		} catch (error) {
+			toast.error(error);
+		}
+	};
+
+	const fetchArticleOptions = async () => {
+		try {
+			const response = await apiClient.get(`api/article/type/TOP_STORIES`);
+
+			const resJson = await response.json();
+			const articlesData = resJson.data;
+
+
+			const mappedArticles = articlesData.map((article) => ({
+				id: article.uuid,
+				title: stripHTMLandDecodeEntities(article.main_title),
+				sequence: article.sequence,
+			}));
+			setArticleOptions1(mappedArticles)
+			const preSelections: Record<string, string | number> = {};
+			mappedArticles.forEach(article => {
+				if (article.sequence >= 0 && article.sequence <= 6) {
+					preSelections[`article${article.sequence + 1}`] = article.id;
+				}
+			});
+			setTopStoriesSelections(preSelections);
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	const fetchSevereWeatherOptions = async () => {
+		try {
+			const response = await apiClient.get(`api/article/type/SEVERE_WEATHER`);
+
+			const resJson = await response.json();
+			const articlesData = resJson.data;
+
+
+			const mappedArticles = articlesData.map((article) => ({
+				id: article.uuid,
+				title: stripHTMLandDecodeEntities(article.main_title),
+				sequence: article.sequence,
+			}));
+			setArticleOptions2(mappedArticles)
+			const preSelections = {};
+			mappedArticles.forEach(article => {
+				if (article.sequence >= 0 && article.sequence <= 6) {
+					preSelections[`article${article.sequence + 1}`] = article.id;
+				}
+			});
+			setSevereWeatherSelections(preSelections);
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	const archiveArticle = async () => {
+		try {
+			if (!selectedArchiveItem)
+				return;
+
+			const authToken = JSON.parse(localStorage.getItem('auth') || "{}")?.access_token;
+			const response = await apiClient.put(`api/article/archive/${selectedArchiveItem.id}`, {
+				headers: {
+					Authorization: `Bearer ${authToken}`,
+					"Content-Type": "application/json",
+				}
+			});
+
+			if (response.ok) {
+				toast.success(`Article archived successfully!`);
+				fetchPaginatedArticles(1, sortConfig.key, sortConfig.direction);
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	const deleteArticle = async () => {
+		try {
+			if (!deleteUserIndex)
+				return;
+
+			const authToken = JSON.parse(localStorage.getItem('auth') || "{}")?.access_token;
+			const response = await apiClient.delete(`api/article/delete/${postArticle[deleteUserIndex].id}`, {
+				headers: {
+					Authorization: `Bearer ${authToken}`,
+					"Content-Type": "application/json",
+				}
+			});
+
+			if (response.ok) {
+				toast.success(`Article deleted successfully!`);
+				fetchPaginatedArticles(1, sortConfig.key, sortConfig.direction);
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	useEffect(() => {
+		fetchPaginatedArticles(1, 'main_title', 'asc');
+		fetchArticleOptions();
+		fetchSevereWeatherOptions();
+	}, [])
 
 	// Reset to page 1 when searchQuery changes
 	useEffect(() => {
-		setCurrentPage(1);
+		// setCurrentPage(1);
 	}, [searchQuery]);
 
 	return (
@@ -578,11 +595,11 @@ export default function PostsArticlesPage() {
 										</span>
 									</label>
 								</th>
-								<th className="w-[152px] sm:w-[260px] px-3 sm:px-5 py-3.5 cursor-pointer" onClick={() => handleSort("title")}>
+								<th className="w-[152px] sm:w-[260px] px-3 sm:px-5 py-3.5 cursor-pointer" onClick={() => handleSort("main_title")}>
 									<div className="flex items-center gap-2">
 										<span className="text-text dark:text-textDark text-xs sm:text-base font-medium whitespace-nowrap">Title</span>
 										<Icon
-											icon={sortConfig?.key === "title" ? "up-sort" : "sort"}
+											icon={sortConfig?.key === "main_title" ? "up-sort" : "sort"}
 											className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"
 												}`}
 										/>
@@ -598,28 +615,35 @@ export default function PostsArticlesPage() {
 										/>
 									</div>
 								</th>
-								<th className="w-[180px] sm:w-[220px] px-3 sm:px-5 py-3.5">
-									<span className="text-text dark:text-textDark text-xs sm:text-base font-medium whitespace-nowrap">Scheduled For</span>
-								</th>
-								<th className="w-[137px] sm:w-[180px] px-3 sm:px-5 py-3.5 cursor-pointer" onClick={() => handleSort("createdBy")}>
+								<th className="w-[180px] sm:w-[220px] px-3 sm:px-5 py-3.5" onClick={() => handleSort("publish_at")}>
 									<div className="flex items-center gap-2">
-										<span className="text-text dark:text-textDark text-xs sm:text-base font-medium whitespace-nowrap">
-											Created By
-										</span>
+										<span className="text-text dark:text-textDark text-xs sm:text-base font-medium whitespace-nowrap">Scheduled For</span>
 										<Icon
-											icon={sortConfig?.key === "createdBy" ? "up-sort" : "sort"}
+											icon={sortConfig?.key === "publish_at" ? "up-sort" : "sort"}
 											className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"
 												}`}
 										/>
 									</div>
 								</th>
-								<th className="w-[129px] sm:w-[180px] px-3 sm:px-5 py-3.5 cursor-pointer" onClick={() => handleSort("createdOn")}>
+								<th className="w-[137px] sm:w-[180px] px-3 sm:px-5 py-3.5 cursor-pointer" onClick={() => handleSort("author")}>
+									<div className="flex items-center gap-2">
+										<span className="text-text dark:text-textDark text-xs sm:text-base font-medium whitespace-nowrap">
+											Created By
+										</span>
+										<Icon
+											icon={sortConfig?.key === "author" ? "up-sort" : "sort"}
+											className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"
+												}`}
+										/>
+									</div>
+								</th>
+								<th className="w-[129px] sm:w-[180px] px-3 sm:px-5 py-3.5 cursor-pointer" onClick={() => handleSort("created_at")}>
 									<div className="flex items-center gap-2">
 										<span className="text-text dark:text-textDark text-xs sm:text-base font-medium whitespace-nowrap">
 											Created On
 										</span>
 										<Icon
-											icon={sortConfig?.key === "createdOn" ? "up-sort" : "sort"}
+											icon={sortConfig?.key === "created_at" ? "up-sort" : "sort"}
 											className={`w-4 h-4 sm:w-5 sm:h-5 text-text dark:text-textDark shrink-0 ${sortConfig.direction === "asc" ? "" : "rotate-180"
 												}`}
 										/>
@@ -680,9 +704,7 @@ export default function PostsArticlesPage() {
 												</label>
 											</td>
 											<td className="px-3 sm:px-5 py-4 text-text dark:text-textDark text-xs sm:text-base whitespace-nowrap">
-												{item.mainTitle
-													? new DOMParser().parseFromString(item.mainTitle, "text/html").body.textContent
-													: item.title}
+												{stripHTMLandDecodeEntities(item.title)}
 											</td>
 
 											<td className="px-3 sm:px-5 py-4 text-text dark:text-textDark text-xs sm:text-base whitespace-nowrap">{item.type}</td>
@@ -723,7 +745,7 @@ export default function PostsArticlesPage() {
 																	<div
 																		className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full"
 																		onClick={() => {
-																			const globalIndex = PostArticle.findIndex((u) => u.id === item.id);
+																			const globalIndex = postArticle.findIndex((u) => u.id === item.id);
 																			setEditIndex(globalIndex);
 																			setIsAddEditPostArticlePopupOpen(true);
 																		}}
@@ -748,7 +770,7 @@ export default function PostsArticlesPage() {
 																	<div
 																		className="flex p-1 sm:px-3 sm:py-2.5 items-center gap-2 text-sm sm:text-base text-textSecondary dark:text-textDark cursor-pointer w-full"
 																		onClick={() => {
-																			setDeleteUserIndex(PostArticle.findIndex((u) => u.id === item.id));
+																			setDeleteUserIndex(postArticle.findIndex((u) => u.id === item.id));
 																			setIsDeleteUserPopupOpen(true);
 																		}}
 																	>
@@ -786,18 +808,19 @@ export default function PostsArticlesPage() {
 				<div className="flex flex-col sm:flex-row items-center justify-between w-full gap-4 sm:py-2.5 relative flex-[0_0_auto]">
 					<div className="w-full flex items-center">
 						<span className="text-xs sm:text-sm text-textSecondary leading-[18px] sm:leading-[24px]">
-							{filteredPostArticle.length === 0
+							{postArticle.length === 0
 								? "Showing 0 of 0 Post / Article"
-								: `Showing ${startIdx + 1}–${Math.min(endIdx, filteredPostArticle.length)} of ${filteredPostArticle.length} Post / Article`}
+								: `Showing ${startIdx + 1}–${Math.min(endIdx, totalArticlesCount)} of ${totalArticlesCount} Post / Article`}
 						</span>
 					</div>
-					{filteredPostArticle.length !== 0 && (
+					{postArticle.length !== 0 && (
 						<Pagination
-							totalRecords={filteredPostArticle.length}
+							totalRecords={totalArticlesCount}
 							recordsPerPage={PostArticlePerPage}
 							currentPage={currentPage}
 							handlePageChange={(page: number) => {
 								setCurrentPage(page);
+								fetchPaginatedArticles(page, sortConfig.key, sortConfig.direction);
 							}}
 						/>
 					)}
@@ -822,7 +845,7 @@ export default function PostsArticlesPage() {
 					title="Severe Weather"
 					sectionKey="severe"
 					articleSelections={severeWeatherSelections}
-					getFilteredOptions={getFilteredOptions}
+					getFilteredOptions2={getFilteredOptions2}
 					handleSelectChange={handleSelectChange}
 					onReset={() => {
 						setSevereWeatherSelections({});
@@ -840,7 +863,7 @@ export default function PostsArticlesPage() {
 					setEditIndex(null);
 					setIsAddEditPostArticlePopupOpen(false);
 				}}
-				list={PostArticle}
+				list={postArticle}
 				setList={setPostArticle}
 				editIndex={editIndex}
 			/>
@@ -873,21 +896,20 @@ export default function PostsArticlesPage() {
 				setIsOpen={setIsDeleteUserPopupOpen}
 				user={
 					deleteUserIndex !== null
-						? { name: PostArticle[deleteUserIndex].title }
+						? { name: postArticle[deleteUserIndex].title }
 						: null
 				}
 				itemType={
 					deleteUserIndex !== null
-						? PostArticle[deleteUserIndex].status === "Draft"
+						? postArticle[deleteUserIndex].status === "Draft"
 							? "Draft Post / Article" : "Post / Article"
 						: ""
 				}
 				onDelete={() => {
 					if (deleteUserIndex !== null) {
-						setPostArticle(prev => prev.filter((_, idx) => idx !== deleteUserIndex));
+						deleteArticle();
 						setDeleteUserIndex(null);
 						setIsDeleteUserPopupOpen(false);
-						toast.success("User deleted successfully");
 					}
 				}}
 			/>

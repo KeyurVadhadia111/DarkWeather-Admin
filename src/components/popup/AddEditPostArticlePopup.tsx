@@ -23,7 +23,7 @@ type Props = {
 	editIndex?: number | null;
 };
 
-const typeOptions = ["News", "Article", "Update", "Announcement"] as const;
+const typeOptions = ["News", "Article", "Top Stories", "Severe Weather", "Announcement", "Update"] as const;
 
 interface PresignedUrlResponse {
 	data: any;
@@ -45,32 +45,37 @@ interface FormData {
 }
 
 
-const getSchema = (status: "Draft" | "Published") => {
+const getSchema = (status: "Draft" | "Published", publishNow: boolean) => {
 	const base = {
 		type: yup.string().required("Type is required"),
+		mainTitle: yup.string().required("Main title is required"),
 	};
 
 	if (status === "Published") {
 		return yup.object({
 			...base,
-			publishDate: yup.string().required("Publish date is required"),
+			publishDate: yup
+				.string()
+				.when([], {
+					is: () => !publishNow,
+					then: schema => schema.required("Publish date is required"),
+					otherwise: schema => schema.notRequired()
+				}),
 			publishTime: yup.string(),
-			mainTitle: yup.string().required("Main title is required"),
-			imageHeader: yup.string(),
-			imageThumbnail: yup.string(),
+			imageHeader: yup.string().required("Header Image is required"),
+			imageThumbnail: yup.string().required("Thumbnail image is required"),
 			titles: yup.array().of(
 				yup.object({
 					title: yup.string().required("Title is required"),
 					description: yup.string().required("Description is required"),
 				})
-			).min(1, "At least one title & description is required")
+			).min(1, "At least one title & description is required"),
 		});
 	}
 
 	// Draft mode — only `type` is required
 	return yup.object(base);
 };
-
 
 
 
@@ -85,6 +90,7 @@ const AddEditPostArticlePopup: React.FC<Props> = ({ isOpen, setIsOpen, list = []
 	const [headerImagePreview, setHeaderImagePreview] = useState<string | null>(null);
 	const [thumbnailImagePreview, setThumbnailImagePreview] = useState<string | null>(null);
 
+	const [publishNow, setPublishNow] = useState(false);
 	const [headerImageData, setHeaderImageData] = useState<string | null>(null);
 	const [thumbnailImageData, setThumbnailImageData] = useState<string | null>(null);
 	const headerFileInputRef = useRef<HTMLInputElement | null>(null);
@@ -97,6 +103,7 @@ const AddEditPostArticlePopup: React.FC<Props> = ({ isOpen, setIsOpen, list = []
 		setValue,
 		getValues,
 		control,
+		setError,
 		reset,
 		trigger,
 		formState: { errors },
@@ -114,20 +121,27 @@ const AddEditPostArticlePopup: React.FC<Props> = ({ isOpen, setIsOpen, list = []
 
 	useEffect(() => {
 		if (editIndex !== null && list[editIndex]) {
-			const userData = list[editIndex];
-			reset({
-				type: userData.type || "",
-				publishDate: userData.publishDate || "",
-				publishTime: userData.publishTime || "",
-				mainTitle: userData.mainTitle || "",
-				imageHeader: userData.imageHeader || "",
-				imageThumbnail: userData.imageThumbnail || "",
-				titles: userData.titles || [{ title: "", description: "" }],
+			const articleData = list[editIndex];
+			const dateObj = new Date(articleData.scheduledFor);
+			const publishDate = dateObj.toISOString().split("T")[0];
+			const publishTime = dateObj.toLocaleTimeString([], {
+				hour: "2-digit",
+				minute: "2-digit",
+				hour12: false,
 			});
-			setHeaderImagePreview(userData.imageHeader || null);
-			setThumbnailImagePreview(userData.imageThumbnail || null);
-			setHeaderImageData(userData.imageHeader || null);
-			setThumbnailImageData(userData.imageThumbnail || null);
+			reset({
+				id: articleData.id || null,
+				type: articleData.type || "",
+				publishDate: publishDate || "",
+				publishTime: publishTime || "00:00",
+				mainTitle: articleData.title,
+				imageHeader: articleData.headerImage || "",
+				imageThumbnail: articleData.thumbnailImage || "",
+				titles: articleData.titles || [{ title: "", description: "" }],
+			});
+
+			setHeaderImagePreview(articleData.headerImage || null);
+			setThumbnailImagePreview(articleData.thumbnailImage || null);
 		}
 	}, [editIndex, isOpen, list, reset]);
 
@@ -141,23 +155,33 @@ const AddEditPostArticlePopup: React.FC<Props> = ({ isOpen, setIsOpen, list = []
 
 	const createNewArticle = async (data: FormData) => {
 		try {
-			const date = data.publishDate;
-			const time24h = to24HourFormat(data.publishTime);
-			const dateTimeStr = `${date}T${time24h}:00`;
-			const publishAt = new Date(dateTimeStr).toISOString();
+			let publishAt: string | null = null;
+
+			if (publishNow) {
+				const now = new Date();
+				const date = now.toISOString().slice(0, 10);
+				const time = now.toTimeString().slice(0, 5);
+				const dateTimeStr = `${date}T${time}:00`;
+				publishAt = toLocalISOString(new Date(dateTimeStr));
+			} else if (data.publishDate && data.publishTime) {
+				const dateTimeStr = `${data.publishDate}T${to24HourFormat(data.publishTime)}:00`;
+				publishAt = toLocalISOString(new Date(dateTimeStr));
+			}
+
 			const authToken = JSON.parse(localStorage.getItem('auth') || "{}")?.access_token;
 			const response = await apiClient.post('api/article/create', {
 				json: {
 					main_title: data.mainTitle,
 					header_image: headerImagePreview,
 					thumbnail_image: thumbnailImagePreview,
-					type: data.type.toUpperCase(),
+					type: data.type.toUpperCase().replace(' ', '_'),
 					publish_at: publishAt,
 					titles_descriptions: data?.titles?.map((x, index) => ({
 						title: x.title,
 						description: x.description,
 						sequence: index
 					})) || [],
+					status: statusRef.current.toUpperCase(),
 				},
 				headers: {
 					Authorization: `Bearer ${authToken}`,
@@ -177,16 +201,33 @@ const AddEditPostArticlePopup: React.FC<Props> = ({ isOpen, setIsOpen, list = []
 
 	const updateArticle = async (data: FormData) => {
 		try {
+			let publishAt: string | null = null;
+
+			if (publishNow) {
+				const now = new Date();
+				const date = now.toISOString().slice(0, 10);
+				const time = now.toTimeString().slice(0, 5);
+				const dateTimeStr = `${date}T${time}:00`;
+				publishAt = toLocalISOString(new Date(dateTimeStr));
+			} else if (data.publishDate && data.publishTime) {
+				const dateTimeStr = `${data.publishDate}T${to24HourFormat(data.publishTime)}:00`;
+				publishAt = toLocalISOString(new Date(dateTimeStr));
+			}
+
 			const authToken = JSON.parse(localStorage.getItem('auth') || "{}")?.access_token;
-			const response = apiClient.post('api/admin/articles/create', {
+			const response = await apiClient.put(`api/article/update/${list[editIndex].id}`, {
 				json: {
-					header_image_url: headerImagePreview,
-					thumbnail_image_url: thumbnailImagePreview,
-					type: data.type,
-					publish_date: data.publishDate,
-					publish_time: data.publishTime,
 					main_title: data.mainTitle,
-					titles: data.titles,
+					header_image: headerImagePreview,
+					thumbnail_image: thumbnailImagePreview,
+					type: data.type.toUpperCase().replace(' ', '_'),
+					publish_at: publishAt,
+					titles_descriptions: data?.titles?.map((x, index) => ({
+						title: x.title,
+						description: x.description,
+						sequence: index
+					})) || [],
+					status: statusRef.current.toUpperCase(),
 				},
 				headers: {
 					Authorization: `Bearer ${authToken}`,
@@ -203,6 +244,15 @@ const AddEditPostArticlePopup: React.FC<Props> = ({ isOpen, setIsOpen, list = []
 			console.log(error);
 		}
 	};
+
+	const toLocalISOString = (date: Date) => {
+		const offset = date.getTimezoneOffset();
+		const sign = offset > 0 ? "-" : "+";
+		const pad = (n: number) => String(Math.abs(Math.floor(n))).padStart(2, "0");
+		const hours = pad(offset / -60);
+		const mins = pad(offset % 60);
+		return date.toISOString().slice(0, 19) + `${sign}${hours}:${mins}`;
+	}
 
 
 	const handleHeaderDivClick = () => {
@@ -266,10 +316,18 @@ const AddEditPostArticlePopup: React.FC<Props> = ({ isOpen, setIsOpen, list = []
 
 	const handleSave = async (status: "Draft" | "Published") => {
 		statusRef.current = status;
-		setValidationSchema(getSchema(status));
-		const isValid = await trigger();
-		if (isValid) {
+
+		const schema = getSchema(status, publishNow);
+		try {
+			const values = getValues();
+			await schema.validate(values, { abortEarly: false });
 			handleSubmit(onSubmit)();
+		} catch (err: any) {
+			if (err.inner) {
+				err.inner.forEach((e: any) => {
+					setError(e.path, { message: e.message });
+				});
+			}
 		}
 	};
 
@@ -308,8 +366,10 @@ const AddEditPostArticlePopup: React.FC<Props> = ({ isOpen, setIsOpen, list = []
 			throw new Error("Failed to upload image to S3");
 		} else {
 			if (imageType === 'thumbnail') {
+				setValue("imageThumbnail", fileUrl, { shouldValidate: true });
 				setThumbnailImagePreview(fileUrl);
 			} else {
+				setValue("imageHeader", fileUrl, { shouldValidate: true });
 				setHeaderImagePreview(fileUrl);
 			}
 		}
@@ -345,10 +405,37 @@ const AddEditPostArticlePopup: React.FC<Props> = ({ isOpen, setIsOpen, list = []
 								/>
 							</div>
 
+							<div className="col-span-2">
+								<label
+									htmlFor="publishNow"
+									className="relative flex items-center justify-between gap-2 text-sm font-medium sm:text-base text-text dark:text-white cursor-pointer w-full"
+								>
+									<span>Publish Immediately</span>
+									<input
+										id="publishNow"
+										type="checkbox"
+										checked={publishNow}
+										onChange={(e) => setPublishNow(e.target.checked)}
+										className="peer hidden"
+									/>
+									<div className="w-5 h-5 shrink-0 rounded border border-gray-300 bg-white dark:bg-bgcDark peer-checked:bg-primary flex items-center justify-center">
+										<svg
+											className="w-3 h-3 text-white hidden peer-checked:block"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="3"
+											viewBox="0 0 24 24"
+										>
+											<path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+										</svg>
+									</div>
+								</label>
+							</div>
+
 							<div className="col-span-1 flex flex-col gap-2 sm:gap-3">
 								<label className="text-xs sm:text-sm font-medium text-text dark:text-textDark">Publish Date</label>
 								<div className="flex flex-col gap-1">
-									<input {...register("publishDate")} type="date" className="w-full sm:h-14 text-textSecondary border border-textSecondary/20 rounded-xl px-3 py-2" />
+									<input {...register("publishDate")} type="date" className="w-full sm:h-14 text-textSecondary border border-textSecondary/20 rounded-xl px-3 py-2" disabled={publishNow} />
 									{errors.publishDate && (
 										<p className="text-red-500 text-xs mt-1">{errors.publishDate.message}</p>
 									)}
@@ -360,6 +447,7 @@ const AddEditPostArticlePopup: React.FC<Props> = ({ isOpen, setIsOpen, list = []
 								<div className="flex gap-3 w-full">
 									<TimePicker name="publishTime" register={register} setValue={setValue}
 										getValues={getValues}
+										disabled={publishNow}
 										error={errors.publishTime?.message}
 									/>
 								</div>

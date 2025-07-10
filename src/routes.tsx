@@ -14,6 +14,7 @@ import RoleManagement from "pages/RoleManagement";
 import Subscription from "pages/Subscription";
 import PostsArticlesPage from "pages/PostsArticlesPage";
 import NotificationSystemPage from "pages/NotificationSystemPage";
+import SettingsConfigurationsPage from "pages/SettingsConfigurationsPage";
 
 declare global {
 	interface Window {
@@ -194,6 +195,14 @@ const createRoutes: React.FC = () => {
 							element={
 								// <ProtectedRoute>
 								<NotificationSystemPage />
+								// </ProtectedRoute>
+							}
+						/>
+						<Route
+							path="/settings-configurations"
+							element={
+								// <ProtectedRoute>
+								<SettingsConfigurationsPage />
 								// </ProtectedRoute>
 							}
 						/>

@@ -8,6 +8,7 @@ type Props = {
 	sectionKey: "top" | "severe";
 	articleSelections: Record<string, string | number | null>;
 	getFilteredOptions: (articleKey: string, sectionKey: "top" | "severe") => any[];
+	getFilteredOptions2: (articleKey: string, sectionKey: "top" | "severe") => any[];
 	handleSelectChange: (name: any, value: number, section: 'top' | 'severe') => void;
 	onReset?: () => void;
 	onSave?: () => void;
@@ -20,6 +21,7 @@ const ArticleSelectionSection: React.FC<Props> = ({
 	sectionKey,
 	articleSelections,
 	getFilteredOptions,
+	getFilteredOptions2,
 	handleSelectChange,
 	onReset,
 	onSave,
@@ -41,6 +43,10 @@ const ArticleSelectionSection: React.FC<Props> = ({
 				<div className="grid grid-cols-1 min-[1310px]:lg:grid-cols-2 gap-4">
 					{[...Array(7)].map((_, idx) => {
 						const articleKey = `article${idx + 1}`;
+						const options = sectionKey === 'top' ? getFilteredOptions(articleKey, sectionKey) : getFilteredOptions2(articleKey, sectionKey);
+						const selectedId = articleSelections[articleKey];
+						const selectedOption = options.find(opt => opt.value === selectedId) || null;
+
 						return (
 							<div className="col-span-1" key={articleKey}>
 								<Select
@@ -48,9 +54,11 @@ const ArticleSelectionSection: React.FC<Props> = ({
 									label={`Article ${idx + 1}`}
 									required
 									className="!bg-bgc dark:!bg-fgcDark !border-textSecondary/20 !h-[42px] sm:!h-14 !rounded-xl !text-sm sm:!text-base"
-									items={getFilteredOptions(articleKey, sectionKey)}
-									value={articleSelections[articleKey] ?? ""}
-									onChange={(val: any) => handleSelectChange(articleKey, Number(val), sectionKey)}
+									items={options}
+									value={selectedOption?.value}
+									onChange={(val: any) => {
+										handleSelectChange(articleKey, val, sectionKey)
+									}}
 									error={errors?.[articleKey]?.message}
 								/>
 							</div>
