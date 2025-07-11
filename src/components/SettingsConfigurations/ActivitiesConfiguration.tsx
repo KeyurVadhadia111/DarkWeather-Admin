@@ -104,6 +104,7 @@ const ActivitiesConfiguration = () => {
 
 	const onSubmit = (data: any) => {
 		console.log("Submitted Data:", data);
+		toast.success("Activities saved successfully!")
 	};
 
 	return (

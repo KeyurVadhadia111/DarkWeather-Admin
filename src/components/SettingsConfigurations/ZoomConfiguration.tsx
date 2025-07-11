@@ -4,6 +4,7 @@ import Select from "components/utils/Select";
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { toast } from "react-toastify";
 
 interface FormData {
 	zoomAccountId: string;
@@ -44,6 +45,8 @@ const ZoomConfiguration = () => {
 
 	const onSubmit = (data: any) => {
 		console.log("Submitted Data:", data);
+		toast.success("Zoom Settings saved successfully!")
+
 	};
 
 	return (

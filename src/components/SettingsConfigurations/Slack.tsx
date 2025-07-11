@@ -4,6 +4,7 @@ import Select from "components/utils/Select";
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { toast } from "react-toastify";
 
 interface SlackType {
 	slackBotToken: string;
@@ -72,6 +73,7 @@ const Slack = () => {
 
 	const onSubmit = (data: any) => {
 		console.log("Submitted Data:", data);
+		toast.success("Slack Settings saved successfully!");
 	};
 
 	return (
@@ -177,31 +179,29 @@ const Slack = () => {
 
 						{/* Default Notification Channel */}
 						<div className="flex flex-col gap-2 sm:gap-3">
-							<Select
+							<label className="text-xs sm:text-base font-medium text-text dark:text-textDark leading-[18px] sm:leading-[21px]">
+								Default Notification Channel
+							</label>
+							<Input
+								{...register("defaultNotificationChannel")}
 								name="defaultNotificationChannel"
-								label="Default Notification Channel"
-								placeholder="Select Default Notification Channel"
-								required
-								register={register}
-								trigger={trigger}
+								placeholder="Default Notification Channel"
+								className="bg-white !w-full"
 								error={errors?.defaultNotificationChannel?.message}
-								items={defaultNotificationChannelOptions}
-								className="!bg-bgc dark:!bg-fgcDark !border-textSecondary/20 !h-[42px] sm:!h-14 !rounded-xl !text-sm sm:!text-base"
 							/>
 						</div>
 
 						{/* Mention Roles */}
 						<div className="flex flex-col gap-2 sm:gap-3">
-							<Select
+							<label className="text-xs sm:text-base font-medium text-text dark:text-textDark leading-[18px] sm:leading-[21px]">
+								Mention Roles
+							</label>
+							<Input
+								{...register("mentionRoles")}
 								name="mentionRoles"
-								label="Mention Roles"
-								placeholder="Select Mention Roles."
-								required
-								register={register}
-								trigger={trigger}
+								placeholder="Mention Roles."
+								className="bg-white !w-full"
 								error={errors?.mentionRoles?.message}
-								items={mentionRolesOptions}
-								className="!bg-bgc dark:!bg-fgcDark !border-textSecondary/20 !h-[42px] sm:!h-14 !rounded-xl !text-sm sm:!text-base"
 							/>
 						</div>
 

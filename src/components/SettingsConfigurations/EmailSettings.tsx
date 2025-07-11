@@ -4,6 +4,7 @@ import Select from "components/utils/Select";
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { toast } from "react-toastify";
 
 interface SMTPType {
 	smtpHost: string;
@@ -63,6 +64,7 @@ const EmailSettings = () => {
 
 	const onSubmit = (data: any) => {
 		console.log("Submitted SMTP Data:", data);
+		toast.success("Email Settings save successfully!");
 	};
 
 	return (
@@ -117,31 +119,30 @@ const EmailSettings = () => {
 
 					{/* Sender Email Address */}
 					<div className="flex flex-col gap-2 sm:gap-3">
-						<Select
+						<label className="text-xs sm:text-base font-medium text-text dark:text-textDark leading-[18px] sm:leading-[21px]">
+							Sender Email Address
+						</label>
+						<Input
+							{...register("senderEmailAddress")}
 							name="senderEmailAddress"
-							label="Sender Email Address"
-							placeholder="Select Sender Email Address"
-							required
-							register={register}
-							trigger={trigger}
+							placeholder="Sender Email Address"
+							className="bg-white !w-full"
 							error={errors?.senderEmailAddress?.message}
-							items={senderEmailAddressOptions.map((item: any) => ({ value: item.id, text: item.title }))}
-							className="!bg-bgc dark:!bg-fgcDark !border-textSecondary/20 !h-[42px] sm:!h-14 !rounded-xl !text-sm sm:!text-base"
 						/>
 					</div>
 
+
 					{/* SMTP Username */}
 					<div className="flex flex-col gap-2 sm:gap-3">
-						<Select
+						<label className="text-xs sm:text-base font-medium text-text dark:text-textDark leading-[18px] sm:leading-[21px]">
+							SMTP Username
+						</label>
+						<Input
+							{...register("SMTPUsername")}
 							name="SMTPUsername"
-							label="SMTP Username"
-							placeholder="Select SMTP Username"
-							required
-							register={register}
-							trigger={trigger}
+							placeholder="Sender SMTP Username"
+							className="bg-white !w-full"
 							error={errors?.SMTPUsername?.message}
-							items={SMTPUsernameOptions.map((item: any) => ({ value: item.id, text: item.title }))}
-							className="!bg-bgc dark:!bg-fgcDark !border-textSecondary/20 !h-[42px] sm:!h-14 !rounded-xl !text-sm sm:!text-base"
 						/>
 					</div>
 

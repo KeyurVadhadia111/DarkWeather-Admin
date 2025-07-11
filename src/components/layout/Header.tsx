@@ -10,6 +10,9 @@ export default function Header() {
 	const setIsDark = useAppState(state => state.setIsDark);
 	const userDetails = useAppState(state => state.userDetails);
 	const setUserDetails = useAppState(state => state.setUserDetails);
+	const isMenuOpen = useAppState(state => state.isMenuOpen);
+	const setIsMenuOpen = useAppState(state => state.setIsMenuOpen);
+
 
 	useEffect(() => {
 		setUserDetails(JSON.parse(localStorage.getItem("auth") || "{}"));
@@ -49,7 +52,7 @@ export default function Header() {
 				</div>
 				<div className="flex items-center gap-4">
 					<Icon icon="search" className="w-6 h-6 text-textDark dark:text-text" />
-					<Icon icon="menu" className="w-6 h-6 text-textDark dark:text-text" />
+					<Icon icon="menu" className="w-6 h-6 text-textDark dark:text-text" onClick={() => setIsMenuOpen(!isMenuOpen)} />
 				</div>
 			</div>
 

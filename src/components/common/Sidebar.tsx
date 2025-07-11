@@ -72,7 +72,7 @@ export default function Sidebar() {
 	return (
 		<>
 			<div
-				className="absolute top-3 right-4 z-10 px-3 sm:hidden flex items-center "
+				className="absolute top-3 right-4 z-10 px-3 md:hidden flex items-center "
 				onClick={() => setIsOpen(!isOpen)}>
 				<Icon className="w-6 h-6 text-textDark dark:text-text" icon="hamburger" />
 			</div>
@@ -81,9 +81,8 @@ export default function Sidebar() {
 
 			<div
 				ref={sidebarRef}
-				className={`${
-					isOpen ? "translate-x-0" : "-translate-x-full"
-				}  sm:translate-x-0 top-0 left-0 z-50 transition-transform ease-in-out duration-300 transform fixed block sm:hidden`}>
+				className={`${isOpen ? "translate-x-0" : "-translate-x-full"
+					}  sm:translate-x-0 top-0 left-0 z-50 transition-transform ease-in-out duration-300 transform fixed block sm:hidden`}>
 				<div className="min-w-[306px] max-w-[306px] inline-flex flex-col items-start justify-between px-6 py-8 bg-bgc dark:bg-bgcDark rounded-r-2xl gap-4">
 					<div className="flex flex-col w-[255px] items-start gap-8 flex-[0_0_auto]">
 						<div
@@ -113,9 +112,8 @@ export default function Sidebar() {
 											to={item.href}
 											aria-label={item.title}
 											onClick={() => setIsOpen(false)}
-											className={`text-base  font-normal text-text dark:text-textDark leading-[18px] px-4 py-3 rounded-xl transition-colors w-full ${
-												isActive ? "bg-primary !text-text font-semibold" : "bg-transparent"
-											}`}>
+											className={`text-base  font-normal text-text dark:text-textDark leading-[18px] px-4 py-3 rounded-xl transition-colors w-full ${isActive ? "bg-primary !text-text font-semibold" : "bg-transparent"
+												}`}>
 											{item.title}
 										</Link>
 									);

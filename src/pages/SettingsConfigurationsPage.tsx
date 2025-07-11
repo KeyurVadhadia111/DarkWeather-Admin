@@ -1,9 +1,7 @@
 import useAppState from "components/utils/useAppState";
-import React, { useEffect, useMemo, useState } from "react";
+import { } from "react";
+import React, { useEffect, useRef, useMemo, useState } from "react";
 import DeleteUserPopup from "components/popup/DeleteUserPopup";
-import PostArticleArchivePopup from "components/popup/PostArticleArchivePopup";
-import ResertPasswordPopup from "components/popup/ResertPasswordPopup";
-import { useNavigate } from "react-router-dom";
 import { toast } from "components/utils/toast";
 import EmailSettings from "components/SettingsConfigurations/EmailSettings";
 import SystemWideFeature from "components/SettingsConfigurations/SystemWideFeature";
@@ -13,7 +11,6 @@ import SmsSettings from "components/SettingsConfigurations/SmsSettings";
 import PaymentConfiguration from "components/SettingsConfigurations/PaymentConfiguration";
 import Slack from "components/SettingsConfigurations/Slack";
 import ZoomConfiguration from "components/SettingsConfigurations/ZoomConfiguration";
-import AddEditScheduledNotificationPopup from "components/popup/AddEditScheduledNotificationPopup";
 import ActivitiesConfiguration from "components/SettingsConfigurations/ActivitiesConfiguration";
 import ApiIntegration from "components/SettingsConfigurations/ApiIntegration";
 import AddEditAddEditApiIntegrationPopup from "components/popup/AddEditAddEditApiIntegrationPopup";
@@ -99,7 +96,7 @@ export default function SettingsConfigurationsPage() {
 			id: 9,
 			title: "API",
 			name: "api"
-		}
+		},
 	]
 
 	const [paymentConfiguration, setPaymentConfiguration] = useState<PaymentConfigurationType[]>([
@@ -216,10 +213,52 @@ export default function SettingsConfigurationsPage() {
 	const [isAddEditApiIntegrationPopup, setIsAddEditApiIntegrationPopup] = useState(false);
 	const isSideExpanded = useAppState(state => state.isSideExpanded);
 	const [showAllTabs, setShowAllTabs] = useState(false);
-	const MAX_VISIBLE_TABS = 7;
 
-	const visibleTabs = showAllTabs ? notificationBar : notificationBar.slice(0, MAX_VISIBLE_TABS);
-	const hiddenTabs = notificationBar.slice(MAX_VISIBLE_TABS);
+	// Inside SettingsConfigurationsPage component
+	const containerRef = useRef<HTMLDivElement | null>(null);
+	const [visibleTabs, setVisibleTabs] = useState(notificationBar);
+	const [hiddenTabs, setHiddenTabs] = useState<typeof notificationBar>([]);
+	const tabRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+	// Adjust visible/hidden tabs based on width
+	useEffect(() => {
+		const updateVisibleTabs = () => {
+			if (!containerRef.current) return;
+
+			if (showAllTabs) {
+				setVisibleTabs(notificationBar);
+				setHiddenTabs([]);
+				return; // prevent infinite recalculation
+			}
+
+			const containerWidth = containerRef.current.offsetWidth;
+			let usedWidth = 0;
+			let lastVisibleIndex = -1;
+
+			for (let i = 0; i < notificationBar.length; i++) {
+				const tabWidth = tabRefs.current[i]?.offsetWidth || 0;
+
+				// Reserve ~80px for "+More"
+				if (usedWidth + tabWidth <= containerWidth - 80) {
+					usedWidth += tabWidth;
+					lastVisibleIndex = i;
+				} else {
+					break;
+				}
+			}
+
+			setVisibleTabs(notificationBar.slice(0, lastVisibleIndex + 1));
+			setHiddenTabs(notificationBar.slice(lastVisibleIndex + 1));
+		};
+
+		const observer = new ResizeObserver(updateVisibleTabs);
+		if (containerRef.current) observer.observe(containerRef.current);
+		updateVisibleTabs();
+
+		return () => observer.disconnect();
+	}, [showAllTabs]);
+
+
 
 	const startIdx = (currentPage - 1) * PostArticlePerPage;
 	const endIdx = Math.min(
@@ -329,25 +368,30 @@ export default function SettingsConfigurationsPage() {
 						Settings & Configurations
 					</div>
 				</div>
-				<div className={`flex sm:flex-row flex-col items-center justify-between gap-2 sm:gap-4 w-full`}>
-					<div className={`flex items-center gap-3 bg-bgc dark:bg-bgcDark rounded-xl shadow-[0px_10px_65px_#0000000d] whitespace-nowrap w-full ${showAllTabs ? "overflow-x-auto" : "md:overflow-hidden overflow-x-auto"}`}>
-
-						{visibleTabs.map((item) => (
+				<div className="flex sm:flex-row flex-col items-center justify-between gap-2 sm:gap-4 w-full">
+					<div
+						ref={containerRef}
+						className={`w-[90%] flex items-center gap-3 bg-bgc dark:bg-bgcDark rounded-xl shadow-[0px_10px_65px_#0000000d] whitespace-nowrap ${showAllTabs ? "overflow-x-auto" : "md:overflow-hidden overflow-x-auto"
+							}`}
+					>
+						{visibleTabs.map((item, index) => (
 							<div
+								ref={(el) => {
+									tabRefs.current[index] = el;
+								}}
 								key={item.id}
 								onClick={() => {
-									setActiveTab(item.name)
+									setActiveTab(item.name);
 									localStorage.setItem("activeTab", item.name);
 								}}
-								className={`py-2.5 px-5 rounded-lg cursor-pointer transition-all duration-200 ${activeTab === item.name
-									? "bg-primary font-semibold text-text"
-									: "text-gray-700 dark:text-white"
+								className={`py-2.5 px-5 rounded-lg cursor-pointer transition-all duration-200 ${activeTab === item.name ? "bg-primary font-semibold text-text" : "text-gray-700 dark:text-white"
 									}`}
 							>
 								<span className="sm:text-base">{item.title}</span>
 							</div>
 						))}
 					</div>
+
 					{!showAllTabs && hiddenTabs.length > 0 && (
 						<div
 							onClick={() => setShowAllTabs(true)}
@@ -357,8 +401,6 @@ export default function SettingsConfigurationsPage() {
 						</div>
 					)}
 				</div>
-
-
 			</div>
 
 			<div className="w-full">
